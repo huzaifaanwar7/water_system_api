@@ -1,0 +1,11 @@
+
+/.vs
+/PrescottAppBackend.Api/bin
+/PrescottAppBackend.Api/obj
+/PrescottAppBackend.Domain/obj
+/PrescottAppBackend.Infrastructure/bin
+/PrescottAppBackend.Infrastructure/obj
+/PrescottAppBackend.Domain/bin
+/PrescottAppBackend.Api/Properties
+/PrescottAppBackend.Api/bin
+/PrescottAppBackend.Domain/obj
