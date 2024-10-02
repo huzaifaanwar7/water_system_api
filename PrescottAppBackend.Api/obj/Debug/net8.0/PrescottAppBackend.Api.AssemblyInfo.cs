@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PrescottAppBackend.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9fd1dec92f596b1059410cf3f95946ca3132d517")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bab95075e061db35feb50f86e165fddee4915867")]
 [assembly: System.Reflection.AssemblyProductAttribute("PrescottAppBackend.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PrescottAppBackend.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
