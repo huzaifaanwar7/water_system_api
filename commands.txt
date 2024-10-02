@@ -1,0 +1,5 @@
+// DB scaffolding Command
+dotnet ef dbcontext scaffold "Server=localhost;Database=Prescott;User=root;Password=;" MySql.EntityFrameworkCore -o DbModels --force;
+
+//Create Controller Command
+dotnet new apicontroller --name ContactController
