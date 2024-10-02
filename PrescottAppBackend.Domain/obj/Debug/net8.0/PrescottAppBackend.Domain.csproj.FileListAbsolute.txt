@@ -12,3 +12,4 @@
 /Users/suffiullah/Documents/Prescott/reward_app/PrescottAppBackend/PrescottAppBackend.Domain/obj/Debug/net8.0/PrescottAppBackend.Domain.pdb
 /Users/suffiullah/Documents/Prescott/reward_app/PrescottAppBackend/PrescottAppBackend.Domain/obj/Debug/net8.0/PrescottAppBackend.Domain.genruntimeconfig.cache
 /Users/suffiullah/Documents/Prescott/reward_app/PrescottAppBackend/PrescottAppBackend.Domain/obj/Debug/net8.0/ref/PrescottAppBackend.Domain.dll
+/Users/suffiullah/Documents/Prescott/reward_app/PrescottAppBackend/PrescottAppBackend.Domain/obj/Debug/net8.0/PrescottAppBackend.Domain.sourcelink.json
