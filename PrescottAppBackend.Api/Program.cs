@@ -40,7 +40,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "SaapNet Book", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "PRESCOTT API", Version = "v1" });
         });
 
 builder.Services.AddTransient<IUserService, UserService>();
@@ -53,15 +53,15 @@ builder.Services.AddControllers();
 var app = builder.Build();
 var env = app.Services.GetRequiredService<IWebHostEnvironment>();
 
-if (env.IsDevelopment())
-{
+//if (env.IsDevelopment())
+//{
     app.MapSwagger();
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "SaapNet Book v1");
     });
-}
+//}
 
 app.UseCors("AllowAllOrigins");
 

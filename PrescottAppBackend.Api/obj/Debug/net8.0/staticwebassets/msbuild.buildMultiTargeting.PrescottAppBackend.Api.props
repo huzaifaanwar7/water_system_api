@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/PrescottAppBackend.Api.props" />
-</Project>
