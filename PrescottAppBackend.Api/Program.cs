@@ -20,7 +20,7 @@ FirebaseApp.Create(new AppOptions()
 //     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register the DbContext with a connection string (for MySQL)
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=localhost;Database=SaapNetBook;User=root;Password=;";
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=127.0.0.1;Database=Prescott;User=root;Password=;";
 builder.Services.AddDbContext<PrescottContext>(options =>
    options.UseMySQL(connectionString));
 
