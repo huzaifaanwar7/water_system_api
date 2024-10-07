@@ -1,30 +1,45 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+using PrescottAppBackend.Api.Model;
 using PrescottAppBackend.Domain;
+using System.Net;
 
-namespace PrescottAppBackend.Api
+namespace PrescottAppBackend.Api;
+[Route("api/[controller]")]
+[ApiController]
+public class DropdownListController(IDDLService _ddlService) : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class DropdownListController : ControllerBase
+    [HttpGet("{type}")]
+    public async Task<BaseResponse> Get(string type)
     {
-        private readonly IDDLService _ddlService;
-        public DropdownListController(IDDLService ddlService)
-        {
-            _ddlService = ddlService;
-        }
-
-        // GET: api/dropdownlist/BusinessType
-        [HttpGet("{type}")]
-        public async Task<IActionResult> Get(string type)
+        try
         {
             var ddls = await _ddlService.GetDropdownListByTypeAsync(type);
             if (ddls == null)
             {
-                return NotFound();
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.OK,
+                    data = ddls
+                };
             }
-            return Ok(ddls);
+            return new BaseResponse
+            {
+                status = HttpStatusCode.OK,
+                data = ddls
+            };
         }
-
+        catch (Exception ex)
+        {
+            return new BaseResponse
+            {
+                status = HttpStatusCode.InternalServerError,
+                message = ex.Message,
+                data = ex
+            };
+        }
     }
 }
+
+

@@ -65,21 +65,22 @@ var env = app.Services.GetRequiredService<IWebHostEnvironment>();
 
 app.UseCors("AllowAllOrigins");
 
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseHttpsRedirection();
-
 app.UseRouting();
-
+app.UseAuthentication();
+app.UseAuthorization();
 // Add custom middleware to the pipeline
 app.UseMiddleware<CustomMiddleware>();
-
-app.UseAuthorization();
-
 app.UseEndpoints(endpoints =>
     {
         endpoints.MapControllers();
     });
+
+
+
+
 
 // Run the configured pipeline
 app.Run();

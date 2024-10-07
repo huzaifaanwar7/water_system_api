@@ -1,33 +1,36 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PrescottAppBackend.Api.Model;
 using PrescottAppBackend.Domain;
 using PrescottAppBackend.Domain.DbModels;
+using System.Net;
 
-namespace PrescottAppBackend.Api
+namespace PrescottAppBackend.Api;
+[ApiController]
+[Route("api/[controller]")]
+public class RoleController(IRoleService _role) : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class RoleController : ControllerBase
+
+    [HttpPost("create")]
+    public async Task<BaseResponse> CreateRole([FromBody] RoleVM roleVM)
     {
-        private readonly IRoleService _role;
-        public RoleController(IRoleService role){
-            _role = role;
-        }
-        
-        [Route("create")]
-        [HttpPost]
-        // [HttpPost("create")]
-        public async Task<IActionResult> CreateRole([FromBody] RoleVM roleVM)
+        try
         {
-            try
+            var newRole = await _role.AddRoleAsync(roleVM);
+            return new BaseResponse
             {
-                var newRole = await _role.AddRoleAsync(roleVM);
-                return Ok(newRole);
-            }
-            catch (Exception ex)
+                status = HttpStatusCode.OK,
+                data = newRole
+            };
+        }
+        catch (Exception ex)
+        {
+            return new BaseResponse
             {
-                return BadRequest(new { nessage = ex.Message });
-            }
+                status = HttpStatusCode.InternalServerError,
+                message = ex.Message,
+                data = ex
+            };
         }
     }
 }

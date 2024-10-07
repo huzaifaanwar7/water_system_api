@@ -9,3 +9,6 @@
 /PrescottAppBackend.Api/Properties
 /PrescottAppBackend.Api/bin
 /PrescottAppBackend.Domain/obj
+/PrescottAppBackend.Api/obj
+/PrescottAppBackend.Domain/obj
+/PrescottAppBackend.Infrastructure/obj
