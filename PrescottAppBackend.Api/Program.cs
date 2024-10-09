@@ -46,6 +46,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<IDDLService, DDLService>();
+builder.Services.AddTransient<IBuildingService, BuildingService>();
 
 builder.Services.AddControllers();
 

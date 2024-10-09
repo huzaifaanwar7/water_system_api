@@ -106,9 +106,9 @@ namespace PrescottAppBackend.Api
                 var newUser = new UserVM()
                 {
                     Id = Guid.NewGuid().ToString(),
-                    FirstName = user.DisplayName,
+                    FirstName = userArgs.DisplayName,
                     RoleId = role.Id,
-                    Email = user.Email,
+                    Email = userArgs.Email,
                     Password = userArgs.Password,
                     FirebaseId = user.Uid,
                     UserSignUpType = userType

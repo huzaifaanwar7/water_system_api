@@ -15,6 +15,8 @@ public partial class PrescottContext : DbContext
     {
     }
 
+    public virtual DbSet<Building> Buildings { get; set; }
+
     public virtual DbSet<DropdownListChild> DropdownListChildren { get; set; }
 
     public virtual DbSet<DropdownListParent> DropdownListParents { get; set; }
@@ -25,10 +27,34 @@ public partial class PrescottContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySQL("Server=localhost;Database=Prescott;User=root;Password=;");
+        => optionsBuilder.UseMySQL("Server=127.0.0.1;Database=Prescott;User=root;Password=;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Building>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("Buildings", "prescott");
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Address)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("text");
+            entity.Property(e => e.BuildingDescription)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("text");
+            entity.Property(e => e.BuildingName).HasMaxLength(255);
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedBy).HasMaxLength(255);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
+        });
+
         modelBuilder.Entity<DropdownListChild>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");

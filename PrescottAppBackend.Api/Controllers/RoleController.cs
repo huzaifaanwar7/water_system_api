@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PrescottAppBackend.Api.Model;
 using PrescottAppBackend.Domain;
-using PrescottAppBackend.Domain.DbModels;
 using System.Net;
 
 namespace PrescottAppBackend.Api;
