@@ -95,12 +95,13 @@ namespace PrescottAppBackend.Api
         }
 
         [HttpPost("sign-up")]
-        public async Task<BaseResponse> SignUp(UserRecordArgs user, string userType)
+        public async Task<BaseResponse> SignUp(UserRecordArgs userArgs, string userType)
         {
             try
             {
-                UserRecord userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(user);
-                var token = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(userRecord.Uid);
+                // UserRecord userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(user);
+                var user = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(userArgs.Email);
+                var token = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(user.Uid);
                 var role = await _roleService.GetRoleByRolenameAsync("Admin");
                 var newUser = new UserVM()
                 {
@@ -108,8 +109,8 @@ namespace PrescottAppBackend.Api
                     FirstName = user.DisplayName,
                     RoleId = role.Id,
                     Email = user.Email,
-                    Password = user.Password,
-                    FirebaseId = userRecord.Uid,
+                    Password = userArgs.Password,
+                    FirebaseId = user.Uid,
                     UserSignUpType = userType
                 };
                 await _userService.AddUserAsync(newUser);
