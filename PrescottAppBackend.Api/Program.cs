@@ -100,6 +100,7 @@ builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<IDDLService, DDLService>();
 builder.Services.AddTransient<IBuildingService, BuildingService>();
 
+builder.Services.AddScoped<IJwtUtils, JwtUtils>();
 builder.Services.AddControllers();
 
 // Configure the application services and middleware by using the Startup class
