@@ -15,6 +15,8 @@ public partial class PrescottContext : DbContext
     {
     }
 
+    public virtual DbSet<Announcement> Announcements { get; set; }
+
     public virtual DbSet<Building> Buildings { get; set; }
 
     public virtual DbSet<DropdownListChild> DropdownListChildren { get; set; }
@@ -31,6 +33,31 @@ public partial class PrescottContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Announcement>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("Announcements", "prescott");
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.BuildingId).HasColumnType("int(11)");
+            entity.Property(e => e.Content)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("text");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedBy).HasMaxLength(255);
+            entity.Property(e => e.FilePath)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
+            entity.Property(e => e.Title).HasMaxLength(255);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
+        });
+
         modelBuilder.Entity<Building>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -117,12 +144,7 @@ public partial class PrescottContext : DbContext
             entity.Property(e => e.Address)
                 .HasDefaultValueSql("'NULL'")
                 .HasColumnType("text");
-            entity.Property(e => e.BusinessName)
-                .HasMaxLength(255)
-                .HasDefaultValueSql("'NULL'");
-            entity.Property(e => e.BusinessType)
-                .HasMaxLength(255)
-                .HasDefaultValueSql("'NULL'");
+            entity.Property(e => e.BuildingId).HasColumnType("int(11)");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.CreatedBy)
                 .HasMaxLength(255)

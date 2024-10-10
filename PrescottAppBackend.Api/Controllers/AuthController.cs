@@ -14,7 +14,7 @@ namespace PrescottAppBackend.Api
     [Route("api/[controller]")]
     public class AuthController(IUserService _userService, IRoleService _roleService, IJwtUtils _jwtUtils) : ControllerBase
     {
-       
+
 
         [HttpGet("user-exists")]
         public async Task<BaseResponse> IsUserExists(string email)
@@ -53,14 +53,16 @@ namespace PrescottAppBackend.Api
                 if (request.Email.Equals(user.Email))
                 {
                     var dbUser = await _userService.GetUserByUsernameAsync(user.Email);
-                    if(dbUser != null){
+                    if (dbUser != null)
+                    {
                         return new BaseResponse
                         {
                             status = HttpStatusCode.OK,
                             data = new { dbUser.Id, user.Email, user.DisplayName, request.Password, ExpiresIn = 36000 }
                         };
                     }
-                    else {
+                    else
+                    {
                         UserRecordArgs args = new UserRecordArgs()
                         {
                             Email = user.Email,
@@ -130,23 +132,28 @@ namespace PrescottAppBackend.Api
             }
         }
 
-        [HttpPost("signin")]
-        public async Task<BaseResponse> SignIn(string email, string password)
+        [AllowAnonymous]
+        [HttpGet("signin")]
+        public async Task<BaseResponse> SignIn(string email, string password, string type)
         {
             try
             {
-                var user = await _userService.GetUserByUsernameAsync(email);
+                var user = await _userService.ValidateUserAsync(email, password, type);
                 if (user != null)
                 {
-                    // Normally you would handle password verification here.
-                    // Firebase Admin SDK does not provide direct password verification.
-                    // Use Firebase Authentication client SDK on the client side for password sign-in.
                     var token = _jwtUtils.GenerateJwtToken(user);
 
                     return new BaseResponse
                     {
                         status = HttpStatusCode.OK,
-                        data = new { token }
+                        data = new
+                        {
+                            user.Id,
+                            user.Email,
+                            displayName = (user.FirstName + ' ' + user.LastName).Trim(),
+                            token,
+                            expiresIn = 36000
+                        }
                     };
                 }
                 return new BaseResponse
@@ -166,7 +173,7 @@ namespace PrescottAppBackend.Api
             }
         }
 
-       
+
     }
 
     public class TokenRequest
@@ -174,6 +181,6 @@ namespace PrescottAppBackend.Api
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; } = "";
-        public string UserType { get; set; } 
+        public string UserType { get; set; }
     }
 }

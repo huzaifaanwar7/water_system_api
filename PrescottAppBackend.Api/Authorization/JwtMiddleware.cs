@@ -6,10 +6,18 @@ using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using PrescottAppBackend.Infrastructure;
 
-public class JwtMiddleware(RequestDelegate _next)
+public class JwtMiddleware
 {
+    private readonly RequestDelegate _next;
+    private readonly IJwtUtils _jwtUtils;
+
+    public JwtMiddleware(RequestDelegate next, IJwtUtils jwtUtils)
+    {
+        _next = next;
+        _jwtUtils = jwtUtils;
+    }
     
-    public async Task Invoke(HttpContext context, IJwtUtils jwtUtils)
+    public async Task Invoke(HttpContext context)
     {
         string token;
 
@@ -41,7 +49,7 @@ public class JwtMiddleware(RequestDelegate _next)
             //    // attach user to context on successful jwt validation
             //    context.Items["User"] = userService.GetById(userId.Value);
             //}
-            var UserId = jwtUtils.ValidateJwtToken(token);
+            var UserId = _jwtUtils.ValidateJwtToken(token);
             if (UserId == null)
             {
                 context.Response.Clear();

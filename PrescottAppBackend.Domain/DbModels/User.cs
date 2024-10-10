@@ -25,6 +25,8 @@ public partial class User
 
     public string? Address { get; set; }
 
+    public int BuildingId { get; set; }
+
     public string FirebaseId { get; set; } = null!;
 
     public string? CreatedBy { get; set; }
@@ -40,8 +42,4 @@ public partial class User
     public bool? IsActive { get; set; }
 
     public string UserSignUpType { get; set; } = null!;
-
-    public string? BusinessName { get; set; }
-
-    public string? BusinessType { get; set; }
 }

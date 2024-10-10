@@ -14,6 +14,24 @@ namespace PrescottAppBackend.Infrastructure
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
+        public async Task<User> ValidateUserAsync(string email, string password, string type)
+        {
+            if (type.Equals("Email"))
+            {
+                var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email && x.Password == password);
+                return user;
+            }
+            else if (type.Equals("Google"))
+            {
+                var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email && x.UserSignUpType == type);
+                return user;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public async Task<User> GetUserByIdAsync(string userId)
         {
             return await _dbContext.Users.FindAsync(userId) ?? new User();
@@ -26,7 +44,8 @@ namespace PrescottAppBackend.Infrastructure
 
         public async Task AddUserAsync(UserVM user)
         {
-            var newUser = new User(){
+            var newUser = new User()
+            {
                 Id = user.Id ?? "",
                 FirstName = user.FirstName ?? "",
                 LastName = "",

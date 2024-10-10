@@ -36,12 +36,6 @@ public class JwtUtils(IOptions<AppSettings> _appSettings) : IJwtUtils
         };
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
-        //var token = new JwtSecurityToken(
-        //    issuer: _appSettings.LDAPDomain.ToString(),
-        //    audience: _appSettings.LDAPDomain.ToString(),
-        //    claims = claims,
-        //    expires: DateTime.UtcNow.AddDays(7),
-        //    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature));
         return tokenHandler.WriteToken(token);
     }
 
