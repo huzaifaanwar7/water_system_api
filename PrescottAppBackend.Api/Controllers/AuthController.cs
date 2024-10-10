@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using FirebaseAdmin.Auth;
-using FirebaseAuthException = Firebase.Auth.FirebaseAuthException;
 using PrescottAppBackend.Domain;
 using PrescottAppBackend.Domain.DbModels;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +12,7 @@ namespace PrescottAppBackend.Api
     [AllowAnonymous]
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController(IUserService _userService, IRoleService _roleService) : ControllerBase
+    public class AuthController(IUserService _userService, IRoleService _roleService, IJwtUtils _jwtUtils) : ControllerBase
     {
        
 
@@ -136,13 +135,13 @@ namespace PrescottAppBackend.Api
         {
             try
             {
-                var user = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(email);
+                var user = await _userService.GetUserByUsernameAsync(email);
                 if (user != null)
                 {
                     // Normally you would handle password verification here.
                     // Firebase Admin SDK does not provide direct password verification.
                     // Use Firebase Authentication client SDK on the client side for password sign-in.
-                    var token = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(user.Uid);
+                    var token = _jwtUtils.GenerateJwtToken(user);
 
                     return new BaseResponse
                     {
