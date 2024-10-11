@@ -110,7 +110,10 @@ namespace PrescottAppBackend.Api
                 // UserRecord userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(user);
                 var user = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(userArgs.Email);
                 var token = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(user.Uid);
-                // var role = await _roleService.GetRoleByRolenameAsync("Tenant");
+                if(string.IsNullOrEmpty(userArgs.RoleId)) {
+                    var role = await _roleService.GetRoleByRolenameAsync("Tenant");
+                    userArgs.RoleId = role.Id;
+                }
                 var newUser = new UserVM()
                 {
                     Id = Guid.NewGuid().ToString(),
