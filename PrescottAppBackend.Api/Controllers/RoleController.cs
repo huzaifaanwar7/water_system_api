@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrescottAppBackend.Api.Model;
 using PrescottAppBackend.Domain;
@@ -32,6 +33,7 @@ public class RoleController(IRoleService _role) : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<BaseResponse> GetAllRoles()
     {

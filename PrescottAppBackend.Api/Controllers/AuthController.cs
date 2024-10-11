@@ -119,6 +119,7 @@ namespace PrescottAppBackend.Api
                     BuildingId = userArgs.BuildingId,
                     Email = userArgs.Email,
                     Password = userArgs.Password,
+                    PhotoUrl = userArgs.PhotoUrl,
                     FirebaseId = user.Uid,
                     UserSignUpType = userType
                 };
