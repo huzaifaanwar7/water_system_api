@@ -31,4 +31,26 @@ public class RoleController(IRoleService _role) : ControllerBase
             };
         }
     }
+
+    [HttpGet]
+    public async Task<BaseResponse> GetAllRoles()
+    {
+        try
+        {
+            var roles = await _role.GetAllRolesAsync();
+            return new BaseResponse() {
+                status = HttpStatusCode.OK,
+                data = roles,
+            };
+        }
+        catch (Exception ex)
+        {
+            return new BaseResponse()
+            {
+                status = HttpStatusCode.InternalServerError,
+                data = ex,
+                message = ex.Message
+            };
+        }
+    }
 }

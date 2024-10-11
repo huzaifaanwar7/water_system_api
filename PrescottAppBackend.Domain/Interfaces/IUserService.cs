@@ -6,7 +6,7 @@ namespace PrescottAppBackend.Domain
 
     public interface IUserService
     {
-        Task<User> ValidateUserAsync(string email, string password, string type);
+        Task<User> ValidateUserAsync(UserVM userVM);
         Task<User> GetUserByIdAsync(string userId);
         Task<User> GetUserByUsernameAsync(string username);
         Task AddUserAsync(UserVM user);

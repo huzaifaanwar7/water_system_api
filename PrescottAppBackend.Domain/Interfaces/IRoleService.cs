@@ -6,6 +6,7 @@ namespace PrescottAppBackend.Domain
 
     public interface IRoleService
     {
+        Task<List<Role>> GetAllRolesAsync();
         Task<Role> GetRoleByIdAsync(string roleId);
         Task<Role> GetRoleByRolenameAsync(string rolename);
         Task<Role> AddRoleAsync(RoleVM role);

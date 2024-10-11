@@ -23,6 +23,8 @@ public partial class User
 
     public string? Phone { get; set; }
 
+    public string? PhotoUrl { get; set; }
+
     public string? Address { get; set; }
 
     public int BuildingId { get; set; }

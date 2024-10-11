@@ -163,6 +163,10 @@ public partial class PrescottContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(20)
                 .HasDefaultValueSql("'NULL'");
+            entity.Property(e => e.PhotoUrl)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnName("PhotoURL");
             entity.Property(e => e.RoleId).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("'NULL'")

@@ -23,13 +23,11 @@ namespace PrescottAppBackend.Api
             {
 
                 var user = await _userService.GetUserByUsernameAsync(email);
+                return new BaseResponse
                 {
-                    return new BaseResponse
-                    {
-                        status = HttpStatusCode.OK,
-                        data = user.Id != null
-                    };
-                }
+                    status = HttpStatusCode.OK,
+                    data = user.Id != null
+                };
             }
             catch (Exception ex)
             {
@@ -61,14 +59,13 @@ namespace PrescottAppBackend.Api
                             data = new { dbUser.Id, user.Email, user.DisplayName, request.Password, ExpiresIn = 36000 }
                         };
                     }
-                    else
-                    {
-                        UserRecordArgs args = new UserRecordArgs()
+                    else {
+                        UserVM args = new UserVM()
                         {
+                            DisplayName = user.DisplayName,
                             Email = user.Email,
                             EmailVerified = user.EmailVerified,
                             Password = request.Password,
-                            Disabled = false,
                         };
                         var returnVal = await SignUp(args, request.UserType);
                         return new BaseResponse
@@ -96,19 +93,30 @@ namespace PrescottAppBackend.Api
         }
 
         [HttpPost("sign-up")]
-        public async Task<BaseResponse> SignUp(UserRecordArgs userArgs, string userType)
+        public async Task<BaseResponse> SignUp(UserVM userArgs, string userType)
         {
             try
             {
+                var userExist = await _userService.GetUserByUsernameAsync(userArgs.Email);
+                if (userExist != null && userExist.Id != null)
+                {
+                    return new BaseResponse
+                    {
+                        status = HttpStatusCode.BadRequest,
+                        message = "User already exists",
+                        data = userExist
+                    };
+                }
                 // UserRecord userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(user);
                 var user = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(userArgs.Email);
                 var token = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(user.Uid);
-                var role = await _roleService.GetRoleByRolenameAsync("Admin");
+                // var role = await _roleService.GetRoleByRolenameAsync("Tenant");
                 var newUser = new UserVM()
                 {
                     Id = Guid.NewGuid().ToString(),
                     FirstName = userArgs.DisplayName,
-                    RoleId = role.Id,
+                    RoleId = userArgs.RoleId,
+                    BuildingId = userArgs.BuildingId,
                     Email = userArgs.Email,
                     Password = userArgs.Password,
                     FirebaseId = user.Uid,
@@ -133,12 +141,12 @@ namespace PrescottAppBackend.Api
         }
 
         [AllowAnonymous]
-        [HttpGet("signin")]
-        public async Task<BaseResponse> SignIn(string email, string password, string type)
+        [HttpPost("signin")]
+        public async Task<BaseResponse> SignIn(UserVM userVM)
         {
             try
             {
-                var user = await _userService.ValidateUserAsync(email, password, type);
+                var user = await _userService.ValidateUserAsync(userVM);
                 if (user != null)
                 {
                     var token = _jwtUtils.GenerateJwtToken(user);
@@ -151,6 +159,7 @@ namespace PrescottAppBackend.Api
                             user.Id,
                             user.Email,
                             displayName = (user.FirstName + ' ' + user.LastName).Trim(),
+                            photoURL = user.PhotoUrl,
                             token,
                             expiresIn = 36000
                         }
