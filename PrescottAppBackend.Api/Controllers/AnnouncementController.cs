@@ -123,6 +123,32 @@ public class AnnouncementController(IAnnouncementService _announcementService) :
         }
     }
 
+
+    [HttpDelete]
+    public async Task<BaseResponse> Delete(int Id)
+    {
+
+        try
+        {
+            await _announcementService.DeleteAnnouncementAsync(Id);
+            return new BaseResponse()
+            {
+                status = HttpStatusCode.NoContent,
+                data = "",
+                message = "Deleted",
+            };
+        }
+        catch (Exception ex)
+        {
+            return new BaseResponse()
+            {
+                status = HttpStatusCode.InternalServerError,
+                message = ex.Message,
+                data = ex
+            };
+        }
+    }
+
 }
 
 
