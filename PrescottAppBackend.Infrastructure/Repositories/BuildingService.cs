@@ -16,7 +16,8 @@ namespace PrescottAppBackend.Infrastructure
 
         public async Task<List<Building>> GetAllBuildingsAsync()
         {
-            return await _dbContext.Buildings.ToListAsync();
+            var bd = await _dbContext.Buildings.ToListAsync();
+            return bd;
         }
 
         public async Task<Building> GetBuildingByIdAsync(int buildingId)

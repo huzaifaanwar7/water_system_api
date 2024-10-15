@@ -6,6 +6,6 @@ namespace PrescottAppBackend.Domain
 
     public interface IDDLService
     {
-        Task<List<DropdownListChild>> GetDropdownListByTypeAsync(string ddlType);
+        Task<List<Dropdownlistchild>> GetDropdownListByTypeAsync(string ddlType);
     }
 }

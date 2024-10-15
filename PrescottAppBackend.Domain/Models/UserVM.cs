@@ -9,7 +9,7 @@ namespace PrescottAppBackend.Domain
         public string? Id { get; set; }
         public string? RoleId { get; set; }
         public int BuildingId { get; set; }
-        public string DisplayName { get; set; }
+        public string? DisplayName { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Email { get; set; }

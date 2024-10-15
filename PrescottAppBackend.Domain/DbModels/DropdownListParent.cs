@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PrescottAppBackend.Domain.DbModels;
 
-public partial class DropdownListParent
+public partial class Dropdownlistparent
 {
     public int Id { get; set; }
 
@@ -13,5 +13,5 @@ public partial class DropdownListParent
 
     public bool IsDeleted { get; set; }
 
-    public virtual ICollection<DropdownListChild> DropdownListChildren { get; set; } = new List<DropdownListChild>();
+    public virtual ICollection<Dropdownlistchild> Dropdownlistchildren { get; set; } = new List<Dropdownlistchild>();
 }

@@ -59,7 +59,8 @@ namespace PrescottAppBackend.Api
                             data = new { dbUser.Id, user.Email, user.DisplayName, request.Password, ExpiresIn = 36000 }
                         };
                     }
-                    else {
+                    else
+                    {
                         UserVM args = new UserVM()
                         {
                             DisplayName = user.DisplayName,
@@ -93,7 +94,7 @@ namespace PrescottAppBackend.Api
         }
 
         [HttpPost("sign-up")]
-        public async Task<BaseResponse> SignUp(UserVM userArgs, string userType)
+        public async Task<BaseResponse> SignUp([FromBody] UserVM userArgs, string userType)
         {
             try
             {

@@ -15,13 +15,17 @@ public partial class PrescottContext : DbContext
     {
     }
 
+    public virtual DbSet<Amenity> Amenities { get; set; }
+
     public virtual DbSet<Announcement> Announcements { get; set; }
 
     public virtual DbSet<Building> Buildings { get; set; }
 
-    public virtual DbSet<DropdownListChild> DropdownListChildren { get; set; }
+    public virtual DbSet<Dropdownlistchild> Dropdownlistchildren { get; set; }
 
-    public virtual DbSet<DropdownListParent> DropdownListParents { get; set; }
+    public virtual DbSet<Dropdownlistparent> Dropdownlistparents { get; set; }
+
+    public virtual DbSet<Reservation> Reservations { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
 
@@ -33,11 +37,33 @@ public partial class PrescottContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Amenity>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("amenity");
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.AmenityName).HasMaxLength(255);
+            entity.Property(e => e.BuildingId).HasColumnType("int(11)");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedBy).HasMaxLength(255);
+            entity.Property(e => e.Description)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("text");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
+        });
+
         modelBuilder.Entity<Announcement>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("Announcements", "prescott");
+            entity.ToTable("announcements");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.BuildingId).HasColumnType("int(11)");
@@ -68,7 +94,7 @@ public partial class PrescottContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("Buildings", "prescott");
+            entity.ToTable("building");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.Address)
@@ -88,11 +114,11 @@ public partial class PrescottContext : DbContext
                 .HasDefaultValueSql("'NULL'");
         });
 
-        modelBuilder.Entity<DropdownListChild>(entity =>
+        modelBuilder.Entity<Dropdownlistchild>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("DropdownListChild", "prescott");
+            entity.ToTable("dropdownlistchild");
 
             entity.HasIndex(e => e.ParentId, "ParentId");
 
@@ -102,28 +128,52 @@ public partial class PrescottContext : DbContext
             entity.Property(e => e.ParentId).HasColumnType("int(11)");
             entity.Property(e => e.Value).HasMaxLength(255);
 
-            entity.HasOne(d => d.Parent).WithMany(p => p.DropdownListChildren)
+            entity.HasOne(d => d.Parent).WithMany(p => p.Dropdownlistchildren)
                 .HasForeignKey(d => d.ParentId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("dropdownlistchild_ibfk_1");
         });
 
-        modelBuilder.Entity<DropdownListParent>(entity =>
+        modelBuilder.Entity<Dropdownlistparent>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("DropdownListParent", "prescott");
+            entity.ToTable("dropdownlistparent");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Type).HasMaxLength(255);
         });
 
+        modelBuilder.Entity<Reservation>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("reservation");
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.AmenityId).HasColumnType("int(11)");
+            entity.Property(e => e.BuildingId).HasColumnType("int(11)");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedBy).HasMaxLength(255);
+            entity.Property(e => e.FromDate).HasColumnType("datetime");
+            entity.Property(e => e.Reason)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("text");
+            entity.Property(e => e.ToDate).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
+        });
+
         modelBuilder.Entity<Role>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("Roles", "prescott");
+            entity.ToTable("roles");
 
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.CreatedBy)
@@ -145,7 +195,7 @@ public partial class PrescottContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("Users", "prescott");
+            entity.ToTable("users");
 
             entity.Property(e => e.Address)
                 .HasDefaultValueSql("'NULL'")

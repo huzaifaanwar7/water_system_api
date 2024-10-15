@@ -14,10 +14,10 @@ namespace PrescottAppBackend.Infrastructure
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        public async Task<List<DropdownListChild>> GetDropdownListByTypeAsync(string ddlType)
+        public async Task<List<Dropdownlistchild>> GetDropdownListByTypeAsync(string ddlType)
         {
-            var parentId = await _dbContext.DropdownListParents.Where(ddl => ddl.Type == ddlType).Select(ddl => ddl.Id).FirstOrDefaultAsync();
-            var childDDL = await _dbContext.DropdownListChildren.Where(ddl => ddl.ParentId == parentId).ToListAsync();
+            var parentId = await _dbContext.Dropdownlistparents.Where(ddl => ddl.Type == ddlType).Select(ddl => ddl.Id).FirstOrDefaultAsync();
+            var childDDL = await _dbContext.Dropdownlistchildren.Where(ddl => ddl.ParentId == parentId).ToListAsync();
             return childDDL;
         }
 
