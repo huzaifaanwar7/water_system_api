@@ -162,6 +162,8 @@ namespace PrescottAppBackend.Api
                         data = new
                         {
                             user.Id,
+                            user.BuildingId,
+                            user.RoleId,
                             user.Email,
                             displayName = (user.FirstName + ' ' + user.LastName).Trim(),
                             photoURL = user.PhotoUrl,
