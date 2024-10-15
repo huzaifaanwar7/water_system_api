@@ -124,13 +124,13 @@ public class AnnouncementController(IAnnouncementService _announcementService) :
     }
 
 
-    [HttpDelete]
-    public async Task<BaseResponse> Delete(int Id)
+    [HttpDelete("{id}")]
+    public async Task<BaseResponse> Delete(int id)
     {
 
         try
         {
-            await _announcementService.DeleteAnnouncementAsync(Id);
+            await _announcementService.DeleteAnnouncementAsync(id);
             return new BaseResponse()
             {
                 status = HttpStatusCode.NoContent,
