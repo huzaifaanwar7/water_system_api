@@ -46,7 +46,13 @@ public partial class PrescottContext : DbContext
                 .HasColumnType("text");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.CreatedBy).HasMaxLength(255);
-            entity.Property(e => e.FilePath)
+            entity.Property(e => e.File)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("text");
+            entity.Property(e => e.FileName)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
+            entity.Property(e => e.FileType)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("'NULL'");
             entity.Property(e => e.Title).HasMaxLength(255);

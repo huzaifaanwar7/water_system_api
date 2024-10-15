@@ -108,8 +108,8 @@ namespace PrescottAppBackend.Api
                     };
                 }
                 // UserRecord userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(user);
-                var user = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(userArgs.Email);
-                var token = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(user.Uid);
+                //var user = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(userArgs.Email);
+                //var token = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(user.Uid);
                 if(string.IsNullOrEmpty(userArgs.RoleId)) {
                     var role = await _roleService.GetRoleByRolenameAsync("Tenant");
                     userArgs.RoleId = role.Id;
@@ -123,15 +123,16 @@ namespace PrescottAppBackend.Api
                     Email = userArgs.Email,
                     Password = userArgs.Password,
                     PhotoUrl = userArgs.PhotoUrl,
-                    FirebaseId = user.Uid,
+                    //FirebaseId = user.Uid,
                     UserSignUpType = userType
                 };
                 await _userService.AddUserAsync(newUser);
-                return new BaseResponse
-                {
-                    status = HttpStatusCode.OK,
-                    data = new { newUser.Id, user.Email, user.DisplayName, Password = token, ExpiresIn = 36000 }
-                };
+                return await SignIn(newUser);
+                // return new BaseResponse
+                // {
+                //     status = HttpStatusCode.OK,
+                //     data = new { newUser.Id, user.Email, user.DisplayName, Password = token, ExpiresIn = 36000 }
+                // };
             }
             catch (FirebaseAuthException ex)
             {

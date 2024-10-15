@@ -95,11 +95,12 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddTransient<IJwtUtils, JwtUtils>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<IDDLService, DDLService>();
 builder.Services.AddTransient<IBuildingService, BuildingService>();
-builder.Services.AddTransient<IJwtUtils, JwtUtils>();
+builder.Services.AddTransient<IAnnouncementService, AnnouncementService>();
 
 builder.Services.AddControllers();
 
