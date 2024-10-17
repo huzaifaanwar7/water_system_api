@@ -41,7 +41,7 @@ public partial class PrescottContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("amenity");
+            entity.ToTable("amenity", "prescott");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.AmenityName).HasMaxLength(255);
@@ -63,7 +63,7 @@ public partial class PrescottContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("announcements");
+            entity.ToTable("announcements", "prescott");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.BuildingId).HasColumnType("int(11)");
@@ -76,6 +76,9 @@ public partial class PrescottContext : DbContext
                 .HasDefaultValueSql("'NULL'")
                 .HasColumnType("text");
             entity.Property(e => e.FileName)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
+            entity.Property(e => e.FilePath)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("'NULL'");
             entity.Property(e => e.FileType)
@@ -94,7 +97,7 @@ public partial class PrescottContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("building");
+            entity.ToTable("building", "prescott");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.Address)
@@ -118,7 +121,7 @@ public partial class PrescottContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("dropdownlistchild");
+            entity.ToTable("dropdownlistchild", "prescott");
 
             entity.HasIndex(e => e.ParentId, "ParentId");
 
@@ -138,7 +141,7 @@ public partial class PrescottContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("dropdownlistparent");
+            entity.ToTable("dropdownlistparent", "prescott");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -149,7 +152,7 @@ public partial class PrescottContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("reservation");
+            entity.ToTable("reservation", "prescott");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.AmenityId).HasColumnType("int(11)");
@@ -173,7 +176,7 @@ public partial class PrescottContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("roles");
+            entity.ToTable("roles", "prescott");
 
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.CreatedBy)
@@ -195,7 +198,7 @@ public partial class PrescottContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("users");
+            entity.ToTable("users", "prescott");
 
             entity.Property(e => e.Address)
                 .HasDefaultValueSql("'NULL'")

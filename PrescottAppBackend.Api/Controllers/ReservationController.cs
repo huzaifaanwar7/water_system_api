@@ -9,67 +9,67 @@ namespace PrescottAppBackend.Api.Controllers
     [Route("api/[controller]")]
     public class ReservationController(IReservationService _reservationService) : ControllerBase
     {
-        // [HttpGet]
-        // public async Task<BaseResponse> Get()
-        // {
-        //     try
-        //     {
-        //         var Reservations = await _reservationService.GetAllReservationsAsync();
-        //         if (Reservations == null)
-        //         {
-        //             return new BaseResponse
-        //             {
-        //                 status = HttpStatusCode.NotFound,
-        //                 data = Reservations
-        //             };
-        //         }
-        //         return new BaseResponse
-        //         {
-        //             status = HttpStatusCode.OK,
-        //             data = Reservations
-        //         };
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return new BaseResponse
-        //         {
-        //             status = HttpStatusCode.InternalServerError,
-        //             message = ex.Message,
-        //             data = ex
-        //         };
-        //     }
-        // }
+        [HttpGet]
+        public async Task<BaseResponse> Get()
+        {
+            try
+            {
+                var Reservations = await _reservationService.GetAllReservationsAsync();
+                if (Reservations == null)
+                {
+                    return new BaseResponse
+                    {
+                        status = HttpStatusCode.NotFound,
+                        data = Reservations
+                    };
+                }
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.OK,
+                    data = Reservations
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = ex.Message,
+                    data = ex
+                };
+            }
+        }
 
-        // [HttpGet("{id}")]
-        // public async Task<BaseResponse> Get(int id)
-        // {
-        //     try
-        //     {
-        //         var Reservations = await _reservationService.GetReservationByIdAsync(id);
-        //         if (Reservations == null)
-        //         {
-        //             return new BaseResponse
-        //             {
-        //                 status = HttpStatusCode.NotFound,
-        //                 data = Reservations
-        //             };
-        //         }
-        //         return new BaseResponse
-        //         {
-        //             status = HttpStatusCode.OK,
-        //             data = Reservations
-        //         };
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return new BaseResponse
-        //         {
-        //             status = HttpStatusCode.InternalServerError,
-        //             message = ex.Message,
-        //             data = ex
-        //         };
-        //     }
-        // }
+        [HttpGet("{id}")]
+        public async Task<BaseResponse> Get(int id)
+        {
+            try
+            {
+                var Reservations = await _reservationService.GetReservationByIdAsync(id);
+                if (Reservations == null)
+                {
+                    return new BaseResponse
+                    {
+                        status = HttpStatusCode.NotFound,
+                        data = Reservations
+                    };
+                }
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.OK,
+                    data = Reservations
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = ex.Message,
+                    data = ex
+                };
+            }
+        }
 
         // [HttpPost]
         // public async Task<BaseResponse> AddUpdate([FromBody] ReservationVM vM)

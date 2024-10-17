@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PrescottAppBackend.Domain.Models
+namespace PrescottAppBackend.Domain
 {
     public class AmenityVM
     {
@@ -16,5 +16,7 @@ namespace PrescottAppBackend.Domain.Models
         public string? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public string BuildingName { get; set; }
+        public string CreatedByStr { get; set; }
     }
 }

@@ -19,6 +19,8 @@ public partial class Announcement
 
     public string? FileType { get; set; }
 
+    public string? FilePath { get; set; }
+
     public string CreatedBy { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }

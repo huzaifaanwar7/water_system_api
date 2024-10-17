@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PrescottAppBackend.Domain.DbModels;
 
 namespace PrescottAppBackend.Domain
 {
@@ -18,5 +19,7 @@ namespace PrescottAppBackend.Domain
         public string? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public Amenity Amenities { get; set; }
+        public Building Building { get; set; }
     }
 }

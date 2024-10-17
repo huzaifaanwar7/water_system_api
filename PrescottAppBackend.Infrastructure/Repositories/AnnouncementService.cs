@@ -8,10 +8,12 @@ namespace PrescottAppBackend.Infrastructure
     public class AnnouncementService : IAnnouncementService
     {
         private readonly PrescottContext _dbContext;
+        // private readonly IIOHelper _iOHelper;
 
         public AnnouncementService(PrescottContext dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            // _iOHelper = iOHelper ?? throw new ArgumentNullException(nameof(iOHelper));
         }
 
         public async Task<List<AnnouncementVM>> GetAllAnnouncementsAsync()
@@ -30,6 +32,7 @@ namespace PrescottAppBackend.Infrastructure
                                     FileName = a.FileName,
                                     File = a.File,
                                     FileType = a.FileType,
+                                    FilePath = a.FilePath,
                                     CreatedBy = a.CreatedBy,
                                     CreatedAt = a.CreatedAt,
                                     UpdatedBy = a.UpdatedBy,
@@ -56,12 +59,15 @@ namespace PrescottAppBackend.Infrastructure
                     Title = announcementVM.Title,
                     Content = announcementVM.Content,
                     FileName = announcementVM.FileName,
-                    File = announcementVM.File,
+                    //File = announcementVM.File,
                     FileType = announcementVM.FileType,
                     CreatedBy = announcementVM.CreatedBy,
                     CreatedAt = DateTime.Now,
                     IsDeleted = false
                 };
+
+                string filePath = IOHelper.SaveFile(announcementVM.File, announcementVM.FileName);
+                announcement.FilePath = filePath;
 
                 await _dbContext.Announcements.AddAsync(announcement);
             }
@@ -74,10 +80,14 @@ namespace PrescottAppBackend.Infrastructure
                     announcement.Title = announcementVM.Title;
                     announcement.Content = announcementVM.Content;
                     announcement.FileName = announcementVM.FileName;
-                    announcement.File = announcementVM.File;
+                    //announcement.File = announcementVM.File;
                     announcement.FileType = announcementVM.FileType;
                     announcement.UpdatedBy = announcementVM.UpdatedBy;
                     announcement.UpdatedAt = DateTime.Now;
+
+                    string filePath = IOHelper.SaveFile(announcementVM.File, announcementVM.FileName);
+                    announcement.FilePath = filePath;
+
                     _dbContext.Announcements.Update(announcement);
                 }
             }
