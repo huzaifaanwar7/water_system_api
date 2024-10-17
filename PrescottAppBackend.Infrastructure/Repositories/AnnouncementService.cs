@@ -39,6 +39,7 @@ namespace PrescottAppBackend.Infrastructure
                                     UpdatedAt = a.UpdatedAt,
                                     BuildingName = b.BuildingName,
                                     CreatedByStr = (u.FirstName + " " + u.LastName).Trim(),
+                                    UserVM = u
                                 }).ToListAsync();
 
             return result;

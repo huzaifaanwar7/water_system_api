@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using PrescottAppBackend.Domain.DbModels;
 
 namespace PrescottAppBackend.Domain
 {
@@ -37,5 +38,7 @@ namespace PrescottAppBackend.Domain
         public string? BuildingName { get; set; }
         
         public string? CreatedByStr { get; set; }
+
+        public User UserVM { get; set; }
     }
 }
