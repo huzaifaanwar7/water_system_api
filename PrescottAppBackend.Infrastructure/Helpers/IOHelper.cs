@@ -47,7 +47,7 @@ namespace PrescottAppBackend.Infrastructure
             // Write the byte array to a file
             File.WriteAllBytes(filePath, fileBytes);
 
-            return filePath;
+            return filePath.Replace("www","/files");
         }
     }
 }

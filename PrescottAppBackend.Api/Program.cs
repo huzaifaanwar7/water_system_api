@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using PrescottAppBackend.Api.Authorization;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 var _appSettings = builder.Configuration.GetSection("AppSettings");
@@ -121,7 +122,19 @@ app.UseSwaggerUI(c =>
 app.UseCors("AllowAllOrigins");
 
 app.UseHttpsRedirection();
+
+
+// Enable serving of static files
 app.UseStaticFiles();
+
+// Serve files from the "other_project_files" folder
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "www")),
+    RequestPath = "/files" // URL path to access the files
+});
+
 
 app.UseRouting();
 app.UseAuthentication();

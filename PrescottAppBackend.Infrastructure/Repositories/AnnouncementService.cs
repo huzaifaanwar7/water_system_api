@@ -30,7 +30,7 @@ namespace PrescottAppBackend.Infrastructure
                                     BuildingId = a.BuildingId,
                                     Content = a.Content,
                                     FileName = a.FileName,
-                                    File = a.File,
+                                    // File = a.File,
                                     FileType = a.FileType,
                                     FilePath = a.FilePath,
                                     CreatedBy = a.CreatedBy,
