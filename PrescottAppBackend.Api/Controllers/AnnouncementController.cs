@@ -47,19 +47,19 @@ public class AnnouncementController(IAnnouncementService _announcementService) :
     {
         try
         {
-            var Aanouncements = await _announcementService.GetAnnouncementByIdAsync(id);
-            if (Aanouncements == null)
+            var anouncements = await _announcementService.GetAnnouncementByIdAsync(id);
+            if (anouncements == null)
             {
                 return new BaseResponse
                 {
                     status = HttpStatusCode.NotFound,
-                    data = Aanouncements
+                    data = anouncements
                 };
             }
             return new BaseResponse
             {
                 status = HttpStatusCode.OK,
-                data = Aanouncements
+                data = anouncements
             };
         }
         catch (Exception ex)

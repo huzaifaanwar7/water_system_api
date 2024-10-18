@@ -15,16 +15,6 @@ namespace PrescottAppBackend.Domain
 
         public string? Content { get; set; }
 
-        public string? FileName { get; set; }
-
-        public string? FilePath { get; set; }
-
-        public string? File { get; set; }
-
-        public string? FileType { get; set; }
-
-        public byte[] Document { get; set; } = [];
-
         public string CreatedBy { get; set; } = null!;
 
         public DateTime CreatedAt { get; set; }
@@ -39,6 +29,8 @@ namespace PrescottAppBackend.Domain
         
         public string? CreatedByStr { get; set; }
 
-        public User UserVM { get; set; }
+        public User? UserVM { get; set; }
+
+        public List<AnnouncementImageVM> AnnouncementImages { get; set; } = new();
     }
 }

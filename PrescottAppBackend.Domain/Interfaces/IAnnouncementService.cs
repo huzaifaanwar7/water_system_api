@@ -7,8 +7,8 @@ namespace PrescottAppBackend.Domain
     public interface IAnnouncementService
     {
         Task<List<AnnouncementVM>> GetAllAnnouncementsAsync();
-        Task<Announcement> GetAnnouncementByIdAsync(int announcementId);
-        Task<Announcement> AddUpdateAnnouncementAsync(AnnouncementVM announcement);
+        Task<AnnouncementVM> GetAnnouncementByIdAsync(int announcementId);
+        Task<AnnouncementVM> AddUpdateAnnouncementAsync(AnnouncementVM announcement);
         Task DeleteAnnouncementAsync(int announcementId);
     }
 }

@@ -19,6 +19,8 @@ public partial class PrescottContext : DbContext
 
     public virtual DbSet<Announcement> Announcements { get; set; }
 
+    public virtual DbSet<AnnouncementImage> AnnouncementImages { get; set; }
+
     public virtual DbSet<Building> Buildings { get; set; }
 
     public virtual DbSet<Dropdownlistchild> Dropdownlistchildren { get; set; }
@@ -72,23 +74,26 @@ public partial class PrescottContext : DbContext
                 .HasColumnType("text");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.CreatedBy).HasMaxLength(255);
-            entity.Property(e => e.File)
-                .HasDefaultValueSql("'NULL'")
-                .HasColumnType("text");
-            entity.Property(e => e.FileName)
-                .HasMaxLength(255)
-                .HasDefaultValueSql("'NULL'");
-            entity.Property(e => e.FilePath)
-                .HasMaxLength(255)
-                .HasDefaultValueSql("'NULL'");
-            entity.Property(e => e.FileType)
-                .HasMaxLength(255)
-                .HasDefaultValueSql("'NULL'");
             entity.Property(e => e.Title).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("'NULL'")
                 .HasColumnType("datetime");
             entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
+        });
+
+        modelBuilder.Entity<AnnouncementImage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("announcement_images", "prescott");
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.AnnouncementId).HasColumnType("int(11)");
+            entity.Property(e => e.FileName).HasMaxLength(255);
+            entity.Property(e => e.FilePath).HasMaxLength(255);
+            entity.Property(e => e.FileType)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("'NULL'");
         });
