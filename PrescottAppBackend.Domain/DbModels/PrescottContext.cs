@@ -17,6 +17,8 @@ public partial class PrescottContext : DbContext
 
     public virtual DbSet<Amenity> Amenities { get; set; }
 
+    public virtual DbSet<AmenityImage> AmenityImages { get; set; }
+
     public virtual DbSet<Announcement> Announcements { get; set; }
 
     public virtual DbSet<AnnouncementImage> AnnouncementImages { get; set; }
@@ -57,6 +59,21 @@ public partial class PrescottContext : DbContext
                 .HasDefaultValueSql("'NULL'")
                 .HasColumnType("datetime");
             entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
+        });
+
+        modelBuilder.Entity<AmenityImage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("amenity_images", "prescott");
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.AmenityId).HasColumnType("int(11)");
+            entity.Property(e => e.FileName).HasMaxLength(255);
+            entity.Property(e => e.FilePath).HasMaxLength(255);
+            entity.Property(e => e.FileType)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("'NULL'");
         });

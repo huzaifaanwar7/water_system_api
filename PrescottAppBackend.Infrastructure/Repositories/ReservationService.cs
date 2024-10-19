@@ -34,6 +34,7 @@ namespace PrescottAppBackend.Infrastructure
                                             CreatedAt = res.CreatedAt,
                                             UpdatedBy = res.UpdatedBy,
                                             UpdatedAt = res.UpdatedAt,
+                                            UserVM = u
                                         }).ToListAsync();
             return reservationVMs;
         }

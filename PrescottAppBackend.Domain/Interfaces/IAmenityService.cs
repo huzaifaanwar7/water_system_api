@@ -11,8 +11,8 @@ namespace PrescottAppBackend.Domain
     public interface IAmenityService
     {
         Task<List<AmenityVM>> GetAllAmenitiesAsync();
-        Task<Amenity> GetAmenityByIdAsync(int amenityId);
-        // Task<Amenity> AddUpdateAmenityAsync(AmenityVM amenity);
-        // Task DeleteAmenityAsync(int amenityId);
+        Task<AmenityVM> GetAmenityByIdAsync(int amenityId);
+        Task<AmenityVM> AddUpdateAmenityAsync(AmenityVM amenity);
+        Task DeleteAmenityAsync(int amenityId);
     }
 }

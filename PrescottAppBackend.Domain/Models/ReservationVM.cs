@@ -21,5 +21,6 @@ namespace PrescottAppBackend.Domain
         public bool IsDeleted { get; set; } = false;
         public Amenity Amenities { get; set; }
         public Building Building { get; set; }
+        public User UserVM { get; set; }
     }
 }

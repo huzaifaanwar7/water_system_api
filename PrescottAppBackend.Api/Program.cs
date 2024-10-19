@@ -102,6 +102,8 @@ builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<IDDLService, DDLService>();
 builder.Services.AddTransient<IBuildingService, BuildingService>();
 builder.Services.AddTransient<IAnnouncementService, AnnouncementService>();
+builder.Services.AddTransient<IAmenityService, AmenityService>();
+builder.Services.AddTransient<IReservationService, ReservationService>();
 
 builder.Services.AddControllers();
 

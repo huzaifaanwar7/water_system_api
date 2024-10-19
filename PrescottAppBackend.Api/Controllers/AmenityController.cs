@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PrescottAppBackend.Api.Model;
 using PrescottAppBackend.Domain;
-using PrescottAppBackend.Domain.DbModels;
 
 namespace PrescottAppBackend.Api.Controllers
 {
@@ -76,56 +71,56 @@ namespace PrescottAppBackend.Api.Controllers
             }
         }
 
-        // [HttpPost]
-        // public async Task<BaseResponse> AddUpdate([FromBody] AmenityVM vM)
-        // {
-        //     try
-        //     {
-        //         // var anouncement = await _amenity.AddUpdateAmenityAsync(vM);
-        //         return new BaseResponse()
-        //         {
-        //             status = HttpStatusCode.OK,
-        //             data =  null, //anouncement,
-        //             message = "Data Saved",
-        //         };
+        [HttpPost]
+        public async Task<BaseResponse> AddUpdate([FromBody] AmenityVM vM)
+        {
+            try
+            {
+                var amenity = await _amenity.AddUpdateAmenityAsync(vM);
+                return new BaseResponse()
+                {
+                    status = HttpStatusCode.OK,
+                    data = amenity,
+                    message = "Data Saved",
+                };
 
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return new BaseResponse()
-        //         {
-        //             status = HttpStatusCode.InternalServerError,
-        //             data = ex,
-        //             message = ex.Message
-        //         };
-        //     }
-        // }
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse()
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    data = ex,
+                    message = ex.Message
+                };
+            }
+        }
 
 
-        // [HttpDelete("{id}")]
-        // public async Task<BaseResponse> Delete(int id)
-        // {
+        [HttpDelete("{id}")]
+        public async Task<BaseResponse> Delete(int id)
+        {
 
-        //     try
-        //     {
-        //         // await _amenity.DeleteAmenityAsync(id);
-        //         return new BaseResponse()
-        //         {
-        //             status = HttpStatusCode.NoContent,
-        //             data = "",
-        //             message = "Deleted",
-        //         };
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return new BaseResponse()
-        //         {
-        //             status = HttpStatusCode.InternalServerError,
-        //             message = ex.Message,
-        //             data = ex
-        //         };
-        //     }
-        // }
+            try
+            {
+                await _amenity.DeleteAmenityAsync(id);
+                return new BaseResponse()
+                {
+                    status = HttpStatusCode.NoContent,
+                    data = "",
+                    message = "Deleted",
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse()
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = ex.Message,
+                    data = ex
+                };
+            }
+        }
 
 
     }
