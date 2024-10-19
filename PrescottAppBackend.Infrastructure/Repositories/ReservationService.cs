@@ -25,6 +25,7 @@ namespace PrescottAppBackend.Infrastructure
                                         {
                                             Amenities = a,
                                             Building = b,
+                                            Id = res.Id,
                                             BuildingId = res.BuildingId,
                                             AmenityId = res.AmenityId,
                                             Reason = res.Reason,
