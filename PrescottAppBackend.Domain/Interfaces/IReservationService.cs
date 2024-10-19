@@ -10,8 +10,8 @@ namespace PrescottAppBackend.Domain
     public interface IReservationService
     {
         Task<List<ReservationVM>> GetAllReservationsAsync();
-        Task<Reservation> GetReservationByIdAsync(int reservationId);
-        // Task<Reservation> AddUpdateReservationAsync(ReservationVM reservation);
-        // Task DeleteReservationAsync(int reservationId);
+        Task<ReservationVM> GetReservationByIdAsync(int reservationId);
+        Task<string> AddUpdateReservationAsync(ReservationVM reservation);
+        Task DeleteReservationAsync(int reservationId);
     }
 }

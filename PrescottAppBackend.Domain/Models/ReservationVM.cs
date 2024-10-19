@@ -19,8 +19,8 @@ namespace PrescottAppBackend.Domain
         public string? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public bool IsDeleted { get; set; } = false;
-        public Amenity Amenities { get; set; }
-        public Building Building { get; set; }
-        public User UserVM { get; set; }
+        public Amenity? Amenities { get; set; }
+        public Building? Building { get; set; }
+        public User? UserVM { get; set; }
     }
 }

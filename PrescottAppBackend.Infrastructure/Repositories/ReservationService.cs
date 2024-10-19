@@ -38,18 +38,81 @@ namespace PrescottAppBackend.Infrastructure
                                         }).ToListAsync();
             return reservationVMs;
         }
-        public async Task<Reservation> GetReservationByIdAsync(int reservationId)
+        public async Task<ReservationVM> GetReservationByIdAsync(int reservationId)
         {
             var reservation = await _dbContext.Reservations.Where(reservation => reservation.Id == reservationId).FirstOrDefaultAsync();
-            return reservation;
+            return CustomMapper.Map<Reservation, ReservationVM>(reservation);
         }
-        // public async Task<Reservation> AddUpdateReservationAsync(ReservationVM reservation)
-        // {
+        public async Task<string> AddUpdateReservationAsync(ReservationVM reservationVM)
+        {
+            if (reservationVM.Id == 0)
+            {
+                var isExists = await _dbContext.Reservations.AnyAsync(r => r.BuildingId == reservationVM.BuildingId && r.AmenityId == reservationVM.AmenityId && (r.FromDate <= reservationVM.ToDate && r.ToDate >= reservationVM.FromDate));
+                if (!isExists)
+                {
+                    var reservation = new Reservation()
+                    {
+                        BuildingId = reservationVM.BuildingId,
+                        AmenityId = reservationVM.AmenityId,
+                        Reason = reservationVM.Reason,
+                        FromDate = reservationVM.FromDate,
+                        ToDate = reservationVM.ToDate,
+                        CreatedBy = reservationVM.CreatedBy,
+                        CreatedAt = DateTime.Now,
+                        IsDeleted = false
+                    };
 
-        // }
-        // public async Task DeleteReservationAsync(int reservationId)
-        // {
+                    await _dbContext.Reservations.AddAsync(reservation);
+                    await _dbContext.SaveChangesAsync();
 
-        // }
+                    return "Created";
+                }
+                else
+                {
+                    return "Already Exists";
+                }
+            }
+            else
+            {
+                var isExists = await _dbContext.Reservations.AnyAsync(r => r.Id != reservationVM.Id && r.BuildingId == reservationVM.BuildingId && r.AmenityId == reservationVM.AmenityId && (r.FromDate <= reservationVM.ToDate && r.ToDate >= reservationVM.FromDate));
+                if (!isExists)
+                {
+                    var reservation = await _dbContext.Reservations.FirstOrDefaultAsync(r => r.Id == reservationVM.Id);
+                    if (reservation != null)
+                    {
+                        reservation.BuildingId = reservationVM.BuildingId;
+                        reservation.AmenityId = reservationVM.AmenityId;
+                        reservation.Reason = reservationVM.Reason;
+                        reservation.FromDate = reservationVM.FromDate;
+                        reservation.ToDate = reservationVM.ToDate;
+                        reservation.UpdatedBy = reservationVM.UpdatedBy;
+                        reservation.UpdatedAt = DateTime.Now;
+                        reservation.IsDeleted = false;
+
+                        _dbContext.Reservations.Update(reservation);
+                        await _dbContext.SaveChangesAsync();
+
+                        return "Updated";
+                    }
+                    else
+                    {
+                        return "Not Found";
+                    }
+                }
+                else
+                {
+                    return "Already Exists";
+                }
+            }
+        }
+        public async Task DeleteReservationAsync(int reservationId)
+        {
+            var reservation = await _dbContext.Reservations.FindAsync(reservationId);
+            if (reservation != null)
+            {
+                _dbContext.Reservations.Remove(reservation);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
     }
 }

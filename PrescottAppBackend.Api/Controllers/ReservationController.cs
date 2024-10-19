@@ -71,56 +71,76 @@ namespace PrescottAppBackend.Api.Controllers
             }
         }
 
-        // [HttpPost]
-        // public async Task<BaseResponse> AddUpdate([FromBody] ReservationVM vM)
-        // {
-        //     try
-        //     {
-        //         var anouncement = await _reservationService.AddUpdateReservationAsync(vM);
-        //         return new BaseResponse()
-        //         {
-        //             status = HttpStatusCode.OK,
-        //             data = anouncement,
-        //             message = "Data Saved",
-        //         };
+        [HttpPost]
+        public async Task<BaseResponse> AddUpdate([FromBody] ReservationVM vM)
+        {
+            try
+            {
+                var reservation = await _reservationService.AddUpdateReservationAsync(vM);
+                if (reservation == "Already Exists")
+                {
+                    return new BaseResponse()
+                    {
+                        status = HttpStatusCode.Conflict,
+                        data = reservation,
+                        message = reservation,
+                    };
+                }
+                else if (reservation == "Not Found")
+                {
+                    return new BaseResponse()
+                    {
+                        status = HttpStatusCode.NotFound,
+                        data = reservation,
+                        message = reservation,
+                    };
+                }
+                else
+                {
+                    return new BaseResponse()
+                    {
+                        status = HttpStatusCode.OK,
+                        data = reservation,
+                        message = reservation,
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse()
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    data = ex,
+                    message = ex.Message
+                };
+            }
+        }
 
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return new BaseResponse()
-        //         {
-        //             status = HttpStatusCode.InternalServerError,
-        //             data = ex,
-        //             message = ex.Message
-        //         };
-        //     }
-        // }
 
+        [HttpDelete("{id}")]
+        public async Task<BaseResponse> Delete(int id)
+        {
 
-        // [HttpDelete("{id}")]
-        // public async Task<BaseResponse> Delete(int id)
-        // {
-
-        //     try
-        //     {
-        //         await _reservationService.DeleteReservationAsync(id);
-        //         return new BaseResponse()
-        //         {
-        //             status = HttpStatusCode.NoContent,
-        //             data = "",
-        //             message = "Deleted",
-        //         };
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return new BaseResponse()
-        //         {
-        //             status = HttpStatusCode.InternalServerError,
-        //             message = ex.Message,
-        //             data = ex
-        //         };
-        //     }
-        // }
+            try
+            {
+                await _reservationService.DeleteReservationAsync(id);
+                return new BaseResponse()
+                {
+                    status = HttpStatusCode.NoContent,
+                    data = "",
+                    message = "Deleted",
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse()
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = ex.Message,
+                    data = ex
+                };
+            }
+        }
 
     }
 }
