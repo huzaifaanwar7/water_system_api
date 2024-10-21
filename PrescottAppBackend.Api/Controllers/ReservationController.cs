@@ -142,8 +142,8 @@ namespace PrescottAppBackend.Api.Controllers
             }
         }
 
-         [HttpGet("GetUserReservation/{userId}")]
-        public async Task<BaseResponse> Get(string userId)
+         [HttpGet("user-reservations-history/{userId}")]
+        public async Task<BaseResponse> GetUserReservation(string userId)
         {
             try
             {
