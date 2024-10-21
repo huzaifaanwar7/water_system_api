@@ -115,5 +115,33 @@ namespace PrescottAppBackend.Infrastructure
                 await _dbContext.SaveChangesAsync();
             }
         }
+
+        public async Task<List<ReservationVM>> GetUserReservationById(string userId)
+        {
+            var reservationVMs = await (from res in _dbContext.Reservations
+                                        join a in _dbContext.Amenities on res.AmenityId equals a.Id
+                                        join b in _dbContext.Buildings on res.BuildingId equals b.Id
+                                        join u in _dbContext.Users on res.CreatedBy equals u.Id
+                                        where res.CreatedBy == userId
+                                        select new ReservationVM
+                                        {
+                                            Amenities = a,
+                                            Building = b,
+                                            Id = res.Id,
+                                            BuildingId = res.BuildingId,
+                                            AmenityId = res.AmenityId,
+                                            Reason = res.Reason,
+                                            FromDate = res.FromDate,
+                                            ToDate = res.ToDate,
+                                            CreatedBy = res.CreatedBy,
+                                            CreatedAt = res.CreatedAt,
+                                            UpdatedBy = res.UpdatedBy,
+                                            UpdatedAt = res.UpdatedAt,
+                                            UserVM = u 
+                                        }).ToListAsync();
+
+            return reservationVMs;
+        }
+
     }
 }

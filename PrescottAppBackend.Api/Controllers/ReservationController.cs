@@ -142,5 +142,36 @@ namespace PrescottAppBackend.Api.Controllers
             }
         }
 
+         [HttpGet("GetUserReservation/{userId}")]
+        public async Task<BaseResponse> Get(string userId)
+        {
+            try
+            {
+                var Reservations = await _reservationService.GetUserReservationById(userId);
+                if (Reservations == null)
+                {
+                    return new BaseResponse
+                    {
+                        status = HttpStatusCode.NotFound,
+                        data = Reservations
+                    };
+                }
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.OK,
+                    data = Reservations
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = ex.Message,
+                    data = ex
+                };
+            }
+        }
+
     }
 }

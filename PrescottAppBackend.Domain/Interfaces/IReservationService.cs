@@ -13,5 +13,6 @@ namespace PrescottAppBackend.Domain
         Task<ReservationVM> GetReservationByIdAsync(int reservationId);
         Task<string> AddUpdateReservationAsync(ReservationVM reservation);
         Task DeleteReservationAsync(int reservationId);
+        Task<List<ReservationVM>> GetUserReservationById(string userId);
     }
 }
