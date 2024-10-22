@@ -37,6 +37,7 @@ namespace PrescottAppBackend.Infrastructure
                                             UpdatedAt = res.UpdatedAt,
                                             UserVM = u
                                         }).ToListAsync();
+           
             return reservationVMs;
         }
         public async Task<ReservationVM> GetReservationByIdAsync(int reservationId)
@@ -139,6 +140,16 @@ namespace PrescottAppBackend.Infrastructure
                                             UpdatedAt = res.UpdatedAt,
                                             UserVM = u 
                                         }).ToListAsync();
+            if (reservationVMs.Count > 0)
+            {
+                var amenityImages = await _dbContext.AmenityImages.Where(x => reservationVMs.Select(a => a.Id).Contains(x.AmenityId)).ToListAsync();
+                foreach (var r in reservationVMs)
+                {
+                    var images = amenityImages.Where(x => x.AmenityId == r.Id).ToList();
+                    r.AmenityImages = CustomMapper.MapList<AmenityImage, AmenityImageVM>(images);
+                }
+            }
+
 
             return reservationVMs;
         }

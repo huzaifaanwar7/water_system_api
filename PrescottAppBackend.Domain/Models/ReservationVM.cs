@@ -22,5 +22,6 @@ namespace PrescottAppBackend.Domain
         public Amenity? Amenities { get; set; }
         public Building? Building { get; set; }
         public User? UserVM { get; set; }
+        public List<AmenityImageVM> AmenityImages { get; set; } = new();
     }
 }
