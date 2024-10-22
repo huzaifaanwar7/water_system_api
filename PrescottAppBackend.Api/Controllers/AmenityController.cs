@@ -122,6 +122,37 @@ namespace PrescottAppBackend.Api.Controllers
             }
         }
 
+        [HttpGet("building-amenities-history/{buildingId}")]
+        public async Task<BaseResponse> GetBuildingAmenity(int buildingId)
+        {
+            try
+            {
+                var Amenitys = await _amenity.GetAmenityByBuildingId(buildingId);
+                if (Amenitys == null)
+                {
+                    return new BaseResponse
+                    {
+                        status = HttpStatusCode.NotFound,
+                        data = Amenitys
+                    };
+                }
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.OK,
+                    data = Amenitys
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = ex.Message,
+                    data = ex
+                };
+            }
+        }
+
 
     }
 }

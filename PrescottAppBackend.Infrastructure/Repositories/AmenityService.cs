@@ -174,5 +174,39 @@ namespace PrescottAppBackend.Infrastructure
             }
         }
 
+        public async Task<AmenityVM> GetAmenityByBuildingId(int buildingId)
+        {
+            var result = await (from a in _dbContext.Amenities
+                                join b in _dbContext.Buildings on a.BuildingId equals b.Id
+                                join u in _dbContext.Users on a.CreatedBy equals u.Id
+                                where a.BuildingId == buildingId
+                                select new AmenityVM()
+                                {
+                                    Id = a.Id,
+                                    BuildingId = a.BuildingId,
+                                    AmenityName = a.AmenityName,
+                                    Description = a.Description,
+                                    CreatedBy = a.CreatedBy,
+                                    CreatedAt = a.CreatedAt,
+                                    UpdatedBy = a.UpdatedBy,
+                                    UpdatedAt = a.UpdatedAt,
+                                    BuildingName = b.BuildingName,
+                                    CreatedByStr = (u.FirstName + ' ' + u.LastName).ToString(),
+                                    UserVM = u
+                                }).FirstOrDefaultAsync();
+
+            if (result == null)
+            {
+                // Handle the null case (you can return null or throw a custom exception)
+                throw new Exception("No amenities found for the given building ID.");
+            }
+
+
+            var amenityImages = await _dbContext.AmenityImages.Where(x => x.AmenityId == result.Id).ToListAsync();
+            result.AmenityImages = CustomMapper.MapList<AmenityImage, AmenityImageVM>(amenityImages);
+
+            return result;
+        }
+
     }
 }
