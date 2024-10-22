@@ -15,6 +15,6 @@ namespace PrescottAppBackend.Domain
         Task<AmenityVM> AddUpdateAmenityAsync(AmenityVM amenity);
         Task DeleteAmenityAsync(int amenityId);
 
-        Task<AmenityVM> GetAmenityByBuildingId(int buildingId);
+        Task<List<AmenityVM>> GetAmenityByBuildingId(int buildingId);
     }
 }

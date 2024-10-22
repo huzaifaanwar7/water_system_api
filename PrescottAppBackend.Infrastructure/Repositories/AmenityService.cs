@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PrescottAppBackend.Domain;
 using PrescottAppBackend.Domain.DbModels;
+using System.Collections.Generic;
 
 namespace PrescottAppBackend.Infrastructure
 {
@@ -174,7 +175,7 @@ namespace PrescottAppBackend.Infrastructure
             }
         }
 
-        public async Task<AmenityVM> GetAmenityByBuildingId(int buildingId)
+        public async Task<List<AmenityVM>> GetAmenityByBuildingId(int buildingId)
         {
             var result = await (from a in _dbContext.Amenities
                                 join b in _dbContext.Buildings on a.BuildingId equals b.Id
@@ -193,7 +194,7 @@ namespace PrescottAppBackend.Infrastructure
                                     BuildingName = b.BuildingName,
                                     CreatedByStr = (u.FirstName + ' ' + u.LastName).ToString(),
                                     UserVM = u
-                                }).FirstOrDefaultAsync();
+                                }).ToListAsync();
 
             if (result == null)
             {
@@ -201,10 +202,15 @@ namespace PrescottAppBackend.Infrastructure
                 throw new Exception("No amenities found for the given building ID.");
             }
 
-
-            var amenityImages = await _dbContext.AmenityImages.Where(x => x.AmenityId == result.Id).ToListAsync();
-            result.AmenityImages = CustomMapper.MapList<AmenityImage, AmenityImageVM>(amenityImages);
-
+            if (result.Count > 0)
+            {
+                var amenityImages = await _dbContext.AmenityImages.Where(x => result.Select(a => a.Id).Contains(x.AmenityId)).ToListAsync();
+                foreach (var r in result)
+                {
+                    var images = amenityImages.Where(x => x.AmenityId == r.Id).ToList();
+                    r.AmenityImages = CustomMapper.MapList<AmenityImage, AmenityImageVM>(images);
+                }
+            }
             return result;
         }
 

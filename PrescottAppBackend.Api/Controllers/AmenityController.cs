@@ -122,7 +122,7 @@ namespace PrescottAppBackend.Api.Controllers
             }
         }
 
-        [HttpGet("building-amenities-history/{buildingId}")]
+        [HttpGet("building-amenities/{buildingId}")]
         public async Task<BaseResponse> GetBuildingAmenity(int buildingId)
         {
             try
