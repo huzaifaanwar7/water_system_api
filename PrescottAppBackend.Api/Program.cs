@@ -104,6 +104,7 @@ builder.Services.AddTransient<IBuildingService, BuildingService>();
 builder.Services.AddTransient<IAnnouncementService, AnnouncementService>();
 builder.Services.AddTransient<IAmenityService, AmenityService>();
 builder.Services.AddTransient<IReservationService, ReservationService>();
+builder.Services.AddTransient<IReportedProblemService, ReportedProblemService>();
 
 builder.Services.AddControllers();
 

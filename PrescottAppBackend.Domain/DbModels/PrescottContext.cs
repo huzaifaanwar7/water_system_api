@@ -29,6 +29,10 @@ public partial class PrescottContext : DbContext
 
     public virtual DbSet<Dropdownlistparent> Dropdownlistparents { get; set; }
 
+    public virtual DbSet<ReportedProblem> ReportedProblems { get; set; }
+
+    public virtual DbSet<ReportedProblemImage> ReportedProblemImages { get; set; }
+
     public virtual DbSet<Reservation> Reservations { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
@@ -168,6 +172,40 @@ public partial class PrescottContext : DbContext
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Type).HasMaxLength(255);
+        });
+
+        modelBuilder.Entity<ReportedProblem>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("reported_problem", "prescott");
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedBy).HasMaxLength(255);
+            entity.Property(e => e.Problem)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("text");
+            entity.Property(e => e.Title).HasMaxLength(255);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
+        });
+
+        modelBuilder.Entity<ReportedProblemImage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("reported_problem_images", "prescott");
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.FileName).HasMaxLength(255);
+            entity.Property(e => e.FilePath).HasMaxLength(255);
+            entity.Property(e => e.FileType).HasMaxLength(255);
+            entity.Property(e => e.ReportedProblemId).HasColumnType("int(11)");
         });
 
         modelBuilder.Entity<Reservation>(entity =>
