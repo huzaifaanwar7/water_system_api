@@ -1,14 +1,14 @@
 
 /.vs
-/PrescottAppBackend.Api/bin
-/PrescottAppBackend.Api/obj
-/PrescottAppBackend.Domain/obj
-/PrescottAppBackend.Infrastructure/bin
-/PrescottAppBackend.Infrastructure/obj
-/PrescottAppBackend.Domain/bin
-/PrescottAppBackend.Api/Properties
-/PrescottAppBackend.Api/bin
-/PrescottAppBackend.Domain/obj
-/PrescottAppBackend.Api/obj
-/PrescottAppBackend.Domain/obj
-/PrescottAppBackend.Infrastructure/obj
+/GlobularsAdminAppBackend.Api/bin
+/GlobularsAdminAppBackend.Api/obj
+/GlobularsAdminAppBackend.Domain/obj
+/GlobularsAdminAppBackend.Infrastructure/bin
+/GlobularsAdminAppBackend.Infrastructure/obj
+/GlobularsAdminAppBackend.Domain/bin
+/GlobularsAdminAppBackend.Api/Properties
+/GlobularsAdminAppBackend.Api/bin
+/GlobularsAdminAppBackend.Domain/obj
+/GlobularsAdminAppBackend.Api/obj
+/GlobularsAdminAppBackend.Domain/obj
+/GlobularsAdminAppBackend.Infrastructure/obj

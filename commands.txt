@@ -6,4 +6,4 @@ dotnet new apicontroller --name ContactController
 
 
 // To run the project using cmd/terminal
-dotnet run --project PrescottAppBackend.Api
+dotnet run --project GlobularsAdminAppBackend.Api
