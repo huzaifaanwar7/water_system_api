@@ -1,0 +1,158 @@
+using System.Net;
+using Microsoft.AspNetCore.Mvc;
+using GlobularsAdmin.Api.Model;
+using GlobularsAdmin.Domain;
+
+namespace GlobularsAdmin.Api.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AmenityController(IAmenityService _amenity) : ControllerBase
+    {
+        [HttpGet]
+        public async Task<BaseResponse> Get()
+        {
+            try
+            {
+                var amenities = await _amenity.GetAllAmenitiesAsync();
+                if (amenities == null)
+                {
+                    return new BaseResponse
+                    {
+                        status = HttpStatusCode.NotFound,
+                        data = amenities
+                    };
+                }
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.OK,
+                    data = amenities
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = ex.Message,
+                    data = ex
+                };
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<BaseResponse> Get(int id)
+        {
+            try
+            {
+                var Amenitys = await _amenity.GetAmenityByIdAsync(id);
+                if (Amenitys == null)
+                {
+                    return new BaseResponse
+                    {
+                        status = HttpStatusCode.NotFound,
+                        data = Amenitys
+                    };
+                }
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.OK,
+                    data = Amenitys
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = ex.Message,
+                    data = ex
+                };
+            }
+        }
+
+        [HttpPost]
+        public async Task<BaseResponse> AddUpdate([FromBody] AmenityVM vM)
+        {
+            try
+            {
+                var amenity = await _amenity.AddUpdateAmenityAsync(vM);
+                return new BaseResponse()
+                {
+                    status = HttpStatusCode.OK,
+                    data = amenity,
+                    message = "Data Saved",
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse()
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    data = ex,
+                    message = ex.Message
+                };
+            }
+        }
+
+
+        [HttpDelete("{id}")]
+        public async Task<BaseResponse> Delete(int id)
+        {
+
+            try
+            {
+                await _amenity.DeleteAmenityAsync(id);
+                return new BaseResponse()
+                {
+                    status = HttpStatusCode.NoContent,
+                    data = "",
+                    message = "Deleted",
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse()
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = ex.Message,
+                    data = ex
+                };
+            }
+        }
+
+        [HttpGet("building-amenities/{buildingId}")]
+        public async Task<BaseResponse> GetBuildingAmenity(int buildingId)
+        {
+            try
+            {
+                var Amenitys = await _amenity.GetAmenityByBuildingId(buildingId);
+                if (Amenitys == null)
+                {
+                    return new BaseResponse
+                    {
+                        status = HttpStatusCode.NotFound,
+                        data = Amenitys
+                    };
+                }
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.OK,
+                    data = Amenitys
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = ex.Message,
+                    data = ex
+                };
+            }
+        }
+
+
+    }
+}

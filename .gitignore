@@ -1,14 +1,14 @@
 
 /.vs
-/GlobularsAdminAppBackend.Api/bin
-/GlobularsAdminAppBackend.Api/obj
-/GlobularsAdminAppBackend.Domain/obj
-/GlobularsAdminAppBackend.Infrastructure/bin
-/GlobularsAdminAppBackend.Infrastructure/obj
-/GlobularsAdminAppBackend.Domain/bin
-/GlobularsAdminAppBackend.Api/Properties
-/GlobularsAdminAppBackend.Api/bin
-/GlobularsAdminAppBackend.Domain/obj
-/GlobularsAdminAppBackend.Api/obj
-/GlobularsAdminAppBackend.Domain/obj
-/GlobularsAdminAppBackend.Infrastructure/obj
+/GlobularsAdmin.Api/bin
+/GlobularsAdmin.Api/obj
+/GlobularsAdmin.Domain/obj
+/GlobularsAdmin.Infrastructure/bin
+/GlobularsAdmin.Infrastructure/obj
+/GlobularsAdmin.Domain/bin
+/GlobularsAdmin.Api/Properties
+/GlobularsAdmin.Api/bin
+/GlobularsAdmin.Domain/obj
+/GlobularsAdmin.Api/obj
+/GlobularsAdmin.Domain/obj
+/GlobularsAdmin.Infrastructure/obj
