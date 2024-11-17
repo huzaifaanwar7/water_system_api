@@ -1,9 +1,12 @@
+//Install dotnet-ef tools
+dotnet tool install --global dotnet-ef
+
 // DB scaffolding Command
-dotnet ef dbcontext scaffold "Server=127.0.0.1;Database=Prescott;User=root;Password=;" MySql.EntityFrameworkCore -o DbModels --force;
+dotnet ef dbcontext scaffold "Server=192.227.81.51,58243;Database=globulars_dev;User=ihs;Password=ihs@1234;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -o DbModels --context GBS_DbContext --force
 
 // Create Controller Command
 dotnet new apicontroller --name ContactController
 
 
 // To run the project using cmd/terminal
-dotnet run --project GlobularsAdmin.Api
+dotnet run --project GBS.Api
