@@ -6,7 +6,7 @@
 /GBS.Service/bin
 /GBS.Service/obj
 /GBS.Entities/bin
-/GBS.Api/Properties
+# /GBS.Api/Properties
 /GBS.Api/bin
 /GBS.Entities/obj
 /GBS.Api/obj
