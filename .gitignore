@@ -2,16 +2,13 @@
 /.vs
 /GBS.Api/bin
 /GBS.Api/obj
+
+/GBS.Entities/bin
 /GBS.Entities/obj
+
 /GBS.Service/bin
 /GBS.Service/obj
-/GBS.Entities/bin
-# /GBS.Api/Properties
-/GBS.Api/bin
-/GBS.Entities/obj
-/GBS.Api/obj
-/GBS.Entities/obj
-/GBS.Service/obj
+
 
 /GBS.Data/bin
 /GBS.Data/obj
