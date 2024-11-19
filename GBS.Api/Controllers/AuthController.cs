@@ -152,7 +152,7 @@ namespace GBS.Api
 
         [AllowAnonymous]
         [HttpPost("signin")]
-        public async Task<BaseResponse> SignIn(AuthVM auth)
+        public async Task<BaseResponse> SignIn([FromBody] AuthVM auth)
         {
             try
             {
@@ -164,14 +164,13 @@ namespace GBS.Api
                     return new BaseResponse
                     {
                         status = HttpStatusCode.OK,
-                        data = new UserVM
+                        data = new 
                         {
                             user.Id,
-                            user.BuildingId,
-                            user.RoleId,
-                            user.Email,
+                            user.UserName,
+                            user.PersonalEmail,
+                            user.PersonalPhone,
                             displayName = (user.FirstName + ' ' + user.LastName).Trim(),
-                            photoURL = user.PhotoUrl,
                             token,
                             expiresIn = 36000
                         }
