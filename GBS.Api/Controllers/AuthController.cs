@@ -159,7 +159,7 @@ namespace GBS.Api
                 var user = await _userService.ValidateUserAsync(auth);
                 if (user != null)
                 {
-                    var token = _jwtUtils.GenerateJwtToken(user);
+                    var accessToken = _jwtUtils.GenerateJwtToken(user);
 
                     return new BaseResponse
                     {
@@ -171,8 +171,10 @@ namespace GBS.Api
                             user.PersonalEmail,
                             user.PersonalPhone,
                             displayName = (user.FirstName + ' ' + user.LastName).Trim(),
-                            token,
-                            expiresIn = 36000
+                            accessToken,
+                            expiresIn = 36000,
+                            roles = new List<string>(), 
+                             rights = new List<string>()
                         }
                     };
                 }
