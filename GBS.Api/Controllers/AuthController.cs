@@ -161,6 +161,9 @@ namespace GBS.Api
                 {
                     var accessToken = _jwtUtils.GenerateJwtToken(user);
 
+                    var roles = new List<string> { "Admin", "Editor" }; // Example roles
+                    var rights = new List<string> { "Create", "Read", "Update", "Delete" };
+                    var profilePictureUrl= "http://localhost:4200/assets/images/shahzad.jpg";
                     return new BaseResponse
                     {
                         status = HttpStatusCode.OK,
@@ -168,13 +171,16 @@ namespace GBS.Api
                         {
                             user.Id,
                             user.UserName,
+                            user.FirstName,
+                            user.LastName,
                             user.PersonalEmail,
                             user.PersonalPhone,
                             displayName = (user.FirstName + ' ' + user.LastName).Trim(),
                             accessToken,
                             expiresIn = 36000,
-                            roles = new List<string>(), 
-                             rights = new List<string>()
+                            roles, 
+                            rights,
+                            profilePictureUrl
                         }
                     };
                 }
