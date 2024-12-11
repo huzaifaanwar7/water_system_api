@@ -98,6 +98,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddTransient<IJwtUtils, JwtUtils>();
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IEmployeeService, EmployeeService>();
 
 builder.Services.AddControllers();
 

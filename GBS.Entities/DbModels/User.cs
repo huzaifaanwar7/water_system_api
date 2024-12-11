@@ -17,6 +17,8 @@ public partial class User
 
     public string? PersonalEmail { get; set; }
 
+    public string? ProfilePictureUrl { get; set; }
+
     public string PersonalPhone { get; set; } = null!;
 
     public string? EmergencyPhone { get; set; }

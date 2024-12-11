@@ -162,7 +162,7 @@ namespace GBS.Api
                     var accessToken = _jwtUtils.GenerateJwtToken(user);
 
                     var roles = new List<string> { "Admin", "Editor" }; // Example roles
-                    var rights = new List<string> { "Create", "Read", "Update", "Delete" };
+                    var rights = new List<string> { "Create", "Read", "Update", "Delete", "public" };
                     var profilePictureUrl= "http://localhost:4200/assets/images/shahzad.jpg";
                     return new BaseResponse
                     {
