@@ -1,4 +1,6 @@
+using Firebase.Auth;
 using GBS.Api.Model;
+using GBS.Data.Model;
 using GBS.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +10,7 @@ namespace MyApp.Namespace
 {
     [Route("[controller]")]
     [ApiController]
-    public class EmployeesController(IEmployeeService _employeeService) : ControllerBase
+    public class EmployeeController(IEmployeeService _employeeService) : ControllerBase
     {
         [AllowAnonymous]
         [HttpGet("UpcomingNews/{fromDate:DateTime}/{toDate:DateTime}")]
@@ -65,36 +67,95 @@ namespace MyApp.Namespace
                 }
             });
         }
-        [AllowAnonymous]
-        [HttpGet("[action]")]
+       
+        
+        [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
+            int user = Convert.ToInt32(HttpContext.Items["EmployeeId"]);
             try
             {
                 // Retrieve all users using the employee service
-                var users = await _employeeService.ValidateUserAsync();
+                var users = await _employeeService.GetEmployeeList();
                 var baseUrls = "https://ihs.cc";
                 // Check if users list is not empty
                 if (users != null && users.Any())
                 {
                     // Prepare the response data
-                    var response = users.Select(user => new
+                    var response = users.Select(user => new EmployeeVM
                     {
-                        user.Id,
-                        user.UserName,
-                        user.FirstName,
-                        user.LastName,
-                        user.PersonalEmail,
-                        user.PersonalPhone,
-                        user.TechStack,
-                        user.Cnic,
-                        user.Role,
-                        JoiningDate = user.JoiningDate.ToString("yyyy-MM-dd"), 
-                        SeparationDate = user.SeparationDate?.ToString("yyyy-MM-dd"),
+                        Id = user.Id,
+                        Username= user.Username,
+                        FullName = (user.FirstName + " " + user.LastName).Trim(),
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        PersonalEmail = user.PersonalEmail,
+                        PersonalPhone =  user.PersonalPhone,
+                        //user.EmployeeTechStacks,
+                        Cnic = user.Cnic,
+                        //user.EmployeeJobRoles,
+                        JoiningDate = user.JoiningDate, 
+                        SeparationDate = user.SeparationDate,
                         ProfilePictureUrl = baseUrls + user.ProfilePictureUrl,
-                        displayName = (user.FirstName + " " + user.LastName).Trim()
 
                     }).ToList();
+
+                    // Return success response
+                    return Ok(new BaseResponse
+                    {
+                        status = HttpStatusCode.OK,
+                        data = response
+                    });
+                }
+
+                // Handle case where no users are found
+                return NotFound(new BaseResponse
+                {
+                    status = HttpStatusCode.NotFound,
+                    message = "No users found."
+                });
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected exceptions
+                return StatusCode(500, new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = $"An error occurred: {ex.Message}"
+                });
+            }
+        }
+
+        
+        [HttpGet("{EmployeeId}")]
+        public async Task<IActionResult> GetDetails([FromRoute] int EmployeeId)
+        {
+            try
+            {
+                // Retrieve all users using the employee service
+                var user = await _employeeService.GetEmployeeById(EmployeeId);
+                var baseUrls = "https://ihs.cc";
+                // Check if users list is not empty
+                if (user != null)
+                {
+                    // Prepare the response data
+                    var response = new EmployeeVM
+                    {
+                        Id = user.Id,
+                        Username = user.Username,
+                        FullName = (user.FirstName + " " + user.LastName).Trim(),
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        PersonalEmail = user.PersonalEmail,
+                        PersonalPhone = user.PersonalPhone,
+                        //user.EmployeeTechStacks,
+                        Cnic = user.Cnic,
+                        //user.EmployeeJobRoles,
+                        JoiningDate = user.JoiningDate,
+                        SeparationDate = user.SeparationDate,
+                        ProfilePictureUrl = baseUrls + user.ProfilePictureUrl
+
+                    };
 
                     // Return success response
                     return Ok(new BaseResponse

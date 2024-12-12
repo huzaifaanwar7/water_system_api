@@ -15,9 +15,19 @@ public partial class GBS_DbContext : DbContext
     {
     }
 
-    public virtual DbSet<Lookup> Lookups { get; set; }
+    public virtual DbSet<Employee> Employees { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; }
+
+    public virtual DbSet<EmployeeJobRole> EmployeeJobRoles { get; set; }
+
+    public virtual DbSet<EmployeeTechStack> EmployeeTechStacks { get; set; }
+
+    public virtual DbSet<JobRole> JobRoles { get; set; }
+
+    public virtual DbSet<Status> Statuses { get; set; }
+
+    public virtual DbSet<TechStack> TechStacks { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -25,60 +35,23 @@ public partial class GBS_DbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Lookup>(entity =>
+        modelBuilder.Entity<Employee>(entity =>
         {
-            entity.ToTable("lookups");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.IsActive)
-                .HasDefaultValue(true)
-                .HasColumnName("is_active");
-            entity.Property(e => e.Name)
-                .HasMaxLength(512)
-                .HasColumnName("name");
-            entity.Property(e => e.Type)
-                .HasMaxLength(64)
-                .HasColumnName("type");
-        });
-
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK_employee");
-
-            entity.ToTable("user");
+            entity.ToTable("employee");
 
             entity.HasIndex(e => e.Id, "IX_employee");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
-            entity.Property(e => e.AccountNumber)
-                .HasMaxLength(128)
-                .HasColumnName("account_number");
-            entity.Property(e => e.AccountTitle)
-                .HasMaxLength(128)
-                .HasColumnName("account_title");
-            entity.Property(e => e.BankName)
-                .HasMaxLength(128)
-                .HasColumnName("bank_name");
-            entity.Property(e => e.BranchCode)
-                .HasMaxLength(128)
-                .HasColumnName("branch_code");
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Cnic)
                 .HasMaxLength(16)
                 .HasColumnName("cnic");
             entity.Property(e => e.EmergencyPhone)
                 .HasMaxLength(16)
                 .HasColumnName("emergency_phone");
-            entity.Property(e => e.EmployeeCode)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("employee_code");
+            entity.Property(e => e.EmployeeCode).HasColumnName("employee_code");
             entity.Property(e => e.FirstName)
                 .HasMaxLength(128)
                 .HasColumnName("first_name");
-            entity.Property(e => e.Iban)
-                .HasMaxLength(128)
-                .HasColumnName("iban");
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true)
                 .HasColumnName("is_active");
@@ -100,24 +73,136 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.ProfilePictureUrl)
                 .HasMaxLength(128)
                 .HasColumnName("profile_picture_url");
-            entity.Property(e => e.Role)
-                .HasMaxLength(128)
-                .HasColumnName("role");
             entity.Property(e => e.SeparationDate)
                 .HasColumnType("datetime")
                 .HasColumnName("separation_date");
-            entity.Property(e => e.StatusFk).HasColumnName("status_fk");
-            entity.Property(e => e.TechStack)
-                .HasMaxLength(128)
-                .HasColumnName("tech_stack");
-            entity.Property(e => e.UserName)
+            entity.Property(e => e.StatusIdFk).HasColumnName("status_id_fk");
+            entity.Property(e => e.Username)
                 .HasMaxLength(128)
                 .HasColumnName("user_name");
 
-            entity.HasOne(d => d.StatusFkNavigation).WithMany(p => p.Users)
-                .HasForeignKey(d => d.StatusFk)
+            entity.HasOne(d => d.StatusIdFkNavigation).WithMany(p => p.Employees)
+                .HasForeignKey(d => d.StatusIdFk)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_employee_lookups");
+                .HasConstraintName("FK_employee_status");
+        });
+
+        modelBuilder.Entity<EmployeeBankDetail>(entity =>
+        {
+            entity.ToTable("employee_bank_detail");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AccountNumber)
+                .HasMaxLength(128)
+                .HasColumnName("account_number");
+            entity.Property(e => e.AccountTitle)
+                .HasMaxLength(128)
+                .HasColumnName("account_title");
+            entity.Property(e => e.BankName)
+                .HasMaxLength(128)
+                .HasColumnName("bank_name");
+            entity.Property(e => e.BranchCode)
+                .HasMaxLength(128)
+                .HasColumnName("branch_code");
+            entity.Property(e => e.EmployeeIdFk).HasColumnName("employee_id_fk");
+            entity.Property(e => e.Iban)
+                .HasMaxLength(128)
+                .HasColumnName("iban");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasColumnName("is_active");
+
+            entity.HasOne(d => d.EmployeeIdFkNavigation).WithMany(p => p.EmployeeBankDetails)
+                .HasForeignKey(d => d.EmployeeIdFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_employee_bank_detail_employee");
+        });
+
+        modelBuilder.Entity<EmployeeJobRole>(entity =>
+        {
+            entity.ToTable("employee_job_role");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.EmployeeIdFk).HasColumnName("employee_id_fk");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasColumnName("is_active");
+            entity.Property(e => e.JobRoleIdFk).HasColumnName("job_role_id_fk");
+
+            entity.HasOne(d => d.EmployeeIdFkNavigation).WithMany(p => p.EmployeeJobRoles)
+                .HasForeignKey(d => d.EmployeeIdFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_employee_job_role_employee");
+
+            entity.HasOne(d => d.JobRoleIdFkNavigation).WithMany(p => p.EmployeeJobRoles)
+                .HasForeignKey(d => d.JobRoleIdFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_employee_job_role_job_role");
+        });
+
+        modelBuilder.Entity<EmployeeTechStack>(entity =>
+        {
+            entity.ToTable("employee_tech_stack");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.EmployeeIdFk).HasColumnName("employee_id_fk");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasColumnName("is_active");
+            entity.Property(e => e.TeckStackIdFk).HasColumnName("teck_stack_id_fk");
+
+            entity.HasOne(d => d.EmployeeIdFkNavigation).WithMany(p => p.EmployeeTechStacks)
+                .HasForeignKey(d => d.EmployeeIdFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_employee_tech_stack_employee");
+
+            entity.HasOne(d => d.TeckStackIdFkNavigation).WithMany(p => p.InverseTeckStackIdFkNavigation)
+                .HasForeignKey(d => d.TeckStackIdFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_employee_tech_stack_tech_stack");
+        });
+
+        modelBuilder.Entity<JobRole>(entity =>
+        {
+            entity.ToTable("job_role");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasColumnName("is_active");
+            entity.Property(e => e.Name)
+                .HasMaxLength(128)
+                .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<Status>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_lookups");
+
+            entity.ToTable("status");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasColumnName("is_active");
+            entity.Property(e => e.Name)
+                .HasMaxLength(512)
+                .HasColumnName("name");
+            entity.Property(e => e.Type)
+                .HasMaxLength(64)
+                .HasColumnName("type");
+        });
+
+        modelBuilder.Entity<TechStack>(entity =>
+        {
+            entity.ToTable("tech_stack");
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasColumnName("is_active");
+            entity.Property(e => e.Name)
+                .HasMaxLength(128)
+                .HasColumnName("name");
         });
 
         OnModelCreatingPartial(modelBuilder);

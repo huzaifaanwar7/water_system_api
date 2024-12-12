@@ -5,6 +5,7 @@ using System.Data;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using GBS.Service;
+using GBS.Data.Model;
 
 public class JwtMiddleware
 {
@@ -50,8 +51,8 @@ public class JwtMiddleware
             //    // attach user to context on successful jwt validation
             //    context.Items["User"] = userService.GetById(userId.Value);
             //}
-            var UserId = _jwtUtils.ValidateJwtToken(token);
-            if (UserId == null)
+            var EmployeeId = _jwtUtils.ValidateJwtToken(token);
+            if (EmployeeId == null)
             {
                 context.Response.Clear();
                 context.Response.ContentType = "application/json";
@@ -63,12 +64,12 @@ public class JwtMiddleware
             }
             else
             {
-                context.Items["UserId"] = UserId;
+                context.Items["EmployeeId"] = EmployeeId;
                 await _next(context);
                 //if (body.Any(u => u["token"].ToString().EqualsIgnoreCase(token)))
                 //{
                 //    //context.Items["User"] = body.First();
-                //    context.Items["User"] = userService.GetById(UserId.Value);
+                //    context.Items["User"] = userService.GetById(EmployeeId.Value);
                 //    await _next(context);
                 //}
                 //else

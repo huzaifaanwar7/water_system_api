@@ -170,7 +170,7 @@ namespace GBS.Api
                         data = new 
                         {
                             user.Id,
-                            user.UserName,
+                            user.Username,
                             user.FirstName,
                             user.LastName,
                             user.PersonalEmail,

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GBS.Entities.DbModels;
 
-public partial class Lookup
+public partial class Status
 {
     public int Id { get; set; }
 
@@ -13,5 +13,5 @@ public partial class Lookup
 
     public bool IsActive { get; set; }
 
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+    public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
 }

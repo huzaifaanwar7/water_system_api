@@ -8,27 +8,36 @@ namespace GBS.Service
 {
     public interface IEmployeeService
     {
-        Task<List<User>> ValidateUserAsync();
+        Task<List<Employee>> GetEmployeeList();
+        Task<Employee> GetEmployeeById(int Id);
+        Task<Employee> GetUserByUsernameAsync(string username);
+        Task<int> UpdateEmployee(Employee user);
+        Task<int> DeleteEmployee(string Id);
+
     }
     public class EmployeeService(GBS_DbContext _dbContext) : IEmployeeService
     {
 
 
-        public async Task<List<User>> ValidateUserAsync()
+        public async Task<List<Employee>> GetEmployeeList()
         {
-            var users = await _dbContext.Users.ToListAsync();
+            var users = await _dbContext.Employees.Where(e => e.IsActive).ToListAsync();
             return users;
         }
 
-        // public async Task<User> GetUserByIdAsync(string userId)
-        // {
-        //     return await _dbContext.Users.FindAsync(userId) ?? new User();
-        // }
+        public async Task<Employee> GetEmployeeById(int Id)
+        {
+            return await _dbContext.Employees.Where(u => u.Id == Id)
+                .Include(e => e.EmployeeJobRoles)
+                .Include(e => e.EmployeeTechStacks)
+                .Include(e => e.EmployeeBankDetails)
+                .FirstOrDefaultAsync();
+        }
 
-        // public async Task<User> GetUserByUsernameAsync(string username)
-        // {
-        //     return await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == username) ?? new User();
-        // }
+        public async Task<Employee> GetUserByUsernameAsync(string username)
+        {
+            return await _dbContext.Employees.FirstOrDefaultAsync(u => u.Username == username);
+        }
 
         // public async Task AddUserAsync(UserVM user)
         // {
@@ -55,27 +64,25 @@ namespace GBS.Service
         //     await _dbContext.SaveChangesAsync();
         // }
 
-        // public async Task UpdateUserAsync(User user)
-        // {
-        //     _dbContext.Users.Update(user);
-        //     await _dbContext.SaveChangesAsync();
-        // }
+        public async Task<int> UpdateEmployee(Employee user)
+        {
+            _dbContext.Employees.Update(user);
+            return await _dbContext.SaveChangesAsync();
+        }
 
-        // public async Task DeleteUserAsync(string userId)
-        // {
-        //     var user = await _dbContext.Users.FindAsync(userId);
-        //     if (user != null)
-        //     {
-        //         _dbContext.Users.Remove(user);
-        //         await _dbContext.SaveChangesAsync();
-        //     }
-        // }
+        public async Task<int> DeleteEmployee(string Id)
+        {
+            var user = await _dbContext.Employees.FindAsync(Id);
+            if (user != null)
+            {
+                user.IsActive = false;
+                _dbContext.Employees.Update(user);
 
-        // // Other methods as needed
+                return await _dbContext.SaveChangesAsync();
+            }
+            return 0;
+        }
 
-        // public async Task<List<User>> GetAllUsersAsync()
-        // {
-        //     return await _dbContext.Users.ToListAsync();
-        // }
+
     }
 }

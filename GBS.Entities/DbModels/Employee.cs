@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GBS.Entities.DbModels;
 
-public partial class User
+public partial class Employee
 {
     public int Id { get; set; }
 
@@ -25,29 +25,21 @@ public partial class User
 
     public string Password { get; set; } = null!;
 
-    public string UserName { get; set; } = null!;
+    public string Username { get; set; } = null!;
 
-    public string Role { get; set; } = null!;
-
-    public int StatusFk { get; set; }
-
-    public string? TechStack { get; set; }
+    public int StatusIdFk { get; set; }
 
     public DateTime JoiningDate { get; set; }
 
     public DateTime? SeparationDate { get; set; }
 
-    public string? BankName { get; set; }
-
-    public string? AccountTitle { get; set; }
-
-    public string? BranchCode { get; set; }
-
-    public string? AccountNumber { get; set; }
-
-    public string? Iban { get; set; }
-
     public bool IsActive { get; set; }
 
-    public virtual Lookup StatusFkNavigation { get; set; } = null!;
+    public virtual ICollection<EmployeeBankDetail> EmployeeBankDetails { get; set; } = new List<EmployeeBankDetail>();
+
+    public virtual ICollection<EmployeeJobRole> EmployeeJobRoles { get; set; } = new List<EmployeeJobRole>();
+
+    public virtual ICollection<EmployeeTechStack> EmployeeTechStacks { get; set; } = new List<EmployeeTechStack>();
+
+    public virtual Status StatusIdFkNavigation { get; set; } = null!;
 }

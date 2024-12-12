@@ -6,18 +6,19 @@ using GBS.Entities.DbModels;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using GBS.Data.Model;
 
 public interface IJwtUtils
 {
-    public string GenerateJwtToken(User user);
-    public Guid? ValidateJwtToken(string token);
+    public string GenerateJwtToken(Employee user);
+    public int? ValidateJwtToken(string token);
 }
 
 public class JwtUtils(IOptions<AppSettings> _appSettings) : IJwtUtils
 {
 
 
-    public string GenerateJwtToken(User user)
+    public string GenerateJwtToken(Employee user)
     {
         // generate token that is valid for 7 days
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -39,7 +40,7 @@ public class JwtUtils(IOptions<AppSettings> _appSettings) : IJwtUtils
         return tokenHandler.WriteToken(token);
     }
 
-    public Guid? ValidateJwtToken(string token)
+    public int? ValidateJwtToken(string token)
     {
         if (token == null)
             return null;
@@ -59,8 +60,8 @@ public class JwtUtils(IOptions<AppSettings> _appSettings) : IJwtUtils
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            var userId = Guid.Parse(jwtToken.Claims.First(x => x.Type == "Id").Value);
-
+            var userId = Convert.ToInt32(jwtToken.Claims.First(x => x.Type == "Id").Value);
+            LoggedEmployee.Id = userId;
             // return user id from JWT token if validation successful
             return userId;
         }

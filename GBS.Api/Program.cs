@@ -16,10 +16,10 @@ var builder = WebApplication.CreateBuilder(args);
 var _appSettings = builder.Configuration.GetSection("AppSettings");
 builder.Services.AddMemoryCache();
 // Configure Firebase Admin SDK
-FirebaseApp.Create(new AppOptions()
-{
-    Credential = GoogleCredential.FromFile("prescott-firebase-adminsdk.json")
-});
+//FirebaseApp.Create(new AppOptions()
+//{
+//    Credential = GoogleCredential.FromFile("prescott-firebase-adminsdk.json")
+//});
 
 // Register the DbContext with a connection string
 // builder.Services.AddDbContext<PrescottContext>(options =>
