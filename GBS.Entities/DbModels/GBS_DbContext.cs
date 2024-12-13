@@ -23,11 +23,15 @@ public partial class GBS_DbContext : DbContext
 
     public virtual DbSet<EmployeeTechStack> EmployeeTechStacks { get; set; }
 
+    public virtual DbSet<EmployeeUserRole> EmployeeUserRoles { get; set; }
+
     public virtual DbSet<JobRole> JobRoles { get; set; }
 
     public virtual DbSet<Status> Statuses { get; set; }
 
     public virtual DbSet<TechStack> TechStacks { get; set; }
+
+    public virtual DbSet<UserRole> UserRoles { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -79,7 +83,7 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.StatusIdFk).HasColumnName("status_id_fk");
             entity.Property(e => e.Username)
                 .HasMaxLength(128)
-                .HasColumnName("user_name");
+                .HasColumnName("username");
 
             entity.HasOne(d => d.StatusIdFkNavigation).WithMany(p => p.Employees)
                 .HasForeignKey(d => d.StatusIdFk)
@@ -104,6 +108,10 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.BranchCode)
                 .HasMaxLength(128)
                 .HasColumnName("branch_code");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.CreatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("created_date");
             entity.Property(e => e.EmployeeIdFk).HasColumnName("employee_id_fk");
             entity.Property(e => e.Iban)
                 .HasMaxLength(128)
@@ -111,6 +119,10 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true)
                 .HasColumnName("is_active");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            entity.Property(e => e.UpdatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("updated_date");
 
             entity.HasOne(d => d.EmployeeIdFkNavigation).WithMany(p => p.EmployeeBankDetails)
                 .HasForeignKey(d => d.EmployeeIdFk)
@@ -123,11 +135,19 @@ public partial class GBS_DbContext : DbContext
             entity.ToTable("employee_job_role");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.CreatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("created_date");
             entity.Property(e => e.EmployeeIdFk).HasColumnName("employee_id_fk");
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true)
                 .HasColumnName("is_active");
             entity.Property(e => e.JobRoleIdFk).HasColumnName("job_role_id_fk");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            entity.Property(e => e.UpdatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("updated_date");
 
             entity.HasOne(d => d.EmployeeIdFkNavigation).WithMany(p => p.EmployeeJobRoles)
                 .HasForeignKey(d => d.EmployeeIdFk)
@@ -145,21 +165,59 @@ public partial class GBS_DbContext : DbContext
             entity.ToTable("employee_tech_stack");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.CreatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("created_date");
             entity.Property(e => e.EmployeeIdFk).HasColumnName("employee_id_fk");
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true)
                 .HasColumnName("is_active");
             entity.Property(e => e.TeckStackIdFk).HasColumnName("teck_stack_id_fk");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            entity.Property(e => e.UpdatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("updated_date");
 
             entity.HasOne(d => d.EmployeeIdFkNavigation).WithMany(p => p.EmployeeTechStacks)
                 .HasForeignKey(d => d.EmployeeIdFk)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_employee_tech_stack_employee");
 
-            entity.HasOne(d => d.TeckStackIdFkNavigation).WithMany(p => p.InverseTeckStackIdFkNavigation)
+            entity.HasOne(d => d.TeckStackIdFkNavigation).WithMany(p => p.EmployeeTechStacks)
                 .HasForeignKey(d => d.TeckStackIdFk)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_employee_tech_stack_tech_stack");
+        });
+
+        modelBuilder.Entity<EmployeeUserRole>(entity =>
+        {
+            entity.ToTable("employee_user_role");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.CreatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("created_date");
+            entity.Property(e => e.EmployeeIdFk).HasColumnName("employee_id_fk");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasColumnName("is_active");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            entity.Property(e => e.UpdatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("updated_date");
+            entity.Property(e => e.UserRoleIdFk).HasColumnName("user_role_id_fk");
+
+            entity.HasOne(d => d.EmployeeIdFkNavigation).WithMany(p => p.EmployeeUserRoles)
+                .HasForeignKey(d => d.EmployeeIdFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_employee_user_role_employee");
+
+            entity.HasOne(d => d.UserRoleIdFkNavigation).WithMany(p => p.EmployeeUserRoles)
+                .HasForeignKey(d => d.UserRoleIdFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_employee_user_role_user_role");
         });
 
         modelBuilder.Entity<JobRole>(entity =>
@@ -188,15 +246,25 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(512)
                 .HasColumnName("name");
-            entity.Property(e => e.Type)
-                .HasMaxLength(64)
-                .HasColumnName("type");
         });
 
         modelBuilder.Entity<TechStack>(entity =>
         {
             entity.ToTable("tech_stack");
 
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasColumnName("is_active");
+            entity.Property(e => e.Name)
+                .HasMaxLength(128)
+                .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<UserRole>(entity =>
+        {
+            entity.ToTable("user_role");
+
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true)
                 .HasColumnName("is_active");

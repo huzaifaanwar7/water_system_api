@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace GBS.Entities.DbModels;
 
-public partial class EmployeeJobRole
+public partial class EmployeeUserRole
 {
     public int Id { get; set; }
 
     public int EmployeeIdFk { get; set; }
 
-    public int JobRoleIdFk { get; set; }
+    public int UserRoleIdFk { get; set; }
 
     public bool IsActive { get; set; }
 
@@ -23,5 +23,5 @@ public partial class EmployeeJobRole
 
     public virtual Employee EmployeeIdFkNavigation { get; set; } = null!;
 
-    public virtual JobRole JobRoleIdFkNavigation { get; set; } = null!;
+    public virtual UserRole UserRoleIdFkNavigation { get; set; } = null!;
 }

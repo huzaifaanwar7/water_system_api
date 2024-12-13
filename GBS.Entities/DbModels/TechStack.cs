@@ -10,4 +10,6 @@ public partial class TechStack
     public string? Name { get; set; }
 
     public bool IsActive { get; set; }
+
+    public virtual ICollection<EmployeeTechStack> EmployeeTechStacks { get; set; } = new List<EmployeeTechStack>();
 }

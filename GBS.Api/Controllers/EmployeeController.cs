@@ -4,6 +4,7 @@ using GBS.Data.Model;
 using GBS.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.ObjectModel;
 using System.Net;
 
 namespace MyApp.Namespace
@@ -153,7 +154,21 @@ namespace MyApp.Namespace
                         //user.EmployeeJobRoles,
                         JoiningDate = user.JoiningDate,
                         SeparationDate = user.SeparationDate,
-                        ProfilePictureUrl = baseUrls + user.ProfilePictureUrl
+                        ProfilePictureUrl = baseUrls + user.ProfilePictureUrl,
+                        JobRole = user.EmployeeJobRoles.Select(j => j.JobRoleIdFkNavigation.Name),
+                        UserRole = user.EmployeeUserRoles.Select(j => j.UserRoleIdFkNavigation.Name),
+                        TechStack = user.EmployeeTechStacks.Select(j => j.TeckStackIdFkNavigation.Name),
+                        BankDetail = user.EmployeeBankDetails.Select(b => new BankDetailVM
+                        {
+                            Id = b.Id,
+                            EmployeeId = b.EmployeeIdFk,
+                            BankName = b.BankName,
+                            AccountTitle = b.AccountTitle,
+                            BranchCode = b.BranchCode,
+                            AccountNumber = b.AccountNumber,
+                            Iban = b.Iban
+                        }),
+                        Status = user.StatusIdFkNavigation?.Name,
 
                     };
 

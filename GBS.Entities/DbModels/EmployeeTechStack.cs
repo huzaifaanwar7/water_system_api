@@ -13,9 +13,15 @@ public partial class EmployeeTechStack
 
     public bool IsActive { get; set; }
 
+    public int? CreatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
+
+    public int? UpdatedBy { get; set; }
+
+    public DateTime? UpdatedDate { get; set; }
+
     public virtual Employee EmployeeIdFkNavigation { get; set; } = null!;
 
-    public virtual ICollection<EmployeeTechStack> InverseTeckStackIdFkNavigation { get; set; } = new List<EmployeeTechStack>();
-
-    public virtual EmployeeTechStack TeckStackIdFkNavigation { get; set; } = null!;
+    public virtual TechStack TeckStackIdFkNavigation { get; set; } = null!;
 }

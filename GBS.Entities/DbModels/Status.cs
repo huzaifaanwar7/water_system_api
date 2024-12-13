@@ -9,8 +9,6 @@ public partial class Status
 
     public string Name { get; set; } = null!;
 
-    public string Type { get; set; } = null!;
-
     public bool IsActive { get; set; }
 
     public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();

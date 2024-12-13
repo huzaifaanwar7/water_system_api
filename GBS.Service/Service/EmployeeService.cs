@@ -27,10 +27,16 @@ namespace GBS.Service
 
         public async Task<Employee> GetEmployeeById(int Id)
         {
-            return await _dbContext.Employees.Where(u => u.Id == Id)
-                .Include(e => e.EmployeeJobRoles)
-                .Include(e => e.EmployeeTechStacks)
+            return await _dbContext.Employees
+                .Where(u => u.Id == Id)
                 .Include(e => e.EmployeeBankDetails)
+                .Include(e => e.StatusIdFkNavigation)
+                .Include(e => e.EmployeeJobRoles)
+                    .ThenInclude(ej => ej.JobRoleIdFkNavigation)
+                .Include(e => e.EmployeeTechStacks)
+                    .ThenInclude(et => et.TeckStackIdFkNavigation)
+                .Include(e => e.EmployeeUserRoles)
+                    .ThenInclude(eu => eu.UserRoleIdFkNavigation)
                 .FirstOrDefaultAsync();
         }
 
