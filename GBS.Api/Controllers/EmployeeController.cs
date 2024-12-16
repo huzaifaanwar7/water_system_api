@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.ObjectModel;
 using System.Net;
 
-namespace MyApp.Namespace
+namespace GBS.Api.Controller
 {
     [Route("[controller]")]
     [ApiController]
