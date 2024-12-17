@@ -278,7 +278,7 @@ namespace GBS.Api.Controller
                 {
                     newData = await _employeeService.GetEmployeeBankDetail(data.Id);
                 }
-                if (newData != null)
+                if (newData == null)
                 {
                     newData = new EmployeeBankDetail();
                     newData.CreatedBy = LoggedEmployee.Id;
@@ -286,6 +286,7 @@ namespace GBS.Api.Controller
                 }
                 newData.EmployeeIdFk = data.EmployeeId;
                 newData.BranchCode = data.BranchCode;
+                newData.BankName = data.BankName;
                 newData.AccountTitle = data.AccountTitle;
                 newData.AccountNumber = data.AccountNumber;
                 newData.Iban = data.Iban;

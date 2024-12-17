@@ -82,18 +82,16 @@ namespace GBS.Service
 
         public async Task<int> SaveEmployee(Employee user)
         {
-            if (user.Id == 0)
-                await _dbContext.Employees.AddAsync(user);
-            _dbContext.Employees.Update(user);
+            if (user.Id == 0) { await _dbContext.Employees.AddAsync(user); }
+            else { _dbContext.Employees.Update(user); }
             return await _dbContext.SaveChangesAsync();
         }
 
 
         public async Task<int> SaveEmployeeBankDetail(EmployeeBankDetail data)
         {
-            if (data.Id == 0)
-                await _dbContext.EmployeeBankDetails.AddAsync(data);
-            _dbContext.EmployeeBankDetails.Update(data);
+            if (data.Id == 0) { await _dbContext.EmployeeBankDetails.AddAsync(data); }
+            else { _dbContext.EmployeeBankDetails.Update(data); }
             return await _dbContext.SaveChangesAsync();
         }
 
