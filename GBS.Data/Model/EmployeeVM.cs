@@ -5,7 +5,6 @@ namespace GBS.Data.Model
 {
     public class EmployeeVM
     {
-        [Key]
         public int Id { get; set; }
         public string FullName { get; set; }
         public string? FirstName { get; set; }

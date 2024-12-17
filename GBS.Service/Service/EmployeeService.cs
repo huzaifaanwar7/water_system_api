@@ -10,8 +10,11 @@ namespace GBS.Service
     {
         Task<List<Employee>> GetEmployeeList();
         Task<Employee> GetEmployeeById(int Id);
+        Task<EmployeeBankDetail> GetEmployeeBankDetail(int Id);
         Task<Employee> GetUserByUsernameAsync(string username);
-        Task<int> UpdateEmployee(Employee user);
+        Task<bool> UsernameAlreadyExists(string username);
+        Task<int> SaveEmployee(Employee user);
+        Task<int> SaveEmployeeBankDetail(EmployeeBankDetail data);
         Task<int> DeleteEmployee(string Id);
 
     }
@@ -28,16 +31,20 @@ namespace GBS.Service
         public async Task<Employee> GetEmployeeById(int Id)
         {
             return await _dbContext.Employees
-                .Where(u => u.Id == Id)
-                .Include(e => e.EmployeeBankDetails)
-                .Include(e => e.StatusIdFkNavigation)
-                .Include(e => e.EmployeeJobRoles)
-                    .ThenInclude(ej => ej.JobRoleIdFkNavigation)
-                .Include(e => e.EmployeeTechStacks)
-                    .ThenInclude(et => et.TeckStackIdFkNavigation)
-                .Include(e => e.EmployeeUserRoles)
-                    .ThenInclude(eu => eu.UserRoleIdFkNavigation)
-                .FirstOrDefaultAsync();
+               .Where(u => u.Id == Id)
+               .Include(e => e.EmployeeBankDetails)
+               .Include(e => e.StatusIdFkNavigation)
+               .Include(e => e.EmployeeJobRoles)
+                   .ThenInclude(ej => ej.JobRoleIdFkNavigation)
+               .Include(e => e.EmployeeTechStacks)
+                   .ThenInclude(et => et.TeckStackIdFkNavigation)
+               .Include(e => e.EmployeeUserRoles)
+                   .ThenInclude(eu => eu.UserRoleIdFkNavigation)
+               .FirstOrDefaultAsync();
+        }
+        public async Task<EmployeeBankDetail> GetEmployeeBankDetail(int Id)
+        {
+            return await _dbContext.EmployeeBankDetails.Where(u => u.Id == Id).FirstOrDefaultAsync();
         }
 
         public async Task<Employee> GetUserByUsernameAsync(string username)
@@ -45,6 +52,10 @@ namespace GBS.Service
             return await _dbContext.Employees.FirstOrDefaultAsync(u => u.Username == username);
         }
 
+        public async Task<bool> UsernameAlreadyExists(string username)
+        {
+            return await _dbContext.Employees.CountAsync(u => u.Username == username) > 0;
+        }
         // public async Task AddUserAsync(UserVM user)
         // {
         //     var newUser = new User()
@@ -66,13 +77,23 @@ namespace GBS.Service
         //         UserSignUpType = user.UserSignUpType ?? ""
         //     };
 
-        //     await _dbContext.Users.AddAsync(newUser);
         //     await _dbContext.SaveChangesAsync();
         // }
 
-        public async Task<int> UpdateEmployee(Employee user)
+        public async Task<int> SaveEmployee(Employee user)
         {
+            if (user.Id == 0)
+                await _dbContext.Employees.AddAsync(user);
             _dbContext.Employees.Update(user);
+            return await _dbContext.SaveChangesAsync();
+        }
+
+
+        public async Task<int> SaveEmployeeBankDetail(EmployeeBankDetail data)
+        {
+            if (data.Id == 0)
+                await _dbContext.EmployeeBankDetails.AddAsync(data);
+            _dbContext.EmployeeBankDetails.Update(data);
             return await _dbContext.SaveChangesAsync();
         }
 

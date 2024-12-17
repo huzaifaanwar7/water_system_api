@@ -1,6 +1,8 @@
+using Azure;
 using Firebase.Auth;
 using GBS.Api.Model;
 using GBS.Data.Model;
+using GBS.Entities.DbModels;
 using GBS.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -68,8 +70,8 @@ namespace GBS.Api.Controller
                 }
             });
         }
-       
-        
+
+
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
@@ -86,16 +88,16 @@ namespace GBS.Api.Controller
                     var response = users.Select(user => new EmployeeVM
                     {
                         Id = user.Id,
-                        Username= user.Username,
+                        Username = user.Username,
                         FullName = (user.FirstName + " " + user.LastName).Trim(),
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         PersonalEmail = user.PersonalEmail,
-                        PersonalPhone =  user.PersonalPhone,
+                        PersonalPhone = user.PersonalPhone,
                         //user.EmployeeTechStacks,
                         Cnic = user.Cnic,
                         //user.EmployeeJobRoles,
-                        JoiningDate = user.JoiningDate, 
+                        JoiningDate = user.JoiningDate,
                         SeparationDate = user.SeparationDate,
                         ProfilePictureUrl = baseUrls + user.ProfilePictureUrl,
 
@@ -127,7 +129,7 @@ namespace GBS.Api.Controller
             }
         }
 
-        
+
         [HttpGet("{EmployeeId}")]
         public async Task<IActionResult> GetDetails([FromRoute] int EmployeeId)
         {
@@ -198,6 +200,128 @@ namespace GBS.Api.Controller
             }
         }
 
+
+        [HttpPost("Save")]
+        public async Task<IActionResult> SaveEmployee([FromBody] EmployeeVM employee)
+        {
+            try
+            {
+                // Retrieve all users using the employee service
+                bool usernameAlreadyExists = false;
+
+                if (employee.Id > 0)
+                {
+                    usernameAlreadyExists = await _employeeService.UsernameAlreadyExists(employee.Username);
+                    if (usernameAlreadyExists)
+                    {
+                        return Ok(new BaseResponse
+                        {
+                            status = HttpStatusCode.BadRequest,
+                            message = "Username already exists"
+                        });
+                    }
+                }
+                Employee user = null;
+                user = await _employeeService.GetEmployeeById(employee.Id);
+                if (user != null)
+                {
+                    user = new Employee();
+                }
+                user.FirstName = employee.FirstName;
+                user.Username = employee.Username;
+                user.LastName = employee.LastName;
+                user.PersonalPhone = employee.PersonalPhone;
+                user.PersonalEmail = employee.PersonalEmail;
+                user.Cnic = employee.Cnic; ;
+                user.JoiningDate = employee.JoiningDate;
+
+                var saveResponse = await _employeeService.SaveEmployee(user);
+                // Check if users list is not empty
+                if (saveResponse > 0)
+                {
+                    // Return success response
+                    return Ok(new BaseResponse
+                    {
+                        status = HttpStatusCode.OK,
+                        message = "Employee saved successfully"
+                    });
+                }
+
+                // Handle case where no users are found
+                return Ok(new BaseResponse
+                {
+                    status = HttpStatusCode.BadRequest,
+                    message = "Employee not saved"
+                });
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected exceptions
+                return StatusCode(500, new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = $"An error occurred: {ex.Message}"
+                });
+            }
+        }
+
+
+        [HttpPost("BankDetail/Save")]
+        public async Task<IActionResult> SaveBankDetail([FromBody] BankDetailVM data)
+        {
+            try
+            {
+                // Retrieve all users using the employee service
+                EmployeeBankDetail newData = null;
+
+                if (data.Id > 0)
+                {
+                    newData = await _employeeService.GetEmployeeBankDetail(data.Id);
+                }
+                if (newData != null)
+                {
+                    newData = new EmployeeBankDetail();
+                    newData.CreatedBy = LoggedEmployee.Id;
+                    newData.CreatedDate = DateTime.Now;
+                }
+                newData.EmployeeIdFk = data.EmployeeId;
+                newData.BranchCode = data.BranchCode;
+                newData.AccountTitle = data.AccountTitle;
+                newData.AccountNumber = data.AccountNumber;
+                newData.Iban = data.Iban;
+                newData.EmployeeIdFk = data.EmployeeId;
+                newData.UpdatedBy = LoggedEmployee.Id;
+                newData.UpdatedDate = DateTime.Now;
+
+                var saveResponse = await _employeeService.SaveEmployeeBankDetail(newData);
+                // Check if users list is not empty
+                if (saveResponse > 0)
+                {
+                    // Return success response
+                    return Ok(new BaseResponse
+                    {
+                        status = HttpStatusCode.OK,
+                        message = "Bank detail saved successfully"
+                    });
+                }
+
+                // Handle case where no users are found
+                return Ok(new BaseResponse
+                {
+                    status = HttpStatusCode.BadRequest,
+                    message = "Employee not saved"
+                });
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected exceptions
+                return StatusCode(500, new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = $"An error occurred: {ex.Message}"
+                });
+            }
+        }
 
 
     }
