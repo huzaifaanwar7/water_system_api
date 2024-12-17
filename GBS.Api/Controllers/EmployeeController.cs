@@ -223,7 +223,7 @@ namespace GBS.Api.Controller
                 }
                 Employee user = null;
                 user = await _employeeService.GetEmployeeById(employee.Id);
-                if (user != null)
+                if (user == null)
                 {
                     user = new Employee();
                 }
