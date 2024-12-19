@@ -202,7 +202,7 @@ namespace GBS.Api.Controller
 
 
         [HttpPost("Save")]
-        public async Task<IActionResult> SaveEmployee([FromBody] EmployeeVM employee)
+        public async Task<IActionResult> SaveEmployee([FromBody] EmployeePM employee)
         {
             try
             {
@@ -234,11 +234,23 @@ namespace GBS.Api.Controller
                 user.PersonalEmail = employee.PersonalEmail;
                 user.Cnic = employee.Cnic; ;
                 user.JoiningDate = employee.JoiningDate;
+                user.Password = "Password@123";
 
                 var saveResponse = await _employeeService.SaveEmployee(user);
                 // Check if users list is not empty
                 if (saveResponse > 0)
                 {
+                    Employee savedEmployee = await _employeeService.GetEmployeeByUsername(user.Username);
+
+                    var EmployeeUserRoles = employee.UserRole.Select(r => new EmployeeUserRole
+                    {
+                        EmployeeIdFk = savedEmployee.Id,
+                        UserRoleIdFk = r,
+                        CreatedBy = LoggedEmployee.Id,
+                        CreatedDate = DateTime.Now,
+                    });
+
+                    var saveUserRole = _employeeService.SaveUserRole(EmployeeUserRoles);
                     // Return success response
                     return Ok(new BaseResponse
                     {
@@ -260,7 +272,7 @@ namespace GBS.Api.Controller
                 return StatusCode(500, new BaseResponse
                 {
                     status = HttpStatusCode.InternalServerError,
-                    message = $"An error occurred: {ex.Message}"
+                    message = $"An error occurred: {ex.InnerException}"
                 });
             }
         }

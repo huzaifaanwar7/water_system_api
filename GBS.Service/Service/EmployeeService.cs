@@ -11,9 +11,10 @@ namespace GBS.Service
         Task<List<Employee>> GetEmployeeList();
         Task<Employee> GetEmployeeById(int Id);
         Task<EmployeeBankDetail> GetEmployeeBankDetail(int Id);
-        Task<Employee> GetUserByUsernameAsync(string username);
+        Task<Employee> GetEmployeeByUsername(string username);
         Task<bool> UsernameAlreadyExists(string username);
         Task<int> SaveEmployee(Employee user);
+        Task<int> SaveUserRole(IEnumerable<EmployeeUserRole> data);
         Task<int> SaveEmployeeBankDetail(EmployeeBankDetail data);
         Task<int> DeleteEmployee(string Id);
 
@@ -47,7 +48,7 @@ namespace GBS.Service
             return await _dbContext.EmployeeBankDetails.Where(u => u.Id == Id).FirstOrDefaultAsync();
         }
 
-        public async Task<Employee> GetUserByUsernameAsync(string username)
+        public async Task<Employee> GetEmployeeByUsername(string username)
         {
             return await _dbContext.Employees.FirstOrDefaultAsync(u => u.Username == username);
         }
@@ -87,6 +88,14 @@ namespace GBS.Service
             return await _dbContext.SaveChangesAsync();
         }
 
+
+        public async Task<int> SaveUserRole(IEnumerable<EmployeeUserRole> data)
+        {
+            var existingRoles = _dbContext.EmployeeUserRoles.Where(x => x.EmployeeIdFk == data.FirstOrDefault().EmployeeIdFk);
+            _dbContext.EmployeeUserRoles.RemoveRange(existingRoles);
+            await _dbContext.EmployeeUserRoles.AddRangeAsync(data);
+            return await _dbContext.SaveChangesAsync();
+        }
 
         public async Task<int> SaveEmployeeBankDetail(EmployeeBankDetail data)
         {
