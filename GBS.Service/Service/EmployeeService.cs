@@ -15,6 +15,11 @@ namespace GBS.Service
         Task<bool> UsernameAlreadyExists(string username);
         Task<int> SaveEmployee(Employee user);
         Task<int> SaveUserRole(IEnumerable<EmployeeUserRole> data);
+
+        Task<int> SaveTeckStack(IEnumerable<EmployeeTechStack> data);
+
+        Task<int> SaveJobRole(IEnumerable<EmployeeJobRole> data);
+        
         Task<int> SaveEmployeeBankDetail(EmployeeBankDetail data);
         Task<int> DeleteEmployee(string Id);
 
@@ -94,6 +99,21 @@ namespace GBS.Service
             var existingRoles = _dbContext.EmployeeUserRoles.Where(x => x.EmployeeIdFk == data.FirstOrDefault().EmployeeIdFk);
             _dbContext.EmployeeUserRoles.RemoveRange(existingRoles);
             await _dbContext.EmployeeUserRoles.AddRangeAsync(data);
+            return await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> SaveTeckStack(IEnumerable<EmployeeTechStack> data)
+        {
+            var existingRoles = _dbContext.EmployeeTechStacks.Where(x => x.EmployeeIdFk == data.FirstOrDefault().EmployeeIdFk);
+            _dbContext.EmployeeTechStacks.RemoveRange(existingRoles);
+            await _dbContext.EmployeeTechStacks.AddRangeAsync(data);
+            return await _dbContext.SaveChangesAsync();
+        }
+        public async Task<int> SaveJobRole(IEnumerable<EmployeeJobRole> data)
+        {
+            var existingRoles = _dbContext.EmployeeJobRoles.Where(x => x.EmployeeIdFk == data.FirstOrDefault().EmployeeIdFk);
+            _dbContext.EmployeeJobRoles.RemoveRange(existingRoles);
+            await _dbContext.EmployeeJobRoles.AddRangeAsync(data);
             return await _dbContext.SaveChangesAsync();
         }
 

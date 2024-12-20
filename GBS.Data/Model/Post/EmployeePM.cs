@@ -8,7 +8,7 @@ namespace GBS.Data.Model
         public int Id { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public string Email { get; set; }
+        public string? Email { get; set; }
         public string? PersonalPhone { get; set; }
         public string ProfilePicture { get; set; }
         public DateTime JoiningDate { get; set; }
@@ -18,6 +18,6 @@ namespace GBS.Data.Model
         public IEnumerable<int>? JobRole { get; set; }
         public IEnumerable<int>? UserRole { get; set; }
         public IEnumerable<int>? TechStack { get; set; }
-        public int? Status { get; set; }
+        public int Status { get; set; }
     }
 }

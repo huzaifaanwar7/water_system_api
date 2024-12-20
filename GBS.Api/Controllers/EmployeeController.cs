@@ -234,14 +234,18 @@ namespace GBS.Api.Controller
                 user.PersonalEmail = employee.PersonalEmail;
                 user.Cnic = employee.Cnic; ;
                 user.JoiningDate = employee.JoiningDate;
+                user.Username= employee.Username;
                 user.Password = "Password@123";
+                user.StatusIdFk = employee.Status;
+                user.IsActive = true;
+                user.ProfilePictureUrl=employee.ProfilePicture;
 
                 var saveResponse = await _employeeService.SaveEmployee(user);
                 // Check if users list is not empty
                 if (saveResponse > 0)
                 {
                     Employee savedEmployee = await _employeeService.GetEmployeeByUsername(user.Username);
-
+                    //Saved Userrole
                     var EmployeeUserRoles = employee.UserRole.Select(r => new EmployeeUserRole
                     {
                         EmployeeIdFk = savedEmployee.Id,
@@ -251,6 +255,28 @@ namespace GBS.Api.Controller
                     });
 
                     var saveUserRole = _employeeService.SaveUserRole(EmployeeUserRoles);
+                   //Saved TechStack
+                    var EmployeeTechStack = employee.TechStack.Select(t => new EmployeeTechStack
+                    {
+                        EmployeeIdFk = savedEmployee.Id,
+                        TeckStackIdFk = t,
+                        CreatedBy = LoggedEmployee.Id,
+                        CreatedDate = DateTime.Now,
+                    });
+                    var saveTechStack = _employeeService.SaveTeckStack(EmployeeTechStack);
+
+                    //Saved JobRole
+                    var EmployeeJobRole = employee.JobRole.Select(j => new EmployeeJobRole
+                    {
+                        EmployeeIdFk = savedEmployee.Id,
+                        JobRoleIdFk = j,
+                        CreatedBy = LoggedEmployee.Id,
+                        CreatedDate = DateTime.Now,
+                    });
+                    var saveJobRole = _employeeService.SaveJobRole(EmployeeJobRole);
+
+                   
+
                     // Return success response
                     return Ok(new BaseResponse
                     {
