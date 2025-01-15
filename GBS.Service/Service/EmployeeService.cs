@@ -104,15 +104,15 @@ namespace GBS.Service
 
         public async Task<int> SaveTeckStack(IEnumerable<EmployeeTechStack> data)
         {
-            var existingRoles = _dbContext.EmployeeTechStacks.Where(x => x.EmployeeIdFk == data.FirstOrDefault().EmployeeIdFk);
-            _dbContext.EmployeeTechStacks.RemoveRange(existingRoles);
+            var existingTeckStack = _dbContext.EmployeeTechStacks.Where(t => t.EmployeeIdFk == data.FirstOrDefault().EmployeeIdFk);
+            _dbContext.EmployeeTechStacks.RemoveRange(existingTeckStack);
             await _dbContext.EmployeeTechStacks.AddRangeAsync(data);
             return await _dbContext.SaveChangesAsync();
         }
         public async Task<int> SaveJobRole(IEnumerable<EmployeeJobRole> data)
         {
-            var existingRoles = _dbContext.EmployeeJobRoles.Where(x => x.EmployeeIdFk == data.FirstOrDefault().EmployeeIdFk);
-            _dbContext.EmployeeJobRoles.RemoveRange(existingRoles);
+            var existingjobRoles = _dbContext.EmployeeJobRoles.Where(j => j.EmployeeIdFk == data.FirstOrDefault().EmployeeIdFk);
+            _dbContext.EmployeeJobRoles.RemoveRange(existingjobRoles);
             await _dbContext.EmployeeJobRoles.AddRangeAsync(data);
             return await _dbContext.SaveChangesAsync();
         }

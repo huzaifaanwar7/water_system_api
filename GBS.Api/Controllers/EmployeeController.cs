@@ -208,19 +208,16 @@ namespace GBS.Api.Controller
             {
                 // Retrieve all users using the employee service
                 bool usernameAlreadyExists = false;
-
-                if (employee.Id > 0)
+                usernameAlreadyExists = await _employeeService.UsernameAlreadyExists(employee.Username);
+                if (usernameAlreadyExists)
                 {
-                    usernameAlreadyExists = await _employeeService.UsernameAlreadyExists(employee.Username);
-                    if (usernameAlreadyExists)
+                    return Ok(new BaseResponse
                     {
-                        return Ok(new BaseResponse
-                        {
-                            status = HttpStatusCode.BadRequest,
-                            message = "Username already exists"
-                        });
-                    }
+                        status = HttpStatusCode.BadRequest,
+                        message = "Username already exists"
+                    });
                 }
+
                 Employee user = null;
                 user = await _employeeService.GetEmployeeById(employee.Id);
                 if (user == null)
@@ -254,7 +251,7 @@ namespace GBS.Api.Controller
                         CreatedDate = DateTime.Now,
                     });
 
-                    var saveUserRole = _employeeService.SaveUserRole(EmployeeUserRoles);
+                    var saveUserRole = await _employeeService.SaveUserRole(EmployeeUserRoles);
                    //Saved TechStack
                     var EmployeeTechStack = employee.TechStack.Select(t => new EmployeeTechStack
                     {
@@ -263,17 +260,17 @@ namespace GBS.Api.Controller
                         CreatedBy = LoggedEmployee.Id,
                         CreatedDate = DateTime.Now,
                     });
-                    var saveTechStack = _employeeService.SaveTeckStack(EmployeeTechStack);
+                    var saveTechStack = await _employeeService.SaveTeckStack(EmployeeTechStack);
 
                     //Saved JobRole
-                    var EmployeeJobRole = employee.JobRole.Select(j => new EmployeeJobRole
+                    var EmployeeJobRole =  employee.JobRole.Select(j => new EmployeeJobRole
                     {
                         EmployeeIdFk = savedEmployee.Id,
                         JobRoleIdFk = j,
                         CreatedBy = LoggedEmployee.Id,
                         CreatedDate = DateTime.Now,
                     });
-                    var saveJobRole = _employeeService.SaveJobRole(EmployeeJobRole);
+                    var saveJobRole =  await _employeeService.SaveJobRole(EmployeeJobRole);
 
                    
 
