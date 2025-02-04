@@ -39,7 +39,7 @@ namespace GBS.Api.Controller
                     Location = "Regional Office"
                 }
             },
-                    message = "LunchByWeek"
+                    
                 }
             });
         }

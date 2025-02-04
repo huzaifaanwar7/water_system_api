@@ -99,7 +99,7 @@ namespace GBS.Api.Controller
             {
                 status = HttpStatusCode.OK,
                 data = limitedData,
-                type = "bravoleaderboard"
+                
             });
         }
 
@@ -107,5 +107,5 @@ namespace GBS.Api.Controller
 
 
     }
-    
+
 }

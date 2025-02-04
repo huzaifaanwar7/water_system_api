@@ -122,7 +122,7 @@ namespace GBS.Api.Controller
                     RecordCount = 3
                 }
             },
-                    message = "BravoOfTheDay"
+                  
                 }
             });
         }

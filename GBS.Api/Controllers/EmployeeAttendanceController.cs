@@ -36,7 +36,6 @@ namespace GBS.Api.Controller
                     CheckOut = (string)null
                 }
             },
-                    message = "Employee Office Attendance"
                 }
             });
         }

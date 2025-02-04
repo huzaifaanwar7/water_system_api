@@ -25,7 +25,7 @@ namespace GBS.Api.Controller
             {
                 status = HttpStatusCode.OK,
                 data = skills,
-                type = "TrainingSkill"
+                
             });
         }
 
@@ -56,7 +56,7 @@ namespace GBS.Api.Controller
             {
                 status = HttpStatusCode.OK,
                 data = skill,
-                type = "TrainingSkill"
+                
             });
         }
 

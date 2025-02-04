@@ -31,7 +31,7 @@ namespace GBS.Api.Controller
                         Achievements = new List<string> { "Completed Project X", "Improved QA process" },
                         Challenges = new List<string> { "Resource constraints", "Tight deadlines" }
                     },
-                    message = "Quarter Team Dashboard"
+                    
                 }
             });
         }

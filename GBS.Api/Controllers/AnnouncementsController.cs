@@ -130,7 +130,7 @@ namespace GBS.Api.Controller
                     EventDate = DateTime.Now.AddDays(5)
                 }
             },
-                    message = "Top Announcements"
+                  
                 }
             });
 

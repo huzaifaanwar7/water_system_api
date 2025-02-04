@@ -30,7 +30,7 @@ namespace GBS.Api.Controller
                 new { EmployeeID = employeeid, EmployeeName = "John Doe" }
             }
                 },
-                message = "EmployeeLeaveSummary"
+              
             });
         }
 

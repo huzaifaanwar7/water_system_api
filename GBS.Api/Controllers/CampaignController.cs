@@ -39,7 +39,7 @@ namespace GBS.Api.Controller
                             Description = "This is another dummy campaign for testing purposes."
                         }
                     },
-                    message = "GetUpcomingCampaign"
+                   
                 }
             });
         }
