@@ -19,9 +19,14 @@ namespace GBS.Service
         Task<int> SaveTeckStack(IEnumerable<EmployeeTechStack> data);
 
         Task<int> SaveJobRole(IEnumerable<EmployeeJobRole> data);
-        
+
         Task<int> SaveEmployeeBankDetail(EmployeeBankDetail data);
         Task<int> DeleteEmployee(string Id);
+
+        Task<int> UpdateEmployee(Employee employee);
+        Task UpdateUserRoles(IEnumerable<int> userRoles, int employeeId);
+        Task UpdateTechStack(IEnumerable<int> techStackIds, int employeeId);
+        Task UpdateJobRoles(IEnumerable<int> jobRoleIds, int employeeId);
 
     }
     public class EmployeeService(GBS_DbContext _dbContext) : IEmployeeService
@@ -57,6 +62,8 @@ namespace GBS.Service
         {
             return await _dbContext.Employees.FirstOrDefaultAsync(u => u.Username == username);
         }
+
+
 
         public async Task<bool> UsernameAlreadyExists(string username)
         {
@@ -135,6 +142,65 @@ namespace GBS.Service
                 return await _dbContext.SaveChangesAsync();
             }
             return 0;
+        }
+
+        public async Task<int> UpdateEmployee(Employee employee)
+        {
+            _dbContext.Employees.Update(employee);
+            return await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateUserRoles(IEnumerable<int> userRoles, int employeeId)
+        {
+            var existingRoles = _dbContext.EmployeeUserRoles.Where(x => x.EmployeeIdFk == employeeId);
+            _dbContext.EmployeeUserRoles.RemoveRange(existingRoles);
+
+            var newRoles = userRoles.Select(roleId => new EmployeeUserRole
+            {
+                EmployeeIdFk = employeeId,
+                UserRoleIdFk = roleId,
+                UpdatedBy = LoggedEmployee.Id,
+                UpdatedDate = DateTime.Now
+            });
+
+            await _dbContext.EmployeeUserRoles.AddRangeAsync(newRoles);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateTechStack(IEnumerable<int> techStackIds, int employeeId)
+        {
+            var existingTechStack = _dbContext.EmployeeTechStacks.Where(x => x.EmployeeIdFk == employeeId);
+            _dbContext.EmployeeTechStacks.RemoveRange(existingTechStack);
+
+            var newTechStack = techStackIds.Select(techId => new EmployeeTechStack
+            {
+                EmployeeIdFk = employeeId,
+                TeckStackIdFk = techId,
+                UpdatedBy = LoggedEmployee.Id,
+                UpdatedDate = DateTime.Now
+                
+            });
+
+            await _dbContext.EmployeeTechStacks.AddRangeAsync(newTechStack);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateJobRoles(IEnumerable<int> jobRoleIds, int employeeId)
+        {
+            var existingJobRoles = _dbContext.EmployeeJobRoles.Where(x => x.EmployeeIdFk == employeeId);
+            _dbContext.EmployeeJobRoles.RemoveRange(existingJobRoles);
+
+            var newJobRoles = jobRoleIds.Select(jobId => new EmployeeJobRole
+            {
+                EmployeeIdFk = employeeId,
+                JobRoleIdFk = jobId,
+                UpdatedBy = LoggedEmployee.Id,
+                UpdatedDate = DateTime.Now
+                
+            });
+
+            await _dbContext.EmployeeJobRoles.AddRangeAsync(newJobRoles);
+            await _dbContext.SaveChangesAsync();
         }
 
 
