@@ -3,6 +3,7 @@ dotnet tool install --global dotnet-ef
 
 // DB scaffolding Command
 dotnet ef dbcontext scaffold "Server=192.227.81.51,58243;Database=gbs_dev;User=ihs;Password=ihs@1234;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -o DbModels --context GBS_DbContext --force
+dotnet ef dbcontext scaffold "Server=MUHAMMAD-ZEE;Database=gbs_dev;Integrated Security=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -o DbModels --context GBS_DbContext --force
 
 // Create Controller Command
 dotnet new apicontroller --name ContactController

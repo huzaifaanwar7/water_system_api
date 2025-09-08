@@ -2,12 +2,15 @@
 using Microsoft.EntityFrameworkCore;
 using GBS.Entities;
 using GBS.Entities.DbModels;
+using GBS.Data.Model;
 
 namespace GBS.Service
 {
     public interface IAdminService
     {
-
+        #region All Lookups
+        Task<LookupsVM> GetAllLookups();
+        #endregion
         #region Status
         Task<List<Status>> GetStatusList();
         #endregion
@@ -27,6 +30,18 @@ namespace GBS.Service
     }
     public class AdminService(GBS_DbContext _dbContext) : IAdminService
     {
+        #region All Lookups
+        public async Task<LookupsVM> GetAllLookups()
+        {
+            return new LookupsVM
+            {
+                Status = await _dbContext.Statuses.Where(x => x.IsActive).ToListAsync(),
+                UserRole = await _dbContext.UserRoles.Where(x => x.IsActive).ToListAsync(),
+                JobRole = await _dbContext.JobRoles.Where(x => x.IsActive).ToListAsync(),
+                TechStack = await _dbContext.TechStacks.Where(x => x.IsActive).ToListAsync()
+            };
+        }
+        #endregion
 
         #region Status
         public async Task<List<Status>> GetStatusList()

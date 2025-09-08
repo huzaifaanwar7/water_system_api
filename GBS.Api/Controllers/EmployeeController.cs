@@ -532,8 +532,8 @@ namespace GBS.Api.Controller
         }
 
 
-        [HttpPut("UpdatePersonalInfo")]
-        public async Task<IActionResult> UpdatePersonalInfo([FromBody] PersonalInfoUpdatePM personalInfo)
+        [HttpPut("UpdatePersonalDetails")]
+        public async Task<IActionResult> UpdatePersonalDetails([FromBody] PersonalDetailsPM personalInfo)
         {
             try
             {
@@ -560,6 +560,76 @@ namespace GBS.Api.Controller
                 var updateResponse = await _employeeService.UpdateEmployee(existingUser);
 
                 if (updateResponse > 0)
+                {
+                    // Return success response
+                    return Ok(new BaseResponse
+                    {
+                        status = HttpStatusCode.OK,
+                        message = "Personal information updated successfully"
+                    });
+                }
+
+                // If update fails
+                return Ok(new BaseResponse
+                {
+                    status = HttpStatusCode.BadRequest,
+                    message = "Failed to update personal information"
+                });
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected exceptions
+                return StatusCode(500, new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = $"An error occurred: {ex.InnerException?.Message ?? ex.Message}"
+                });
+            }
+        }
+
+        
+
+        [HttpPut("UpdateProfessionalDetails")]
+        public async Task<IActionResult> UpdateProfessionalDetails([FromBody] ProfessionalDetailsPM data)
+        {
+            try
+            {
+                // Check if the user exists
+                // Check if the employee exists
+                var existingEmployee = await _employeeService.GetEmployeeById(data.Id);
+                if (existingEmployee == null)
+                {
+                    return Ok(new BaseResponse
+                    {
+                        status = HttpStatusCode.NotFound,
+                        message = "Employee not found"
+                    });
+                }
+
+                // Update employee details
+                existingEmployee.JoiningDate = data.JoiningDate;
+                existingEmployee.StatusIdFk = data.Status.Value;
+                existingEmployee.SeparationDate = data.SeparationDate;
+
+                // Save updated employee details
+                var updateEmployeeResponse = await _employeeService.UpdateEmployee(existingEmployee);
+
+                if (updateEmployeeResponse > 0)
+                {
+                    // Update related data (Roles, Tech Stack, Job Roles)
+                    await _employeeService.UpdateUserRoles(data.UserRole, existingEmployee.Id);
+                    await _employeeService.UpdateTechStack(data.TechStack, existingEmployee.Id);
+                    await _employeeService.UpdateJobRoles(data.JobRole, existingEmployee.Id);
+
+                    // Return success response
+                    return Ok(new BaseResponse
+                    {
+                        status = HttpStatusCode.OK,
+                        message = "Employee updated successfully"
+                    });
+                }
+
+                if (updateEmployeeResponse > 0)
                 {
                     // Return success response
                     return Ok(new BaseResponse

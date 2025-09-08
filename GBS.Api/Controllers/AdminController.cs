@@ -13,6 +13,33 @@ namespace GBS.Api.Controller
     public class AdminController(IAdminService _adminService) : ControllerBase
     {
         [HttpGet]
+        [Route("Lookups")]
+        public async Task<IActionResult> GetAllLookups()
+        {
+            try
+            {
+                // Retrieve all users using the employee service
+                var data = await _adminService.GetAllLookups();
+                
+                    // Return success response
+                    return Ok(new BaseResponse
+                    {
+                        status = HttpStatusCode.OK,
+                        data = data
+                    });
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected exceptions
+                return StatusCode(500, new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = $"An error occurred: {ex.Message}"
+                });
+            }
+
+        }
+        [HttpGet]
         [Route("StatusList")]
         public async Task<IActionResult> GetStatusListAsync()
         {

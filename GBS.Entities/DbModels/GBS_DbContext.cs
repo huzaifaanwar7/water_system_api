@@ -15,6 +15,8 @@ public partial class GBS_DbContext : DbContext
     {
     }
 
+    public virtual DbSet<ApprovalHistory> ApprovalHistories { get; set; }
+
     public virtual DbSet<Employee> Employees { get; set; }
 
     public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; }
@@ -27,6 +29,8 @@ public partial class GBS_DbContext : DbContext
 
     public virtual DbSet<JobRole> JobRoles { get; set; }
 
+    public virtual DbSet<MediaFile> MediaFiles { get; set; }
+
     public virtual DbSet<Status> Statuses { get; set; }
 
     public virtual DbSet<TechStack> TechStacks { get; set; }
@@ -35,10 +39,24 @@ public partial class GBS_DbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=192.227.81.51,58243;Database=gbs_dev;User=ihs;Password=ihs@1234;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Server=MUHAMMAD-ZEE;Database=gbs_dev;Integrated Security=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<ApprovalHistory>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("ApprovalHistory", "Common");
+
+            entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.DoneByName).HasMaxLength(256);
+            entity.Property(e => e.LegacyUser).HasMaxLength(128);
+            entity.Property(e => e.ObjectType).HasMaxLength(64);
+            entity.Property(e => e.PendingWith).HasMaxLength(64);
+            entity.Property(e => e.WaitingFor).HasMaxLength(64);
+        });
+
         modelBuilder.Entity<Employee>(entity =>
         {
             entity.ToTable("employee");
@@ -231,6 +249,37 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(128)
                 .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<MediaFile>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Media__3214EC07B01863DB");
+
+            entity.ToTable("media_file");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
+            entity.Property(e => e.Bucket)
+                .HasMaxLength(120)
+                .IsUnicode(false)
+                .HasColumnName("bucket");
+            entity.Property(e => e.CreatedBy)
+                .HasMaxLength(120)
+                .IsUnicode(false)
+                .HasColumnName("created_by");
+            entity.Property(e => e.CreatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("created_date");
+            entity.Property(e => e.MimeType)
+                .HasMaxLength(250)
+                .IsUnicode(false)
+                .HasColumnName("mime_type");
+            entity.Property(e => e.Name)
+                .HasMaxLength(120)
+                .IsUnicode(false)
+                .HasColumnName("name");
+            entity.Property(e => e.Size).HasColumnName("size");
         });
 
         modelBuilder.Entity<Status>(entity =>

@@ -7,4 +7,5 @@ public class AppSettings
     public string TwoFAIssuer { get; set; }
     public string FirebaseServerKey { get; set; }
     public string LDAPDomain { get; set; }
+    public string MediaPath { get; set; }
 }
