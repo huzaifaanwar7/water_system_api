@@ -96,7 +96,9 @@ namespace GBS.Api.Controllers
                     MimeType = mediaFormFile.ContentType,
                     Size = mediaFormFile.Length,
                     Bucket = bucketName,
-                    CreatedBy = application,
+                    Application = application,
+                    CreatedBy = LoggedEmployee.Id,
+                    CreatedDate = DateTime.Now
                 };
                 var saveFile = await _mediaService.Save(MediaFile);
 

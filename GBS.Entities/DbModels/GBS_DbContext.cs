@@ -260,24 +260,21 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id");
+            entity.Property(e => e.Application)
+                .HasMaxLength(120)
+                .HasColumnName("application");
             entity.Property(e => e.Bucket)
                 .HasMaxLength(120)
-                .IsUnicode(false)
                 .HasColumnName("bucket");
-            entity.Property(e => e.CreatedBy)
-                .HasMaxLength(120)
-                .IsUnicode(false)
-                .HasColumnName("created_by");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.CreatedDate)
                 .HasColumnType("datetime")
                 .HasColumnName("created_date");
             entity.Property(e => e.MimeType)
                 .HasMaxLength(250)
-                .IsUnicode(false)
                 .HasColumnName("mime_type");
             entity.Property(e => e.Name)
                 .HasMaxLength(120)
-                .IsUnicode(false)
                 .HasColumnName("name");
             entity.Property(e => e.Size).HasColumnName("size");
         });

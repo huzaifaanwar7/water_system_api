@@ -13,9 +13,11 @@ public partial class MediaFile
 
     public long? Size { get; set; }
 
-    public DateTime? CreatedDate { get; set; }
-
     public string? Bucket { get; set; }
 
-    public string? CreatedBy { get; set; }
+    public string? Application { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
+
+    public int? CreatedBy { get; set; }
 }
