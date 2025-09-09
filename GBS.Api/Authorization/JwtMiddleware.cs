@@ -25,6 +25,7 @@ public class JwtMiddleware
         var skipValidation = context.Request.Path.ToString().ToLower().Contains("user/authenticate")
              || context.Request.Path.ToString().ToLower().Contains("public")
              || context.Request.Path.ToString().ToLower().Contains("user/validateotp")
+             || context.Request.Path.ToString().ToLower().Contains("download")
              || context.Request.Path.ToString().ToLower().Contains("/www");
 
         var endpoint = context.GetEndpoint();

@@ -3,6 +3,7 @@ using GBS.Api.Model;
 using GBS.Data.Model;
 using GBS.Entities.DbModels;
 using GBS.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Data.SqlClient;
@@ -157,7 +158,7 @@ namespace GBS.Api.Controllers
                     return NotFound();
                 }
 
-                string fileDirectory = Path.Combine(_appSettings.MediaPath, $"{media.CreatedBy}/{media.Bucket}");
+                string fileDirectory = Path.Combine(_appSettings.MediaPath, $"{media.Application}/{media.Bucket}");
 
                 string filePath = Path.Combine(fileDirectory, media.Name);
                 string absolutePath = Path.GetFullPath(filePath);
@@ -212,7 +213,7 @@ namespace GBS.Api.Controllers
         }
 
 
-
+        [AllowAnonymous]
         [HttpGet("{id}/download")]
         //
         public async Task<IActionResult> Download(Guid id)

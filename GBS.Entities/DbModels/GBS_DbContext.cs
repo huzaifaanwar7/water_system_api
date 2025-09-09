@@ -92,9 +92,7 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.PersonalPhone)
                 .HasMaxLength(16)
                 .HasColumnName("personal_phone");
-            entity.Property(e => e.ProfilePictureUrl)
-                .HasMaxLength(128)
-                .HasColumnName("profile_picture_url");
+            entity.Property(e => e.ProfilePictureId).HasColumnName("profile_picture_Id");
             entity.Property(e => e.SeparationDate)
                 .HasColumnType("datetime")
                 .HasColumnName("separation_date");

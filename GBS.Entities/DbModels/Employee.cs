@@ -19,7 +19,7 @@ public partial class Employee
 
     public string? PersonalEmail { get; set; }
 
-    public string? ProfilePictureUrl { get; set; }
+    public Guid? ProfilePictureId { get; set; }
 
     public string PersonalPhone { get; set; } = null!;
 

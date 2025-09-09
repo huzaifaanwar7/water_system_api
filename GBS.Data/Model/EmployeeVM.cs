@@ -13,6 +13,7 @@ namespace GBS.Data.Model
         //public bool EmailVerified { get; set; } = false;
         public string? PersonalPhone { get; set; }
         public string ProfilePictureUrl { get; set; }
+        public Guid? ProfilePictureId { get; set; }
         public DateTime JoiningDate { get; set; }
         public DateTime? SeparationDate { get; set; }
         public string Cnic { get; set; }

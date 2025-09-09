@@ -155,7 +155,8 @@ namespace GBS.Api.Controller
                         //user.EmployeeJobRoles,
                         JoiningDate = user.JoiningDate,
                         SeparationDate = user.SeparationDate,
-                        ProfilePictureUrl = baseUrls + user.ProfilePictureUrl,
+                        ProfilePictureUrl = baseUrls + user.ProfilePictureId,
+                        ProfilePictureId = user.ProfilePictureId,
 
                     }).ToList();
 
@@ -212,7 +213,8 @@ namespace GBS.Api.Controller
                         //user.EmployeeJobRoles,
                         JoiningDate = user.JoiningDate,
                         SeparationDate = user.SeparationDate,
-                        ProfilePictureUrl = baseUrls + user.ProfilePictureUrl,
+                        ProfilePictureUrl = baseUrls + user.ProfilePictureId,
+                        ProfilePictureId = user.ProfilePictureId,
                         JobRole = user.EmployeeJobRoles.Select(j => j.JobRoleIdFkNavigation.Name),
                         UserRole = user.EmployeeUserRoles.Select(j => j.UserRoleIdFkNavigation.Name),
                         TechStack = user.EmployeeTechStacks.Select(j => j.TeckStackIdFkNavigation.Name),
@@ -291,7 +293,7 @@ namespace GBS.Api.Controller
                 user.Password = "Password@123";
                 user.StatusIdFk = employee.Status;
                 user.IsActive = true;
-                user.ProfilePictureUrl = employee.ProfilePicture;
+                user.ProfilePictureId = employee.ProfilePictureId;
 
                 var saveResponse = await _employeeService.SaveEmployee(user);
                 // Check if users list is not empty
@@ -493,7 +495,7 @@ namespace GBS.Api.Controller
                 existingEmployee.Cnic = employee.Cnic;
                 existingEmployee.JoiningDate = employee.JoiningDate;
                 existingEmployee.StatusIdFk = employee.Status;
-                existingEmployee.ProfilePictureUrl = employee.ProfilePicture;
+                existingEmployee.ProfilePictureId = employee.ProfilePictureId;
 
                 // Save updated employee details
                 var updateEmployeeResponse = await _employeeService.UpdateEmployee(existingEmployee);
@@ -554,7 +556,7 @@ namespace GBS.Api.Controller
                 existingUser.PersonalPhone = personalInfo.PersonalPhone;
                 existingUser.PersonalEmail = personalInfo.PersonalEmail;
                 existingUser.Cnic = personalInfo.Cnic;
-                existingUser.ProfilePictureUrl = personalInfo.ProfilePicture;
+                existingUser.ProfilePictureId = personalInfo.ProfilePictureId;
 
                 // Save updated personal details
                 var updateResponse = await _employeeService.UpdateEmployee(existingUser);
