@@ -180,7 +180,7 @@ namespace GBS.Api
                             expiresIn = 36000,
                             roles, 
                             rights,
-                            profilePictureUrl
+                            user.ProfilePictureId
                         }
                     };
                 }
