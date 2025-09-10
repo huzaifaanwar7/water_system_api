@@ -23,5 +23,5 @@ public partial class EmployeeUserRole
 
     public virtual Employee EmployeeIdFkNavigation { get; set; } = null!;
 
-    public virtual UserRole UserRoleIdFkNavigation { get; set; } = null!;
+    public virtual Lookup UserRoleIdFkNavigation { get; set; } = null!;
 }

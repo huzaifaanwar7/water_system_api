@@ -9,9 +9,11 @@ namespace GBS.Data.Model
 {
     public class LookupsVM
     {
-        public List<Status> Status { get; set; } = new();
-        public List<UserRole> UserRole { get; set; } = new();
-        public List<JobRole> JobRole { get; set; } = new();
-        public List<TechStack> TechStack { get; set; } = new();
+        public List<Lookup> EmployeeStatus { get; set; } = new();
+        public List<Lookup> UserRole { get; set; } = new();
+        public List<Lookup> JobRole { get; set; } = new();
+        public List<Lookup> TechStack { get; set; } = new();
+        public List<Lookup> TransactionType { get; set; } = new();
+        public List<Lookup> LedgerStatus { get; set; } = new();
     }
 }

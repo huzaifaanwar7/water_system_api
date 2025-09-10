@@ -39,9 +39,11 @@ public partial class Employee
 
     public virtual ICollection<EmployeeJobRole> EmployeeJobRoles { get; set; } = new List<EmployeeJobRole>();
 
+    public virtual ICollection<EmployeeLedger> EmployeeLedgers { get; set; } = new List<EmployeeLedger>();
+
     public virtual ICollection<EmployeeTechStack> EmployeeTechStacks { get; set; } = new List<EmployeeTechStack>();
 
     public virtual ICollection<EmployeeUserRole> EmployeeUserRoles { get; set; } = new List<EmployeeUserRole>();
 
-    public virtual Status StatusIdFkNavigation { get; set; } = null!;
+    public virtual Lookup StatusIdFkNavigation { get; set; } = null!;
 }

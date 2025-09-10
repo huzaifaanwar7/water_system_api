@@ -48,9 +48,13 @@ namespace GBS.Service
                .Include(e => e.EmployeeJobRoles)
                    .ThenInclude(ej => ej.JobRoleIdFkNavigation)
                .Include(e => e.EmployeeTechStacks)
-                   .ThenInclude(et => et.TeckStackIdFkNavigation)
+                   .ThenInclude(et => et.TechStackIdFkNavigation)
                .Include(e => e.EmployeeUserRoles)
                    .ThenInclude(eu => eu.UserRoleIdFkNavigation)
+               .Include(e => e.EmployeeLedgers)
+                    .ThenInclude(l => l.StatusIdFkNavigation)
+               .Include(e => e.EmployeeLedgers)
+                    .ThenInclude(l => l.TransactionTypeIdFkNavigation)
                .FirstOrDefaultAsync();
         }
         public async Task<EmployeeBankDetail> GetEmployeeBankDetail(int Id)
@@ -175,7 +179,7 @@ namespace GBS.Service
             var newTechStack = techStackIds.Select(techId => new EmployeeTechStack
             {
                 EmployeeIdFk = employeeId,
-                TeckStackIdFk = techId,
+                TechStackIdFk = techId,
                 UpdatedBy = LoggedEmployee.Id,
                 UpdatedDate = DateTime.Now
                 

@@ -20,4 +20,6 @@ public partial class MediaFile
     public DateTime? CreatedDate { get; set; }
 
     public int? CreatedBy { get; set; }
+
+    public virtual ICollection<Document> Documents { get; set; } = new List<Document>();
 }

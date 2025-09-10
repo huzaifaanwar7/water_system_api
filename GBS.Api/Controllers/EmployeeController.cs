@@ -217,7 +217,7 @@ namespace GBS.Api.Controller
                         ProfilePictureId = user.ProfilePictureId,
                         JobRole = user.EmployeeJobRoles.Select(j => j.JobRoleIdFkNavigation.Name),
                         UserRole = user.EmployeeUserRoles.Select(j => j.UserRoleIdFkNavigation.Name),
-                        TechStack = user.EmployeeTechStacks.Select(j => j.TeckStackIdFkNavigation.Name),
+                        TechStack = user.EmployeeTechStacks.Select(j => j.TechStackIdFkNavigation.Name),
                         BankDetail = user.EmployeeBankDetails.Select(b => new BankDetailVM
                         {
                             Id = b.Id,
@@ -227,7 +227,28 @@ namespace GBS.Api.Controller
                             BranchCode = b.BranchCode,
                             AccountNumber = b.AccountNumber,
                             Iban = b.Iban
-                        }),
+                        }).ToList(),
+                        Ledger = user.EmployeeLedgers.Select(l => new EmployeeLedgerVM
+                        {
+                            Id = l.Id,
+                            TransactionDate = l.TransactionDate,
+                            TransactionTypeIdFk = l.TransactionTypeIdFk,
+                            TransactionType = l.TransactionTypeIdFkNavigation.Name,
+                            Description = l.Description,
+                            DebitAmount = l.DebitAmount,
+                            CreditAmount = l.CreditAmount,
+                            SalaryMonth = l.SalaryMonth,
+                            RunningBalance = l.RunningBalance,
+                            StatusIdFk = l.StatusIdFk,
+                            Status = l.StatusIdFkNavigation.Name, // Assuming navigation property to Lookups table
+                            IsRecovered = l.IsRecovered,
+                            CreatedDate = l.CreatedDate,
+                            CreatedBy = l.CreatedBy,
+                            ModifiedDate = l.ModifiedDate,
+                            ModifiedBy = l.ModifiedBy,
+                            Remarks = l.Remarks,
+                            IsActive = l.IsActive
+                        }).ToList(),
                         Status = user.StatusIdFkNavigation?.Name,
 
                     };
@@ -314,7 +335,7 @@ namespace GBS.Api.Controller
                     var EmployeeTechStack = employee.TechStack.Select(t => new EmployeeTechStack
                     {
                         EmployeeIdFk = savedEmployee.Id,
-                        TeckStackIdFk = t,
+                        TechStackIdFk = t,
                         CreatedBy = LoggedEmployee.Id,
                         CreatedDate = DateTime.Now,
                     });
@@ -370,106 +391,6 @@ namespace GBS.Api.Controller
             }
         }
 
-        // [HttpPut("Update")]
-        // public async Task<IActionResult> UpdateEmployee([FromBody] EmployeeUpdatePM employee)
-        // {
-        //     try
-        //     {
-        //         // Check if the employee exists
-        //         var existingEmployee = await _employeeService.GetEmployeeById(employee.Id);
-        //         if (existingEmployee == null)
-        //         {
-        //             return Ok(new BaseResponse
-        //             {
-        //                 status = HttpStatusCode.NotFound,
-        //                 message = "Employee not found"
-        //             });
-        //         }
-
-
-
-        //         // Update employee details
-        //         existingEmployee.FirstName = employee.FirstName;
-        //         existingEmployee.LastName = employee.LastName;
-        //         existingEmployee.PersonalPhone = employee.PersonalPhone;
-        //         existingEmployee.PersonalEmail = employee.PersonalEmail;
-        //         existingEmployee.Cnic = employee.Cnic;
-        //         existingEmployee.JoiningDate = employee.JoiningDate;
-        //         existingEmployee.StatusIdFk = employee.Status;
-        //         existingEmployee.ProfilePictureUrl = employee.ProfilePicture;
-
-        //         // Save updated employee
-        //         var updateResponse = await _employeeService.SaveEmployee(existingEmployee);
-        //         if (updateResponse > 0)
-        //         {
-        //             // Update User Roles
-        //             var updatedUserRoles = employee.UserRole.Select(r => new EmployeeUserRole
-        //             {
-        //                 EmployeeIdFk = existingEmployee.Id,
-        //                 UserRoleIdFk = r,
-        //                 CreatedBy = LoggedEmployee.Id,
-        //                 CreatedDate = DateTime.Now,
-        //             });
-        //             await _employeeService.SaveUserRole(updatedUserRoles);
-
-        //             // Update Tech Stack
-        //             var updatedTechStack = employee.TechStack.Select(t => new EmployeeTechStack
-        //             {
-        //                 EmployeeIdFk = existingEmployee.Id,
-        //                 TeckStackIdFk = t,
-        //                 CreatedBy = LoggedEmployee.Id,
-        //                 CreatedDate = DateTime.Now,
-        //             });
-        //             await _employeeService.SaveTeckStack(updatedTechStack);
-
-        //             // Update Job Roles
-        //             var updatedJobRoles = employee.JobRole.Select(j => new EmployeeJobRole
-        //             {
-        //                 EmployeeIdFk = existingEmployee.Id,
-        //                 JobRoleIdFk = j,
-        //                 CreatedBy = LoggedEmployee.Id,
-        //                 CreatedDate = DateTime.Now,
-        //             });
-        //             await _employeeService.SaveJobRole(updatedJobRoles);
-
-        //             // Prepare DTO response
-        //             // var employeeDto = new EmployeeDto
-        //             // {
-        //             //     Id = existingEmployee.Id,
-        //             //     Username = existingEmployee.Username,
-        //             //     FirstName = existingEmployee.FirstName,
-        //             //     LastName = existingEmployee.LastName,
-        //             //     PersonalEmail = existingEmployee.PersonalEmail,
-        //             //     PersonalPhone = existingEmployee.PersonalPhone
-        //             //     // Map other properties as needed...
-        //             // };
-
-        //             // Return success response
-        //             return Ok(new BaseResponse
-        //             {
-        //                 status = HttpStatusCode.OK,
-        //                 message = "Employee updated successfully",
-        //                 // data = employeeDto
-        //             });
-        //         }
-
-        //         // Handle case where update fails
-        //         return Ok(new BaseResponse
-        //         {
-        //             status = HttpStatusCode.BadRequest,
-        //             message = "Employee update failed"
-        //         });
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         // Handle unexpected exceptions
-        //         return StatusCode(500, new BaseResponse
-        //         {
-        //             status = HttpStatusCode.InternalServerError,
-        //             message = $"An error occurred: {ex.InnerException?.Message ?? ex.Message}"
-        //         });
-        //     }
-        // }
 
         [HttpPut("Update")]
         public async Task<IActionResult> UpdateEmployee([FromBody] EmployeeUpdatePM employee)

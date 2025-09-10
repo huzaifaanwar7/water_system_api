@@ -9,7 +9,7 @@ public partial class EmployeeTechStack
 
     public int EmployeeIdFk { get; set; }
 
-    public int TeckStackIdFk { get; set; }
+    public int TechStackIdFk { get; set; }
 
     public bool IsActive { get; set; }
 
@@ -23,5 +23,5 @@ public partial class EmployeeTechStack
 
     public virtual Employee EmployeeIdFkNavigation { get; set; } = null!;
 
-    public virtual TechStack TeckStackIdFkNavigation { get; set; } = null!;
+    public virtual Lookup TechStackIdFkNavigation { get; set; } = null!;
 }

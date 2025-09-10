@@ -23,7 +23,8 @@ namespace GBS.Data.Model
         public IEnumerable<string?> UserRole { get; set; }
         public IEnumerable<string?> TechStack { get; set; }
         public string? Status { get; set; }
-        public IEnumerable<GBS.Data.Model.BankDetailVM> BankDetail { get; set; }
+        public IEnumerable<BankDetailVM> BankDetail { get; set; }
+        public IEnumerable<EmployeeLedgerVM> Ledger { get; set; }
     }
 
     public class EmployeeUpComingNews
