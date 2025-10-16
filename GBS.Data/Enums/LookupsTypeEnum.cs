@@ -13,6 +13,14 @@ namespace GBS.Data.Enums
         TechStack,
         UserRole,
         LedgerStatus,
-        TransactionType
+        TransactionType,
+        CostCategory,
+        MaterialType,
+        MaterialUnit,
+        OrderStatus,
+        PaymentMethod,
+        ProductCategory,
+        ProductSize,
+        SalaryChangeType
     }
 }

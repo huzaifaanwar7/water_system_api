@@ -5,6 +5,7 @@ using GBS.Entities.DbModels;
 using GBS.Data.Model;
 using GBS.Service.Helpers;
 using GBS.Data.Enums;
+using Microsoft.Data.SqlClient;
 
 namespace GBS.Service
 {
@@ -35,14 +36,35 @@ namespace GBS.Service
         #region All Lookups
         public async Task<LookupsVM> GetAllLookups()
         {
+            var lookups = await _dbContext.Lookups
+         .Where(x => x.IsActive)
+         .Include(x => x.ParentIdFkNavigation)
+         .ToListAsync();
+
+            var allLookups = lookups.Select(x => new LookupVM()
+            {
+                Id = x.Id,
+                Type = x.Type,
+                Name = x.Name,
+                SortOrder = x.SortOrder,
+                ParentIdFk = x.ParentIdFk,
+            });
             return new LookupsVM
             {
-                EmployeeStatus = await _dbContext.Lookups.Where(x => x.IsActive && x.Type == LookupsTypeEnum.EmployeeStatus.GetStringValue()).ToListAsync(),
-                UserRole = await _dbContext.Lookups.Where(x => x.IsActive && x.Type == LookupsTypeEnum.UserRole.GetStringValue()).ToListAsync(),
-                JobRole = await _dbContext.Lookups.Where(x => x.IsActive && x.Type == LookupsTypeEnum.JobRole.GetStringValue()).ToListAsync(),
-                TechStack = await _dbContext.Lookups.Where(x => x.IsActive && x.Type == LookupsTypeEnum.TechStack.GetStringValue()).ToListAsync(),
-                LedgerStatus = await _dbContext.Lookups.Where(x => x.IsActive && x.Type == LookupsTypeEnum.LedgerStatus.GetStringValue()).ToListAsync(),
-                TransactionType = await _dbContext.Lookups.Where(x => x.IsActive && x.Type == LookupsTypeEnum.TransactionType.GetStringValue()).ToListAsync(),
+                EmployeeStatus = allLookups.Where(x => x.Type == LookupsTypeEnum.EmployeeStatus.GetStringValue()).ToList(),
+                UserRole = allLookups.Where(x => x.Type == LookupsTypeEnum.UserRole.GetStringValue()).ToList(),
+                JobRole = allLookups.Where(x => x.Type == LookupsTypeEnum.JobRole.GetStringValue()).ToList(),
+                TechStack = allLookups.Where(x => x.Type == LookupsTypeEnum.TechStack.GetStringValue()).ToList(),
+                LedgerStatus = allLookups.Where(x => x.Type == LookupsTypeEnum.LedgerStatus.GetStringValue()).ToList(),
+                TransactionType = allLookups.Where(x => x.Type == LookupsTypeEnum.TransactionType.GetStringValue()).ToList(),
+                CostCategory = allLookups.Where(x => x.Type == LookupsTypeEnum.CostCategory.GetStringValue()).ToList(),
+                MaterialType = allLookups.Where(x => x.Type == LookupsTypeEnum.MaterialType.GetStringValue()).ToList(),
+                MaterialUnit = allLookups.Where(x => x.Type == LookupsTypeEnum.MaterialUnit.GetStringValue()).ToList(),
+                OrderStatus = allLookups.Where(x => x.Type == LookupsTypeEnum.OrderStatus.GetStringValue()).ToList(),
+                PaymentMethod = allLookups.Where(x => x.Type == LookupsTypeEnum.PaymentMethod.GetStringValue()).ToList(),
+                ProductCategory = allLookups.Where(x => x.Type == LookupsTypeEnum.ProductCategory.GetStringValue()).ToList(),
+                ProductSize = allLookups.Where(x => x.Type == LookupsTypeEnum.ProductSize.GetStringValue()).ToList(),
+                SalaryChangeType = allLookups.Where(x => x.Type == LookupsTypeEnum.SalaryChangeType.GetStringValue()).ToList()
             };
         }
         #endregion

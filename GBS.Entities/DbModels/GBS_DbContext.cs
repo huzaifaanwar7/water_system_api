@@ -15,6 +15,8 @@ public partial class GBS_DbContext : DbContext
     {
     }
 
+    public virtual DbSet<Client> Clients { get; set; }
+
     public virtual DbSet<Document> Documents { get; set; }
 
     public virtual DbSet<Employee> Employees { get; set; }
@@ -35,7 +37,27 @@ public partial class GBS_DbContext : DbContext
 
     public virtual DbSet<Lookup> Lookups { get; set; }
 
+    public virtual DbSet<Material> Materials { get; set; }
+
+    public virtual DbSet<MaterialPurchase> MaterialPurchases { get; set; }
+
     public virtual DbSet<MediaFile> MediaFiles { get; set; }
+
+    public virtual DbSet<Order> Orders { get; set; }
+
+    public virtual DbSet<OrderCost> OrderCosts { get; set; }
+
+    public virtual DbSet<OrderItem> OrderItems { get; set; }
+
+    public virtual DbSet<OrderLabor> OrderLabors { get; set; }
+
+    public virtual DbSet<OrderMaterial> OrderMaterials { get; set; }
+
+    public virtual DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
+
+    public virtual DbSet<Payment> Payments { get; set; }
+
+    public virtual DbSet<Product> Products { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -43,6 +65,28 @@ public partial class GBS_DbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Client>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Clients__E67E1A0453801724");
+
+            entity.Property(e => e.Address).HasMaxLength(500);
+            entity.Property(e => e.City).HasMaxLength(50);
+            entity.Property(e => e.ClientName).HasMaxLength(200);
+            entity.Property(e => e.ContactPerson).HasMaxLength(100);
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.Gstnumber)
+                .HasMaxLength(50)
+                .HasColumnName("GSTNumber");
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            entity.Property(e => e.Phone).HasMaxLength(20);
+            entity.Property(e => e.PostalCode).HasMaxLength(20);
+            entity.Property(e => e.State).HasMaxLength(50);
+        });
+
         modelBuilder.Entity<Document>(entity =>
         {
             entity.ToTable("Document");
@@ -263,6 +307,8 @@ public partial class GBS_DbContext : DbContext
 
         modelBuilder.Entity<Lookup>(entity =>
         {
+            entity.HasIndex(e => e.Type, "IX_Lookups_Type");
+
             entity.HasIndex(e => new { e.Type, e.IsActive }, "IX_Lookups_Type_IsActive");
 
             entity.HasIndex(e => new { e.Type, e.Name }, "UK_Lookups_Type_Name").IsUnique();
@@ -270,6 +316,63 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.Name).HasMaxLength(512);
             entity.Property(e => e.Type).HasMaxLength(50);
+
+            entity.HasOne(d => d.ParentIdFkNavigation).WithMany(p => p.InverseParentIdFkNavigation)
+                .HasForeignKey(d => d.ParentIdFk)
+                .HasConstraintName("FK_Lookups_Parent");
+        });
+
+        modelBuilder.Entity<Material>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Material__C50613172522EDFB");
+
+            entity.HasIndex(e => e.MaterialCode, "UQ__Material__170C54BA03A50EE9").IsUnique();
+
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.CurrentStock).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.LastPurchasePrice).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.MaterialCode).HasMaxLength(50);
+            entity.Property(e => e.MaterialName).HasMaxLength(200);
+            entity.Property(e => e.MinStockLevel).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.MaterialTypeIdFkNavigation).WithMany(p => p.MaterialMaterialTypeIdFkNavigations)
+                .HasForeignKey(d => d.MaterialTypeIdFk)
+                .HasConstraintName("FK_Materials_Type");
+
+            entity.HasOne(d => d.UnitIdFkNavigation).WithMany(p => p.MaterialUnitIdFkNavigations)
+                .HasForeignKey(d => d.UnitIdFk)
+                .HasConstraintName("FK_Materials_Unit");
+        });
+
+        modelBuilder.Entity<MaterialPurchase>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Material__6B0A6BDED6754F01");
+
+            entity.HasIndex(e => e.PurchaseNumber, "UQ__Material__373B5B6EFC28B174").IsUnique();
+
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.InvoiceNumber).HasMaxLength(50);
+            entity.Property(e => e.Notes).HasMaxLength(500);
+            entity.Property(e => e.PurchaseDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.PurchaseNumber).HasMaxLength(50);
+            entity.Property(e => e.Quantity).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.TotalAmount)
+                .HasComputedColumnSql("([Quantity]*[UnitPrice])", true)
+                .HasColumnType("decimal(21, 4)");
+            entity.Property(e => e.UnitPrice).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.VendorName).HasMaxLength(200);
+
+            entity.HasOne(d => d.MaterialIdFkNavigation).WithMany(p => p.MaterialPurchases)
+                .HasForeignKey(d => d.MaterialIdFk)
+                .HasConstraintName("FK_MaterialPurchases_Material");
         });
 
         modelBuilder.Entity<MediaFile>(entity =>
@@ -284,6 +387,224 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.MimeType).HasMaxLength(250);
             entity.Property(e => e.Name).HasMaxLength(120);
+        });
+
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Orders__C3905BAF7D3C443A");
+
+            entity.HasIndex(e => e.ClientIdFk, "IX_Orders_ClientID");
+
+            entity.HasIndex(e => e.OrderDate, "IX_Orders_OrderDate");
+
+            entity.HasIndex(e => e.StatusIdFk, "IX_Orders_StatusID");
+
+            entity.HasIndex(e => e.OrderNumber, "UQ__Orders__CAC5E743FFAF8F5C").IsUnique();
+
+            entity.Property(e => e.AdvanceAmount)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(12, 2)");
+            entity.Property(e => e.BalanceAmount)
+                .HasComputedColumnSql("([TotalAmount]-[AdvanceAmount])", true)
+                .HasColumnType("decimal(13, 2)");
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeliveryDate).HasColumnType("datetime");
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            entity.Property(e => e.Notes).HasMaxLength(1000);
+            entity.Property(e => e.OrderDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.OrderNumber).HasMaxLength(50);
+            entity.Property(e => e.TotalAmount).HasColumnType("decimal(12, 2)");
+
+            entity.HasOne(d => d.ClientIdFkNavigation).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.ClientIdFk)
+                .HasConstraintName("FK_Orders_Client");
+
+            entity.HasOne(d => d.StatusIdFkNavigation).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.StatusIdFk)
+                .HasConstraintName("FK_Orders_Status");
+        });
+
+        modelBuilder.Entity<OrderCost>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__OrderCos__8285231E4A963B48");
+
+            entity.HasIndex(e => e.OrderIdFk, "IX_OrderCosts_OrderID");
+
+            entity.Property(e => e.CostDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.CostDescription).HasMaxLength(500);
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.InvoiceNumber).HasMaxLength(50);
+            entity.Property(e => e.Notes).HasMaxLength(500);
+            entity.Property(e => e.Quantity).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.TotalCost).HasColumnType("decimal(12, 2)");
+            entity.Property(e => e.UnitCost).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.VendorName).HasMaxLength(200);
+
+            entity.HasOne(d => d.CostCategoryIdFkNavigation).WithMany(p => p.OrderCosts)
+                .HasForeignKey(d => d.CostCategoryIdFk)
+                .HasConstraintName("FK_OrderCosts_Category");
+
+            entity.HasOne(d => d.OrderIdFkNavigation).WithMany(p => p.OrderCosts)
+                .HasForeignKey(d => d.OrderIdFk)
+                .HasConstraintName("FK_OrderCosts_Order");
+        });
+
+        modelBuilder.Entity<OrderItem>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__OrderIte__57ED06A10AFD391C");
+
+            entity.HasIndex(e => e.OrderIdFk, "IX_OrderItems_OrderID");
+
+            entity.Property(e => e.Color).HasMaxLength(50);
+            entity.Property(e => e.CompletedQuantity).HasDefaultValue(0);
+            entity.Property(e => e.IsCompleted).HasDefaultValue(false);
+            entity.Property(e => e.SpecialInstructions).HasMaxLength(500);
+            entity.Property(e => e.TotalPrice)
+                .HasComputedColumnSql("([Quantity]*[UnitPrice])", true)
+                .HasColumnType("decimal(21, 2)");
+            entity.Property(e => e.UnitPrice).HasColumnType("decimal(10, 2)");
+
+            entity.HasOne(d => d.OrderIdFkNavigation).WithMany(p => p.OrderItems)
+                .HasForeignKey(d => d.OrderIdFk)
+                .HasConstraintName("FK_OrderItems_Order");
+
+            entity.HasOne(d => d.ProductIdFkNavigation).WithMany(p => p.OrderItems)
+                .HasForeignKey(d => d.ProductIdFk)
+                .HasConstraintName("FK_OrderItems_Product");
+
+            entity.HasOne(d => d.SizeIdFkNavigation).WithMany(p => p.OrderItems)
+                .HasForeignKey(d => d.SizeIdFk)
+                .HasConstraintName("FK_OrderItems_Size");
+        });
+
+        modelBuilder.Entity<OrderLabor>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__OrderLab__A8D21A3A1D406F2E");
+
+            entity.ToTable("OrderLabor");
+
+            entity.HasIndex(e => e.OrderIdFk, "IX_OrderLabor_OrderID");
+
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.HoursWorked).HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.Notes).HasMaxLength(500);
+            entity.Property(e => e.RatePerPiece).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.TotalLaborCost).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.WorkDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.OrderIdFkNavigation).WithMany(p => p.OrderLabors)
+                .HasForeignKey(d => d.OrderIdFk)
+                .HasConstraintName("FK_OrderLabor_Order");
+
+            entity.HasOne(d => d.OrderItemIdFkNavigation).WithMany(p => p.OrderLabors)
+                .HasForeignKey(d => d.OrderItemIdFk)
+                .HasConstraintName("FK_OrderLabor_OrderItem");
+        });
+
+        modelBuilder.Entity<OrderMaterial>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__OrderMat__179B1342FDD99D92");
+
+            entity.HasIndex(e => e.OrderIdFk, "IX_OrderMaterials_OrderID");
+
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Notes).HasMaxLength(500);
+            entity.Property(e => e.QuantityUsed).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.TotalCost)
+                .HasComputedColumnSql("([QuantityUsed]*[UnitCost])", true)
+                .HasColumnType("decimal(21, 4)");
+            entity.Property(e => e.UnitCost).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.UsageDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.MaterialIdFkNavigation).WithMany(p => p.OrderMaterials)
+                .HasForeignKey(d => d.MaterialIdFk)
+                .HasConstraintName("FK_OrderMaterials_Material");
+
+            entity.HasOne(d => d.OrderIdFkNavigation).WithMany(p => p.OrderMaterials)
+                .HasForeignKey(d => d.OrderIdFk)
+                .HasConstraintName("FK_OrderMaterials_Order");
+        });
+
+        modelBuilder.Entity<OrderStatusHistory>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__OrderSta__4D7B4ADD8046D29D");
+
+            entity.ToTable("OrderStatusHistory");
+
+            entity.Property(e => e.Notes).HasMaxLength(500);
+            entity.Property(e => e.StatusDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.OrderIdFkNavigation).WithMany(p => p.OrderStatusHistories)
+                .HasForeignKey(d => d.OrderIdFk)
+                .HasConstraintName("FK_StatusHistory_Order");
+
+            entity.HasOne(d => d.StatusIdFkNavigation).WithMany(p => p.OrderStatusHistories)
+                .HasForeignKey(d => d.StatusIdFk)
+                .HasConstraintName("FK_StatusHistory_Status");
+        });
+
+        modelBuilder.Entity<Payment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Payments__9B556A589AE5410A");
+
+            entity.HasIndex(e => e.OrderIdFk, "IX_Payments_OrderID");
+
+            entity.Property(e => e.Amount).HasColumnType("decimal(12, 2)");
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Notes).HasMaxLength(500);
+            entity.Property(e => e.PaymentDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ReferenceNumber).HasMaxLength(100);
+
+            entity.HasOne(d => d.OrderIdFkNavigation).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.OrderIdFk)
+                .HasConstraintName("FK_Payments_Order");
+
+            entity.HasOne(d => d.PaymentMethodIdFkNavigation).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.PaymentMethodIdFk)
+                .HasConstraintName("FK_Payments_Method");
+        });
+
+        modelBuilder.Entity<Product>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Products__B40CC6EDEF267DE5");
+
+            entity.HasIndex(e => e.ProductCode, "UQ__Products__2F4E024FBE15EB0D").IsUnique();
+
+            entity.Property(e => e.BaseStitchingCost).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            entity.Property(e => e.ProductCode).HasMaxLength(50);
+            entity.Property(e => e.ProductName).HasMaxLength(200);
+
+            entity.HasOne(d => d.CategoryIdFkNavigation).WithMany(p => p.Products)
+                .HasForeignKey(d => d.CategoryIdFk)
+                .HasConstraintName("FK_Products_Category");
         });
 
         OnModelCreatingPartial(modelBuilder);

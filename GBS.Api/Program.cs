@@ -101,6 +101,7 @@ builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IEmployeeService, EmployeeService>();
 builder.Services.AddTransient<IAdminService, AdminService>();
 builder.Services.AddTransient<IMediaService, MediaService>();
+builder.Services.AddTransient<IClientService, ClientService>();
 
 builder.Services.AddControllers();
 
@@ -108,8 +109,8 @@ builder.Services.AddControllers();
 var app = builder.Build();
 var env = app.Services.GetRequiredService<IWebHostEnvironment>();
 Console.WriteLine("Environment:", env);
-if (env.IsDevelopment())
-{
+//if (env.IsDevelopment())
+//{
     app.MapSwagger();
     app.UseSwagger();
     app.UseSwaggerUI(c =>
@@ -117,11 +118,11 @@ if (env.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Globulars Admin v1");
         c.RoutePrefix = string.Empty;
     });
-}
+//}
 
+
+//app.UseHttpsRedirection();
 app.UseCors("AllowAllOrigins");
-
-app.UseHttpsRedirection();
 
 
 // Enable serving of static files

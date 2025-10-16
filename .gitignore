@@ -16,3 +16,5 @@
 /GBS.Api/.vs
 GBS.Api/appsettings.json
 GBS.Api/appsettings.Development.json
+GBS.Api/Properties/PublishProfiles/FolderProfile.pubxml
+GBS.Api/Properties/PublishProfiles/FolderProfile.pubxml.user
