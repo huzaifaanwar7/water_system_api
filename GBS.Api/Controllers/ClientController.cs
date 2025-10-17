@@ -76,97 +76,62 @@ namespace GBS.Api.Controller
         }
 
 
-        //[HttpGet("{ClientId}")]
-        //public async Task<IActionResult> GetDetails([FromRoute] int ClientId)
-        //{
-        //    try
-        //    {
-        //        // Retrieve all users using the employee service
-        //        var user = await _clientService.GetClientById(ClientId);
-        //        var baseUrls = "https://ihs.cc";
-        //        // Check if users list is not empty
-        //        if (user != null)
-        //        {
-        //            // Prepare the response data
-        //            var response = new ClientVM
-        //            {
-        //                Id = user.Id,
-        //                Username = user.Username,
-        //                FullName = (user.FirstName + " " + user.LastName).Trim(),
-        //                FirstName = user.FirstName,
-        //                LastName = user.LastName,
-        //                PersonalEmail = user.PersonalEmail,
-        //                PersonalPhone = user.PersonalPhone,
-        //                //user.ClientTechStacks,
-        //                Cnic = user.Cnic,
-        //                //user.ClientJobRoles,
-        //                JoiningDate = user.JoiningDate,
-        //                SeparationDate = user.SeparationDate,
-        //                ProfilePictureUrl = baseUrls + user.ProfilePictureId,
-        //                ProfilePictureId = user.ProfilePictureId,
-        //                JobRole = user.ClientJobRoles.Select(j => j.JobRoleIdFkNavigation.Name),
-        //                UserRole = user.ClientUserRoles.Select(j => j.UserRoleIdFkNavigation.Name),
-        //                TechStack = user.ClientTechStacks.Select(j => j.TechStackIdFkNavigation.Name),
-        //                BankDetail = user.ClientBankDetails.Select(b => new BankDetailVM
-        //                {
-        //                    Id = b.Id,
-        //                    ClientId = b.ClientIdFk,
-        //                    BankName = b.BankName,
-        //                    AccountTitle = b.AccountTitle,
-        //                    BranchCode = b.BranchCode,
-        //                    AccountNumber = b.AccountNumber,
-        //                    Iban = b.Iban
-        //                }).ToList(),
-        //                Ledger = user.ClientLedgers.Select(l => new ClientLedgerVM
-        //                {
-        //                    Id = l.Id,
-        //                    TransactionDate = l.TransactionDate,
-        //                    TransactionTypeIdFk = l.TransactionTypeIdFk,
-        //                    TransactionType = l.TransactionTypeIdFkNavigation.Name,
-        //                    Description = l.Description,
-        //                    DebitAmount = l.DebitAmount,
-        //                    CreditAmount = l.CreditAmount,
-        //                    SalaryMonth = l.SalaryMonth,
-        //                    RunningBalance = l.RunningBalance,
-        //                    StatusIdFk = l.StatusIdFk,
-        //                    Status = l.StatusIdFkNavigation.Name, // Assuming navigation property to Lookups table
-        //                    IsRecovered = l.IsRecovered,
-        //                    CreatedDate = l.CreatedDate,
-        //                    CreatedBy = l.CreatedBy,
-        //                    ModifiedDate = l.ModifiedDate,
-        //                    ModifiedBy = l.ModifiedBy,
-        //                    Remarks = l.Remarks,
-        //                    IsActive = l.IsActive
-        //                }).ToList(),
-        //                Status = user.StatusIdFkNavigation?.Name,
+        [HttpGet("{ClientId}")]
+        public async Task<IActionResult> GetDetails([FromRoute] int ClientId)
+        {
+            try
+            {
+                // Retrieve all users using the employee service
+                var client = await _clientService.GetClientById(ClientId);
+                // Check if users list is not empty
+                if (client != null)
+                {
+                    // Prepare the response data
+                    var response = new ClientVM
+                    {
+                        Id = client.Id,
+                        ClientName = client.ClientName,
+                        ContactPerson = client.ContactPerson,
+                        Phone = client.Phone,
+                        Email = client.Email,
+                        Address = client.Address,
+                        City = client.City,
+                        State = client.State,
+                        PostalCode = client.PostalCode,
+                        Gstnumber = client.Gstnumber,
+                        CreatedBy = client.CreatedBy,
+                        CreatedDate = client.CreatedDate,
+                        ModifiedBy = client.ModifiedBy,
+                        ModifiedDate = client.ModifiedDate,
+                        IsActive = client.IsActive
 
-        //            };
+                    };
 
-        //            // Return success response
-        //            return Ok(new BaseResponse
-        //            {
-        //                status = HttpStatusCode.OK,
-        //                data = response
-        //            });
-        //        }
+                    // Return success response
+                    return Ok(new BaseResponse
+                    {
+                        status = HttpStatusCode.OK,
+                        data = response
+                    });
+                }
 
-        //        // Handle case where no users are found
-        //        return NotFound(new BaseResponse
-        //        {
-        //            status = HttpStatusCode.NotFound,
-        //            message = "No users found."
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Handle unexpected exceptions
-        //        return StatusCode(500, new BaseResponse
-        //        {
-        //            status = HttpStatusCode.InternalServerError,
-        //            message = $"An error occurred: {ex.Message}"
-        //        });
-        //    }
-        //}
+                // Handle case where no users are found
+                return NotFound(new BaseResponse
+                {
+                    status = HttpStatusCode.NotFound,
+                    message = "No users found."
+                });
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected exceptions
+                return StatusCode(500, new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = $"An error occurred: {ex.Message}"
+                });
+            }
+        }
 
 
         //[HttpPost("Save")]
