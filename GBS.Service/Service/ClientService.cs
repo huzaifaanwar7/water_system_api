@@ -30,7 +30,10 @@ namespace GBS.Service
 
         public async Task<Client> GetClientById(int Id)
         {
-            return await _dbContext.Clients.Where(u => u.Id == Id).FirstOrDefaultAsync();
+            return await _dbContext.Clients.Where(u => u.Id == Id).
+                Include(a =>a.Orders)
+                .ThenInclude(x=> x.StatusIdFkNavigation)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<int> SaveClient(Client user)

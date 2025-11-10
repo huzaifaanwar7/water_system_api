@@ -37,6 +37,7 @@ namespace GBS.Data.Model
         public DateTime? ModifiedDate { get; set; }
 
         public bool IsActive { get; set; }
+        public List<OrderVM> Orders { get; set; }
 
     }
 }

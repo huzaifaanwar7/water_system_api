@@ -5,6 +5,7 @@ using GBS.Data.Model;
 using GBS.Entities.DbModels;
 using GBS.Service;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MySqlX.XDevAPI;
 using System.Collections.ObjectModel;
@@ -103,10 +104,32 @@ namespace GBS.Api.Controller
                         CreatedDate = client.CreatedDate,
                         ModifiedBy = client.ModifiedBy,
                         ModifiedDate = client.ModifiedDate,
-                        IsActive = client.IsActive
-
+                        IsActive = client.IsActive,
+                        Orders = new List<OrderVM>()
                     };
+                    foreach (var order in client.Orders)
+                    {
+                        response.Orders.Add(new OrderVM
+                        {
+                            Id = order.Id,
+                            OrderNumber = order.OrderNumber,
+                            ClientIdFk = order.ClientIdFk,
+                            OrderDate = order.OrderDate,
+                            DeliveryDate = order.DeliveryDate,
+                            StatusIdFk = order.StatusIdFk,
+                            Status = order.StatusIdFkNavigation.Name,
+                            TotalQuantity = order.TotalQuantity,
+                            TotalAmount = order.TotalAmount,
+                            AdvanceAmount = order.AdvanceAmount,
+                            BalanceAmount = order.BalanceAmount,
+                            Notes = order.Notes,
+                            CreatedBy = "Hard Coded Name",
+                            CreatedDate = order.CreatedDate,
+                            ModifiedDate = order.ModifiedDate,
+                            ModifiedBy = "Hard Coded Name",
 
+                        });
+                    }
                     // Return success response
                     return Ok(new BaseResponse
                     {
