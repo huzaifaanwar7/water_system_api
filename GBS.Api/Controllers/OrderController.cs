@@ -1,5 +1,6 @@
 ﻿using GBS.Data.Model;
-using GBS.Service.Service;
+using GBS.Service;
+using GBS.Service.Service;  // Use GBS.Service.Service namespace
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;

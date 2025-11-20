@@ -102,8 +102,10 @@ builder.Services.AddTransient<IEmployeeService, EmployeeService>();
 builder.Services.AddTransient<IAdminService, AdminService>();
 builder.Services.AddTransient<IMediaService, MediaService>();
 builder.Services.AddTransient<IClientService, ClientService>();
+builder.Services.AddScoped<GBS.Service.Service.IOrderService, GBS.Service.Service.OrderService>();
 
 builder.Services.AddControllers();
+
 
 // Configure the application services and middleware by using the Startup class
 var app = builder.Build();

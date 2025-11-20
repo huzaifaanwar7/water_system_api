@@ -1,16 +1,16 @@
-﻿using GBS.Entities.DbModels;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using Microsoft.EntityFrameworkCore;
+using GBS.Entities.DbModels;
+using GBS.Data.Model;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GBS.Service.Service
+namespace GBS.Service.Service  // Keep this namespace
 {
     public interface IOrderService
     {
         Task<List<Order>> GetOrderList();
-        Task<Order> GetOrderById(int id);
+        Task<Order> GetOrderById(int Id);
         Task<List<Order>> GetOrdersByClientId(int clientId);
     }
 
@@ -26,16 +26,16 @@ namespace GBS.Service.Service
         public async Task<List<Order>> GetOrderList()
         {
             var orders = await _dbContext.Orders
-               .Include(o => o.ClientIdFkNavigation)
-               .Include(o => o.StatusIdFkNavigation)
-               .ToListAsync();
+                .Include(o => o.ClientIdFkNavigation)
+                .Include(o => o.StatusIdFkNavigation)
+                .ToListAsync();
             return orders;
         }
 
-        public async Task<Order> GetOrderById(int id)
+        public async Task<Order> GetOrderById(int Id)
         {
             return await _dbContext.Orders
-                .Where(o => o.Id == id)
+                .Where(u => u.Id == Id)
                 .Include(o => o.ClientIdFkNavigation)
                 .Include(o => o.StatusIdFkNavigation)
                 .FirstOrDefaultAsync();
