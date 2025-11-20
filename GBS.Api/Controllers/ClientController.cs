@@ -105,11 +105,11 @@ namespace GBS.Api.Controller
                         ModifiedBy = client.ModifiedBy,
                         ModifiedDate = client.ModifiedDate,
                         IsActive = client.IsActive,
-                        Orders = new List<OrderVM>()
+                        Orders = new List<GBS.Data.Model.OrderVM>()
                     };
                     foreach (var order in client.Orders)
                     {
-                        response.Orders.Add(new OrderVM
+                        response.Orders.Add(new GBS.Data.Model.OrderVM
                         {
                             Id = order.Id,
                             OrderNumber = order.OrderNumber,

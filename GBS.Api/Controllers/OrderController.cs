@@ -47,14 +47,14 @@ namespace GBS.Api.Controller
                         ModifiedBy = "Hard Coded Name"
                     }).ToList();
 
-                    return Ok(new BaseResponse
+                    return Ok(new
                     {
                         status = HttpStatusCode.OK,
                         data = response
                     });
                 }
 
-                return NotFound(new BaseResponse
+                return NotFound(new
                 {
                     status = HttpStatusCode.NotFound,
                     message = "No orders found."
@@ -62,7 +62,7 @@ namespace GBS.Api.Controller
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new BaseResponse
+                return StatusCode(500, new
                 {
                     status = HttpStatusCode.InternalServerError,
                     message = $"An error occurred: {ex.Message}"
@@ -98,14 +98,14 @@ namespace GBS.Api.Controller
                         ModifiedBy = "Hard Coded Name"
                     };
 
-                    return Ok(new BaseResponse
+                    return Ok(new
                     {
                         status = HttpStatusCode.OK,
                         data = response
                     });
                 }
 
-                return NotFound(new BaseResponse
+                return NotFound(new
                 {
                     status = HttpStatusCode.NotFound,
                     message = "No order found."
@@ -113,7 +113,7 @@ namespace GBS.Api.Controller
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new BaseResponse
+                return StatusCode(500, new
                 {
                     status = HttpStatusCode.InternalServerError,
                     message = $"An error occurred: {ex.Message}"
@@ -149,14 +149,14 @@ namespace GBS.Api.Controller
                         ModifiedBy = "Hard Coded Name"
                     }).ToList();
 
-                    return Ok(new BaseResponse
+                    return Ok(new
                     {
                         status = HttpStatusCode.OK,
                         data = response
                     });
                 }
 
-                return NotFound(new BaseResponse
+                return NotFound(new
                 {
                     status = HttpStatusCode.NotFound,
                     message = "No orders found for this client."
@@ -164,7 +164,7 @@ namespace GBS.Api.Controller
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new BaseResponse
+                return StatusCode(500, new
                 {
                     status = HttpStatusCode.InternalServerError,
                     message = $"An error occurred: {ex.Message}"
