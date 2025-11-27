@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GBS.Entities.DbModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,6 +39,7 @@ namespace GBS.Data.Model
         public DateTime? ModifiedDate { get; set; }
 
         public string? ModifiedBy { get; set; }
+        public List<OrderCostVM> OrderCosts { get; set; }
     }
 
 }
