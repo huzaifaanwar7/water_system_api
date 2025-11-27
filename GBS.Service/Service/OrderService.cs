@@ -28,6 +28,7 @@ namespace GBS.Service.Service  // Keep this namespace
             var orders = await _dbContext.Orders
                 .Include(o => o.ClientIdFkNavigation)
                 .Include(o => o.StatusIdFkNavigation)
+                .Include(o => o.OrderCosts)
                 .ToListAsync();
             return orders;
         }
@@ -38,6 +39,7 @@ namespace GBS.Service.Service  // Keep this namespace
                 .Where(u => u.Id == Id)
                 .Include(o => o.ClientIdFkNavigation)
                 .Include(o => o.StatusIdFkNavigation)
+                .Include(o => o.OrderCosts)
                 .FirstOrDefaultAsync();
         }
 
@@ -47,6 +49,7 @@ namespace GBS.Service.Service  // Keep this namespace
                 .Where(o => o.ClientIdFk == clientId)
                 .Include(o => o.ClientIdFkNavigation)
                 .Include(o => o.StatusIdFkNavigation)
+                .Include(o => o.OrderCosts)
                 .ToListAsync();
         }
     }
