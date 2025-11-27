@@ -112,7 +112,7 @@ namespace GBS.Api.Controller
                             VendorName = oc.VendorName,
                             InvoiceNumber = oc.InvoiceNumber,
                             Notes = oc.Notes
-                        }).ToList() ?? new List<OrderCostVM>()
+                        }).ToList() ?? new List<OrderCostVM>(),
                         OrderItems = order.OrderItems?.Select(oi => new OrderItemVM
                         {
                             Id = oi.Id,
