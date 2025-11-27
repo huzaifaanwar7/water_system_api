@@ -142,8 +142,20 @@ namespace GBS.Api.Controller
                             CreatedBy = ol.CreatedBy,
                             CreatedDate = ol.CreatedDate,
                             
-                        }).ToList() ?? new List<OrderLaborVM>()
-                    }).ToList();
+                        }).ToList() ?? new List<OrderLaborVM>(),
+                        OrderMaterials  = order.OrderMaterials?.Select(om => new OrderMaterialVM
+                        {
+                            Id = om.Id,
+                            OrderIdFk = om.OrderIdFk,
+                            MaterialIdFk = om.MaterialIdFk,
+                            QuantityUsed = om.QuantityUsed,
+                            UnitCost = om.UnitCost,
+                            TotalCost = om.TotalCost,
+                            UsageDate   = om.UsageDate,
+                            Notes = om.Notes,
+                            CreatedBy = om.CreatedBy,
+                            CreatedDate = om.CreatedDate,
+                        }).ToList();
 
                     return Ok(new
                     {

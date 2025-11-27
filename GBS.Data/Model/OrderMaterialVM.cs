@@ -10,7 +10,7 @@
         public decimal? TotalCost { get; set; }
         public DateTime? UsageDate { get; set; }
         public string? Notes { get; set; }
-        public string? CreatedBy { get; set; }
+        public int? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; }
     }
 }
