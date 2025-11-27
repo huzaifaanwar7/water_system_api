@@ -12,7 +12,7 @@
         public decimal? RatePerPiece { get; set; }
         public decimal? TotalLaborCost { get; set; }
         public string? Notes { get; set; }
-        public string? CreatedBy { get; set; }
+        public int? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; }
     }
 }
