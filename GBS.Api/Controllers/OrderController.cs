@@ -48,6 +48,7 @@ namespace GBS.Api.Controller
                         CreatedDate = order.CreatedDate,
                         ModifiedDate = order.ModifiedDate,
                         ModifiedBy = "Hard Coded Name"
+                        
                     }).ToList();
 
                     return Ok(new
@@ -97,7 +98,21 @@ namespace GBS.Api.Controller
                         CreatedBy = "Hard Coded Name",
                         CreatedDate = order.CreatedDate,
                         ModifiedDate = order.ModifiedDate,
-                        ModifiedBy = "Hard Coded Name"
+                        ModifiedBy = "Hard Coded Name",
+                        OrderCosts = order.OrderCosts?.Select(oc => new OrderCostVM
+                        {
+                            Id = oc.Id,
+                            OrderIdFk = oc.OrderIdFk,
+                            CostCategoryIdFk = oc.CostCategoryIdFk,
+                            CostDescription = oc.CostDescription,
+                            Quantity = oc.Quantity,
+                            UnitCost = oc.UnitCost,
+                            TotalCost = oc.TotalCost,
+                            CostDate = oc.CostDate,
+                            VendorName = oc.VendorName,
+                            InvoiceNumber = oc.InvoiceNumber,
+                            Notes = oc.Notes
+                        }).ToList() ?? new List<OrderCostVM>()
                     }).ToList();
 
                     return Ok(new
