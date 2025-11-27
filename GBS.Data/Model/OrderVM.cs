@@ -43,6 +43,8 @@ namespace GBS.Data.Model
         public List<OrderItemVM> OrderItems { get; set; }   
         public List<OrderLaborVM> OrderLabors { get; set; }
         public List<OrderMaterialVM> OrderMaterials { get; set; }
+        public List<OrderStatusHistoryVM> OrderStatusHistories { get; set; }
+
     }
 
 }

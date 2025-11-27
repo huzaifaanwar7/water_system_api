@@ -165,8 +165,9 @@ namespace GBS.Api.Controller
                             StatusDate = osh.StatusDate,
                             ChangedBy = osh.ChangedBy,
                             Notes = osh.Notes
+                        }).ToList() ?? new List<OrderStatusHistoryVM>()
 
-                        }).ToList();
+                    }).ToList();
 
                     return Ok(new
                     {
