@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GBS.Entities.DbModels;
+using System;
 using System.Collections.Generic;
 
 namespace GBS.Api.Model
@@ -21,5 +22,9 @@ namespace GBS.Api.Model
         public DateTime CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string ModifiedBy { get; set; }
+        public List<OrderCostVM> OrderCosts { get; set; }
     }
-}
+    
+             
+
+    }
