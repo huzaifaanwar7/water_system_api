@@ -113,6 +113,21 @@ namespace GBS.Api.Controller
                             InvoiceNumber = oc.InvoiceNumber,
                             Notes = oc.Notes
                         }).ToList() ?? new List<OrderCostVM>()
+                        OrderItems = order.OrderItems?.Select(oi => new OrderItemVM
+                        {
+                            Id = oi.Id,
+                            OrderIdFk = oi.OrderIdFk,
+                            ProductIdFk = oi.ProductIdFk,
+                            Quantity = oi.Quantity,
+                            SizeIdFk = oi.SizeIdFk,
+                            Color = oi.Color,
+                            UnitPrice = oi.UnitPrice,
+                            TotalPrice = oi.TotalPrice,
+                            SpecialInstructions = oi.SpecialInstructions,
+                            IsCompleted = oi.IsCompleted,
+                            CompletedQuantity = oi.CompletedQuantity,
+
+                        }).ToList() ?? new List<OrderItemVM>()
                     }).ToList();
 
                     return Ok(new
