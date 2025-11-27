@@ -127,7 +127,22 @@ namespace GBS.Api.Controller
                             IsCompleted = oi.IsCompleted,
                             CompletedQuantity = oi.CompletedQuantity,
 
-                        }).ToList() ?? new List<OrderItemVM>()
+                        }).ToList() ?? new List<OrderItemVM>(),
+                        OrderLabors = order.OrderLabors?.Select(ol => new OrderLaborVM
+                        {
+                            Id = ol.Id,
+                            OrderIdFk = ol.OrderIdFk,
+                            OrderItemIdFk = ol.OrderItemIdFk,
+                            EmployeeIdFk = ol.EmployeeIdFk,
+                            WorkDate = ol.WorkDate,
+                            QuantityCompleted = ol.QuantityCompleted,
+                            HoursWorked = ol.HoursWorked,
+                            RatePerPiece = ol.RatePerPiece,
+                            TotalLaborCost = ol.TotalLaborCost,
+                            CreatedBy = ol.CreatedBy,
+                            CreatedDate = ol.CreatedDate,
+                            
+                        }).ToList() ?? new List<OrderLaborVM>()
                     }).ToList();
 
                     return Ok(new
