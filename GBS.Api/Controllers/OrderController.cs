@@ -156,9 +156,17 @@ namespace GBS.Api.Controller
                             Notes = om.Notes,
                             CreatedBy = om.CreatedBy,
                             CreatedDate = om.CreatedDate
-                        }).ToList() ?? new List<OrderMaterialVM>()
+                        }).ToList() ?? new List<OrderMaterialVM>(),
+                        OrderStatusHistories = order.OrderStatusHistories?.Select(osh => new OrderStatusHistoryVM
+                        {
+                            Id = osh.Id,
+                            OrderIdFk = osh.OrderIdFk,
+                            StatusIdFk = osh.StatusIdFk,
+                            StatusDate = osh.StatusDate,
+                            ChangedBy = osh.ChangedBy,
+                            Notes = osh.Notes
 
-                    }).ToList();
+                        }).ToList();
 
                     return Ok(new
                     {

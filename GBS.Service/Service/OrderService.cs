@@ -32,6 +32,7 @@ namespace GBS.Service.Service  // Keep this namespace
                 .Include(o => o.OrderItems)
                 .Include(o => o.OrderLabors)
                 .Include(o => o.OrderMaterials)
+                .Include(o => o.OrderStatusHistories)
                 .ToListAsync();
             return orders;
         }
