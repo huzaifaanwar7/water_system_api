@@ -40,6 +40,7 @@ namespace GBS.Data.Model
 
         public string? ModifiedBy { get; set; }
         public List<OrderCostVM> OrderCosts { get; set; }
+        public List<OrderItemVM> OrderItems { get; set; }   
     }
 
 }
