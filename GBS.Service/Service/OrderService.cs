@@ -29,6 +29,7 @@ namespace GBS.Service.Service  // Keep this namespace
                 .Include(o => o.ClientIdFkNavigation)
                 .Include(o => o.StatusIdFkNavigation)
                 .Include(o => o.OrderCosts)
+                .Include(o => o.OrderItems)
                 .ToListAsync();
             return orders;
         }
