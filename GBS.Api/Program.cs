@@ -103,6 +103,8 @@ builder.Services.AddTransient<IAdminService, AdminService>();
 builder.Services.AddTransient<IMediaService, MediaService>();
 builder.Services.AddTransient<IClientService, ClientService>();
 builder.Services.AddScoped<GBS.Service.Service.IOrderService, GBS.Service.Service.OrderService>();
+builder.Services.AddScoped<GBS.Service.Service.IPaymentService, GBS.Service.Service.PaymentService>();
+
 
 builder.Services.AddControllers();
 
