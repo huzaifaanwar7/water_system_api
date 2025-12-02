@@ -105,7 +105,8 @@ namespace GBS.Api.Controller
                         ModifiedBy = client.ModifiedBy,
                         ModifiedDate = client.ModifiedDate,
                         IsActive = client.IsActive,
-                        Orders = new List<GBS.Data.Model.OrderVM>()
+                        Orders = new List<GBS.Data.Model.OrderVM>(),
+                        Payments = new List<GBS.Data.Model.PaymentVM>()
                     };
                     foreach (var order in client.Orders)
                     {
@@ -129,9 +130,25 @@ namespace GBS.Api.Controller
                             ModifiedBy = "Hard Coded Name",
 
                         });
+                        foreach (var payment in order.Payments)
+                        {
+                            response.Payments.Add(new GBS.Data.Model.PaymentVM
+                            {
+                                Id = payment.Id,
+                                OrderIdFk = payment.OrderIdFk,
+                                PaymentDate = payment.PaymentDate,
+                                Amount = payment.Amount,
+                                PaymentMethodIdFk = payment.PaymentMethodIdFk,
+                                ReferenceNumber = payment.ReferenceNumber,
+                                Notes = payment.Notes,
+                                CreatedBy = payment.CreatedBy,
+                                CreatedDate = payment.CreatedDate
+                            });
+                        }
                     }
-                    // Return success response
-                    return Ok(new BaseResponse
+                   
+                        // Return success response
+                        return Ok(new BaseResponse
                     {
                         status = HttpStatusCode.OK,
                         data = response

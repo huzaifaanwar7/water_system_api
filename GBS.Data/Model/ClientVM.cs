@@ -38,6 +38,7 @@ namespace GBS.Data.Model
 
         public bool IsActive { get; set; }
         public List<OrderVM> Orders { get; set; }
+        public List<PaymentVM> Payments { get; set; }
 
     }
 }

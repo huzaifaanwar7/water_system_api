@@ -31,8 +31,10 @@ namespace GBS.Service
         public async Task<Client> GetClientById(int Id)
         {
             return await _dbContext.Clients.Where(u => u.Id == Id).
-                Include(a =>a.Orders)
+                Include(a =>a.Orders)                
                 .ThenInclude(x=> x.StatusIdFkNavigation)
+                .Include(c => c.Orders)
+                .ThenInclude(o => o.Payments)
                 .FirstOrDefaultAsync();
         }
 
