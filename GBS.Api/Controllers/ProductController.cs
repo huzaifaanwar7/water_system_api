@@ -1,5 +1,5 @@
-using GBS.Service;
 using Microsoft.AspNetCore.Mvc;
+using GBS.Service;
 
 [Route("api/[controller]")]
 [ApiController]
