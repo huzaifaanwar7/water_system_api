@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using GBS.Entities;
 using GBS.Entities.DbModels;
 using GBS.Data.Model;
 
@@ -7,68 +6,35 @@ namespace GBS.Service
 {
     public interface IProductService
     {
-        Task<List<ProductVM>> GetProductList();
-        Task<ProductVM> GetProductById(int id);
-        Task<int> SaveProduct(ProductVM model);
-        Task<int> UpdateProduct(ProductVM model);
-        Task<int> DeleteProduct(int id);
+        Task<List<Product>> GetProductList();
+        Task<Product> GetProductById(int id);
+      
     }
 
-    public class ProductService(GBS_DbContext _dbContext) : IProductService
+    public class ProductService : IProductService
     {
-        // LIST ALL ACTIVE PRODUCTS
-        public async Task<List<ProductVM>> GetProductList()
+        private readonly GBS_DbContext _dbContext;
+
+        public ProductService(GBS_DbContext dbContext)
         {
-            return await _dbContext.Products
-                .Where(p => p.IsActive)
-                .Select(p => new ProductVM
-                {
-                    Id = p.Id,
-                    OrderName = p.OrderName,
-                    ClientIdFk = p.ClientIdFk,
-                    OrderDate = p.OrderDate,
-                    DeliveryDate = p.DeliveryDate,
-                    StatusIdFk = p.StatusIdFk,
-                    TotalQuantity = p.TotalQuantity,
-                    TotalAmount = p.TotalAmount,
-                    AdvanceAmount = p.AdvanceAmount,
-                    BalanceAmount = p.BalanceAmount,
-                    Notes = p.Notes,
-                    CreatedBy = p.CreatedBy,
-                    CreatedDate = p.CreatedDate,
-                    ModifiedBy = p.ModifiedBy,
-                    ModifiedDate = p.ModifiedDate
-                }).ToListAsync();
+            _dbContext = dbContext;
         }
 
-        // GET PRODUCT BY ID
-        public async Task<ProductVM> GetProductById(int id)
+        public async Task<List<Product>> GetProductList()
         {
             return await _dbContext.Products
-                .Where(p => p.Id == id)
-                .Select(p => new ProductVM
-                {
-                    Id = p.Id,
-                    OrderName = p.OrderName,
-                    ClientIdFk = p.ClientIdFk,
-                    OrderDate = p.OrderDate,
-                    DeliveryDate = p.DeliveryDate,
-                    StatusIdFk = p.StatusIdFk,
-                    TotalQuantity = p.TotalQuantity,
-                    TotalAmount = p.TotalAmount,
-                    AdvanceAmount = p.AdvanceAmount,
-                    BalanceAmount = p.BalanceAmount,
-                    Notes = p.Notes,
-                    CreatedBy = p.CreatedBy,
-                    CreatedDate = p.CreatedDate,
-                    ModifiedBy = p.ModifiedBy,
-                    ModifiedDate = p.ModifiedDate
-                }).FirstOrDefaultAsync();
+                .Where(p => p.IsActive == true)
+                .Include(p => p.CategoryIdFkNavigation)
+                .ToListAsync();
         }
 
-      
-     
+        public async Task<Product> GetProductById(int id)
+        {
+            return await _dbContext.Products
+                .Include(p => p.CategoryIdFkNavigation)
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
 
-    
+ 
     }
 }
