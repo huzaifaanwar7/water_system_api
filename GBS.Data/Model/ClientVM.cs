@@ -40,5 +40,7 @@ namespace GBS.Data.Model
         public List<OrderVM> Orders { get; set; }
         public List<PaymentVM> Payments { get; set; }
 
+        public List<ProductVM> Products { get; set; }
+
     }
 }
