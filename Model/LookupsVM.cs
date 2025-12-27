@@ -1,6 +1,6 @@
 ﻿using GBS.Api.DbModels;
 
-namespace GBS.Data.Model
+namespace GBS.Model
 {
     public class LookupsVM
     {

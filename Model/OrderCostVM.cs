@@ -1,5 +1,5 @@
 ﻿using System;
-namespace GBS.Data.Model
+namespace GBS.Model
 {
     public class OrderCostVM
     {

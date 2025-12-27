@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GBS.Data.Model
+namespace GBS.Model
 {
     public partial class OrderVM
     {

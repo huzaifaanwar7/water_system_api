@@ -1,4 +1,4 @@
-﻿namespace GBS.Data.Model
+﻿namespace GBS.Model
 {
     public class OrderLaborVM
     {

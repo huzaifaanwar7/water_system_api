@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace GBS.Data.Model
+namespace GBS.Model
 {
     public class EmployeeVM
     {

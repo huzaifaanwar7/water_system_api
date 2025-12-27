@@ -1,6 +1,7 @@
 using GBS.Api.DbModels;
 using GBS.Api.Model;
-using GBS.Data.Model;
+using GBS.Model;
+using GBS.Model;
 using GBS.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -17,7 +18,7 @@ namespace GBS.Api.Controller
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            int user = Convert.ToInt32(HttpContext.Items["ClientId"]);
+            int user = Convert.ToInt32(HttpContext.Items["EmployeeId"]);
             try
             {
                 // Retrieve all users using the employee service
@@ -41,7 +42,6 @@ namespace GBS.Api.Controller
                         CreatedDate = client.CreatedDate,
                         ModifiedBy = client.ModifiedBy,
                         ModifiedDate = client.ModifiedDate,
-                        IsActive = client.IsActive
                     }).ToList();
 
                     // Return success response
@@ -98,13 +98,12 @@ namespace GBS.Api.Controller
                         CreatedDate = client.CreatedDate,
                         ModifiedBy = client.ModifiedBy,
                         ModifiedDate = client.ModifiedDate,
-                        IsActive = client.IsActive,
-                        Orders = new List<GBS.Data.Model.OrderVM>(),
-                        Payments = new List<GBS.Data.Model.PaymentVM>()
+                        Orders = new List<GBS.Model.OrderVM>(),
+                        Payments = new List<GBS.Model.PaymentVM>()
                     };
                     foreach (var order in client.Orders)
                     {
-                        response.Orders.Add(new GBS.Data.Model.OrderVM
+                        response.Orders.Add(new GBS.Model.OrderVM
                         {
                             Id = order.Id,
                             OrderNumber = order.OrderNumber,
@@ -126,7 +125,7 @@ namespace GBS.Api.Controller
                         });
                         foreach (var payment in order.Payments)
                         {
-                            response.Payments.Add(new GBS.Data.Model.PaymentVM
+                            response.Payments.Add(new GBS.Model.PaymentVM
                             {
                                 Id = payment.Id,
                                 OrderIdFk = payment.OrderIdFk.Value,
@@ -169,11 +168,11 @@ namespace GBS.Api.Controller
 
 
         [HttpPost("Save")]
-        public async Task<IActionResult> SaveClient([FromBody] ClientVM clientPM)
+        public async Task<IActionResult> SaveClient([FromBody] ClientPM clientPM)
         {
             try
             {
-                int loggedInUserId = Convert.ToInt32(HttpContext.Items["ClientId"]);
+                int loggedInUserId = Convert.ToInt32(HttpContext.Items["EmployeeId"]);
 
                 // Validate required fields
                 if (string.IsNullOrWhiteSpace(clientPM.ClientName))
@@ -222,7 +221,9 @@ namespace GBS.Api.Controller
                 client.State = clientPM.State;
                 client.PostalCode = clientPM.PostalCode;
                 client.Gstnumber = clientPM.Gstnumber;
-                client.IsActive = clientPM.IsActive;
+                client.CreatedBy = loggedInUserId;
+                client.CreatedDate = DateTime.Now;
+                client.IsActive=true;
 
                 var saveResponse = await _clientService.SaveClient(client);
 
@@ -270,7 +271,7 @@ namespace GBS.Api.Controller
 
                 // Soft delete
                 client.IsActive = false;
-                client.ModifiedBy = Convert.ToInt32(HttpContext.Items["ClientId"]);
+                client.ModifiedBy = Convert.ToInt32(HttpContext.Items["EmployeeId"]);
                 client.ModifiedDate = DateTime.Now;
 
                 var result = await _clientService.SaveClient(client);

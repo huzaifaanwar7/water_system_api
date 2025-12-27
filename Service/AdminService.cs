@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using GBS.Api.DbModels;
-using GBS.Data.Model;
+using GBS.Model;
 using GBS.Service.Helpers;
 using GBS.Data.Enums;
 using Microsoft.Data.SqlClient;

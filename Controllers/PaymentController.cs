@@ -1,5 +1,5 @@
 using GBS.Api.DbModels;
-using GBS.Data.Model;
+using GBS.Model;
 using GBS.Service;
 using GBS.Service.Service;
 using Microsoft.AspNetCore.Mvc;

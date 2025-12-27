@@ -71,8 +71,8 @@ public partial class GBS_DbContext : DbContext
 
             entity.Property(e => e.Address).HasMaxLength(500);
             entity.Property(e => e.City).HasMaxLength(50);
-            entity.Property(e => e.ClientName).HasMaxLength(200);
-            entity.Property(e => e.ContactPerson).HasMaxLength(100);
+            entity.Property(e => e.ClientName).HasMaxLength(256);
+            entity.Property(e => e.ContactPerson).HasMaxLength(256);
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
@@ -82,7 +82,7 @@ public partial class GBS_DbContext : DbContext
                 .HasColumnName("GSTNumber");
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
-            entity.Property(e => e.Phone).HasMaxLength(20);
+            entity.Property(e => e.Phone).HasMaxLength(128);
             entity.Property(e => e.PostalCode).HasMaxLength(20);
             entity.Property(e => e.State).HasMaxLength(50);
         });

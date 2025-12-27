@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 using System.Net;
 using GBS.Service;
-using GBS.Data.Model;
+using GBS.Model;
 using GBS.Api.Model;
 
 

@@ -6,7 +6,7 @@ using GBS.Api.DbModels;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using GBS.Data.Model;
+using GBS.Model;
 
 public interface IJwtUtils
 {

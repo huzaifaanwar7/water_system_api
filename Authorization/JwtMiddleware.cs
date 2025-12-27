@@ -5,7 +5,7 @@ using System.Data;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using GBS.Service;
-using GBS.Data.Model;
+using GBS.Model;
 
 public class JwtMiddleware
 {

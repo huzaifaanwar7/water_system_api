@@ -1,7 +1,7 @@
 using Azure;
 using Firebase.Auth;
 
-using GBS.Data.Model;
+using GBS.Model;
 using GBS.Api.DbModels;
 using GBS.Service;
 using Microsoft.AspNetCore.Authorization;

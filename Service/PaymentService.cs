@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using GBS.Api.DbModels;
-using GBS.Data.Model;
+using GBS.Model;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

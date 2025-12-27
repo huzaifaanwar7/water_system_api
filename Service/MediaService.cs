@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using GBS.Api.DbModels;
-using GBS.Data.Model;
+using GBS.Model;
 
 namespace GBS.Service
 {
