@@ -78,12 +78,12 @@ public partial class GBS_DbContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.Gstnumber)
-                .HasMaxLength(50)
+                .HasMaxLength(256)
                 .HasColumnName("GSTNumber");
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             entity.Property(e => e.Phone).HasMaxLength(128);
-            entity.Property(e => e.PostalCode).HasMaxLength(20);
+            entity.Property(e => e.PostalCode).HasMaxLength(256);
             entity.Property(e => e.State).HasMaxLength(50);
         });
 
@@ -399,32 +399,29 @@ public partial class GBS_DbContext : DbContext
 
             entity.HasIndex(e => e.StatusIdFk, "IX_Orders_StatusID");
 
-            entity.HasIndex(e => e.OrderNumber, "UQ__Orders__CAC5E74376887B20").IsUnique();
+            entity.HasIndex(e => e.Reference, "UQ__Orders__CAC5E74376887B20").IsUnique();
 
-            entity.Property(e => e.AdvanceAmount)
-                .HasDefaultValue(0m)
-                .HasColumnType("decimal(12, 2)");
-            entity.Property(e => e.BalanceAmount)
-                .HasComputedColumnSql("([TotalAmount]-[AdvanceAmount])", true)
-                .HasColumnType("decimal(13, 2)");
+            entity.Property(e => e.AdvanceAmount).HasColumnType("decimal(12, 2)");
+            entity.Property(e => e.BalanceAmount).HasColumnType("decimal(12, 2)");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.DeliveryDate).HasColumnType("datetime");
             entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
-            entity.Property(e => e.Notes).HasMaxLength(1000);
             entity.Property(e => e.OrderDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.OrderNumber).HasMaxLength(50);
+            entity.Property(e => e.Reference).HasMaxLength(50);
             entity.Property(e => e.TotalAmount).HasColumnType("decimal(12, 2)");
 
             entity.HasOne(d => d.ClientIdFkNavigation).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.ClientIdFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Orders_Client");
 
             entity.HasOne(d => d.StatusIdFkNavigation).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.StatusIdFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Orders_Status");
         });
 
@@ -575,14 +572,16 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.PaymentDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.ReferenceNumber).HasMaxLength(100);
+            entity.Property(e => e.Reference).HasMaxLength(100);
 
             entity.HasOne(d => d.OrderIdFkNavigation).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.OrderIdFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Payments_Order");
 
             entity.HasOne(d => d.PaymentMethodIdFkNavigation).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.PaymentMethodIdFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Payments_Method");
         });
 
@@ -590,7 +589,7 @@ public partial class GBS_DbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__Products__3214EC07F5E036C9");
 
-            entity.HasIndex(e => e.ProductCode, "UQ__Products__2F4E024F31FB17A3").IsUnique();
+            entity.HasIndex(e => e.Reference, "UQ__Products__2F4E024F31FB17A3").IsUnique();
 
             entity.Property(e => e.BaseStitchingCost).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.CreatedDate)
@@ -599,11 +598,12 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.Description).HasMaxLength(500);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
-            entity.Property(e => e.ProductCode).HasMaxLength(50);
             entity.Property(e => e.ProductName).HasMaxLength(200);
+            entity.Property(e => e.Reference).HasMaxLength(50);
 
             entity.HasOne(d => d.CategoryIdFkNavigation).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryIdFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Products_Category");
         });
 
