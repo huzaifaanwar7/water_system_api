@@ -1,7 +1,7 @@
 ﻿public class ProductVM
 {
     public int Id { get; set; }
-    public string ProductCode { get; set; } = null!;
+    public string Reference { get; set; } = null!;
     public string ProductName { get; set; } = null!;
     public int? CategoryIdFk { get; set; }
     public string? Description { get; set; }

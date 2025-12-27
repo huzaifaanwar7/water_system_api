@@ -34,7 +34,7 @@ namespace GBS.Api.Controller
                     var response = orders.Select(order => new OrderVM
                     {
                         Id = order.Id,
-                        OrderNumber = order.OrderNumber,
+                        Reference = order.Reference,
                         ClientIdFk = order.ClientIdFk,
                         OrderDate = order.OrderDate,
                         DeliveryDate = order.DeliveryDate,
@@ -85,7 +85,7 @@ namespace GBS.Api.Controller
                     var response = orders.Select(order => new OrderVM
                     {
                         Id = order.Id,
-                        OrderNumber = order.OrderNumber,
+                        Reference = order.Reference,
                         ClientIdFk = order.ClientIdFk,
                         OrderDate = order.OrderDate,
                         DeliveryDate = order.DeliveryDate,
@@ -205,7 +205,7 @@ namespace GBS.Api.Controller
                     var response = new OrderVM
                     {
                         Id = order.Id,
-                        OrderNumber = order.OrderNumber,
+                        Reference = order.Reference,
                         ClientIdFk = order.ClientIdFk,
                         OrderDate = order.OrderDate,
                         DeliveryDate = order.DeliveryDate,
@@ -256,7 +256,7 @@ namespace GBS.Api.Controller
                     var response = orders.Select(order => new OrderVM
                     {
                         Id = order.Id,
-                        OrderNumber = order.OrderNumber,
+                        Reference = order.Reference,
                         ClientIdFk = order.ClientIdFk,
                         OrderDate = order.OrderDate,
                         DeliveryDate = order.DeliveryDate,
@@ -335,7 +335,7 @@ namespace GBS.Api.Controller
                     // Create new order
                     order = new Order
                     {
-                        OrderNumber = "ORD123",
+                        Reference = "ORD123",
                         CreatedDate = DateTime.Now,
                         // CreatedBy = loggedInUserId // Uncomment when auth is ready
                     };
@@ -349,7 +349,7 @@ namespace GBS.Api.Controller
                 order.TotalQuantity = orderPM.TotalQuantity;
                 order.TotalAmount = orderPM.TotalAmount;
                 order.AdvanceAmount = orderPM.AdvanceAmount;
-                order.BalanceAmount = orderPM.BalanceAmount ?? (orderPM.TotalAmount - (orderPM.AdvanceAmount ?? 0));
+                order.BalanceAmount = orderPM.BalanceAmount ?? (orderPM.TotalAmount - (orderPM.AdvanceAmount));
                 order.Notes = orderPM.Notes;
 
                 var saveResponse = await _orderService.SaveOrder(order);

@@ -26,11 +26,11 @@ namespace GBS.Api.Controller
                     var response = payments.Select(p => new PaymentVM
                     {
                         Id = p.Id,
-                        OrderIdFk = p.OrderIdFk.Value,
+                        OrderIdFk = p.OrderIdFk,
                         PaymentDate = p.PaymentDate,
                         Amount = p.Amount,
                         PaymentMethodIdFk = p.PaymentMethodIdFk,
-                        ReferenceNumber = p.ReferenceNumber,
+                        Reference = p.Reference,
                         Notes = p.Notes,
                         CreatedBy = p.CreatedBy,
                         CreatedDate = p.CreatedDate
@@ -70,11 +70,11 @@ namespace GBS.Api.Controller
                     var response = new PaymentVM
                     {
                         Id = payment.Id,
-                        OrderIdFk = payment.OrderIdFk.Value,
+                        OrderIdFk = payment.OrderIdFk,
                         PaymentDate = payment.PaymentDate,
                         Amount = payment.Amount,
                         PaymentMethodIdFk = payment.PaymentMethodIdFk,
-                        ReferenceNumber = payment.ReferenceNumber,
+                        Reference = payment.Reference,
                         Notes = payment.Notes,
                         CreatedBy = payment.CreatedBy,
                         CreatedDate = payment.CreatedDate
@@ -114,11 +114,11 @@ namespace GBS.Api.Controller
                     var response = payments.Select(p => new PaymentVM
                     {
                         Id = p.Id,
-                        OrderIdFk = p.OrderIdFk.Value,
+                        OrderIdFk = p.OrderIdFk,
                         PaymentDate = p.PaymentDate,
                         Amount = p.Amount,
                         PaymentMethodIdFk = p.PaymentMethodIdFk,
-                        ReferenceNumber = p.ReferenceNumber,
+                        Reference = p.Reference,
                         Notes = p.Notes,
                         CreatedBy = p.CreatedBy,
                         CreatedDate = p.CreatedDate
@@ -199,7 +199,7 @@ namespace GBS.Api.Controller
                             message = "Payment not found"
                         });
                     }
-                    previousAmount = payment.Amount.Value; // Store for balance calculation
+                    previousAmount = payment.Amount; // Store for balance calculation
                 }
                 else
                 {
@@ -216,7 +216,7 @@ namespace GBS.Api.Controller
                 payment.PaymentDate = paymentPM.PaymentDate;
                 payment.Amount = paymentPM.Amount;
                 payment.PaymentMethodIdFk = paymentPM.PaymentMethodIdFk;
-                payment.ReferenceNumber = paymentPM.ReferenceNumber;
+                payment.Reference = paymentPM.Reference;
                 payment.Notes = paymentPM.Notes;
 
                 var saveResponse = await _paymentService.SavePayment(payment);

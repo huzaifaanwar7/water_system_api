@@ -11,22 +11,22 @@ namespace GBS.Model
     {
         public int Id { get; set; }
 
-        public string OrderNumber { get; set; } = null!;
+        public string Reference { get; set; } = null!;
 
-        public int? ClientIdFk { get; set; }
+        public int ClientIdFk { get; set; }
 
         public DateTime OrderDate { get; set; }
 
-        public DateTime? DeliveryDate { get; set; }
+        public DateTime DeliveryDate { get; set; }
 
-        public int? StatusIdFk { get; set; }
+        public int StatusIdFk { get; set; }
         public string Status { get; set; }
 
-        public int? TotalQuantity { get; set; }
+        public int TotalQuantity { get; set; }
 
-        public decimal? TotalAmount { get; set; }
+        public decimal TotalAmount { get; set; }
 
-        public decimal? AdvanceAmount { get; set; }
+        public decimal AdvanceAmount { get; set; }
 
         public decimal? BalanceAmount { get; set; }
 

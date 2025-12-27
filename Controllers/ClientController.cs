@@ -106,7 +106,7 @@ namespace GBS.Api.Controller
                         response.Orders.Add(new GBS.Model.OrderVM
                         {
                             Id = order.Id,
-                            OrderNumber = order.OrderNumber,
+                            Reference = order.Reference,
                             ClientIdFk = order.ClientIdFk,
                             OrderDate = order.OrderDate,
                             DeliveryDate = order.DeliveryDate,
@@ -128,11 +128,11 @@ namespace GBS.Api.Controller
                             response.Payments.Add(new GBS.Model.PaymentVM
                             {
                                 Id = payment.Id,
-                                OrderIdFk = payment.OrderIdFk.Value,
+                                OrderIdFk = payment.OrderIdFk,
                                 PaymentDate = payment.PaymentDate,
                                 Amount = payment.Amount,
                                 PaymentMethodIdFk = payment.PaymentMethodIdFk,
-                                ReferenceNumber = payment.ReferenceNumber,
+                                Reference = payment.Reference,
                                 Notes = payment.Notes,
                                 CreatedBy = payment.CreatedBy,
                                 CreatedDate = payment.CreatedDate

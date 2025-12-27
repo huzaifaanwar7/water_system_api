@@ -26,7 +26,7 @@ namespace GBS.Service
                 .Select(p => new ProductVM
                 {
                     Id = p.Id,
-                    ProductCode = p.ProductCode,
+                    Reference = p.Reference,
                     ProductName = p.ProductName,
                     CategoryIdFk = p.CategoryIdFk,
                     Description = p.Description,
@@ -48,7 +48,7 @@ namespace GBS.Service
                 .Select(p => new ProductVM
                 {
                     Id = p.Id,
-                    ProductCode = p.ProductCode,
+                    Reference = p.Reference,
                     ProductName = p.ProductName,
                     CategoryIdFk = p.CategoryIdFk,
                     Description = p.Description,

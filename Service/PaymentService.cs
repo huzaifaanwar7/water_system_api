@@ -78,7 +78,7 @@ namespace GBS.Service.Service  // Keep this namespace
         {
             return await _dbContext.Payments
                 .Where(p => p.OrderIdFk == orderId)
-                .SumAsync(p => p.Amount.Value);
+                .SumAsync(p => p.Amount);
         }
     }
 }
