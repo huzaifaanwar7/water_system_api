@@ -9,6 +9,8 @@ namespace GBS.Model
     public class ClientVM
     {
         public int Id { get; set; }
+        
+        public string Reference { get; set; }
 
         public string ClientName { get; set; } = null!;
 
@@ -28,15 +30,14 @@ namespace GBS.Model
 
         public string? Gstnumber { get; set; }
 
-        public int CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
 
         public DateTime CreatedDate { get; set; }
 
-        public int? ModifiedBy { get; set; }
+        public string ModifiedBy { get; set; }
 
         public DateTime? ModifiedDate { get; set; }
 
-        public bool IsActive { get; set; }
         public List<OrderVM> Orders { get; set; }
         public List<PaymentVM> Payments { get; set; }
 

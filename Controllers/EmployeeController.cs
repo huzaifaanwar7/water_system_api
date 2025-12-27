@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.ObjectModel;
 using System.Net;
 using GBS.Api.Model;
+using GBS.Api.Model.Post;
 
 namespace GBS.Api.Controller
 {
@@ -32,6 +33,7 @@ namespace GBS.Api.Controller
                     var response = users.Select(user => new EmployeeVM
                     {
                         Id = user.Id,
+                        Reference = user.Reference,
                         Username = user.Username,
                         FullName = (user.FirstName + " " + user.LastName).Trim(),
                         FirstName = user.FirstName,
@@ -90,6 +92,7 @@ namespace GBS.Api.Controller
                     var response = new EmployeeVM
                     {
                         Id = user.Id,
+                        Reference = user.Reference,
                         Username = user.Username,
                         FullName = (user.FirstName + " " + user.LastName).Trim(),
                         FirstName = user.FirstName,

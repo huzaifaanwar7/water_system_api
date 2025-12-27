@@ -7,7 +7,7 @@ public partial class Employee
 {
     public int Id { get; set; }
 
-    public int EmployeeCode { get; set; }
+    public string? Reference { get; set; }
 
     public string Username { get; set; } = null!;
 

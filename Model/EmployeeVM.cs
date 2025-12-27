@@ -6,6 +6,7 @@ namespace GBS.Model
     public class EmployeeVM
     {
         public int Id { get; set; }
+        public string Reference { get; set; }
         public string FullName { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

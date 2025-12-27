@@ -7,6 +7,8 @@ public partial class Client
 {
     public int Id { get; set; }
 
+    public string? Reference { get; set; }
+
     public string ClientName { get; set; } = null!;
 
     public string ContactPerson { get; set; } = null!;
@@ -17,7 +19,7 @@ public partial class Client
 
     public string Address { get; set; } = null!;
 
-    public string? City { get; set; }
+    public string City { get; set; } = null!;
 
     public string? State { get; set; }
 

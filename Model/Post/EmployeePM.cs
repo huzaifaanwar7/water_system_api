@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace GBS.Model
+namespace GBS.Api.Model.Post
 {
     public class EmployeePM
     {

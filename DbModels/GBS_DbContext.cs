@@ -84,6 +84,7 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             entity.Property(e => e.Phone).HasMaxLength(128);
             entity.Property(e => e.PostalCode).HasMaxLength(256);
+            entity.Property(e => e.Reference).HasMaxLength(50);
             entity.Property(e => e.State).HasMaxLength(50);
         });
 
@@ -119,6 +120,7 @@ public partial class GBS_DbContext : DbContext
             entity.Property(e => e.Password).HasMaxLength(128);
             entity.Property(e => e.PersonalEmail).HasMaxLength(64);
             entity.Property(e => e.PersonalPhone).HasMaxLength(16);
+            entity.Property(e => e.Reference).HasMaxLength(50);
             entity.Property(e => e.SeparationDate).HasColumnType("datetime");
             entity.Property(e => e.Username).HasMaxLength(128);
 

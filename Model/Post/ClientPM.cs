@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GBS.Model
+namespace GBS.Api.Model.Post
 {
     public class ClientPM
     {

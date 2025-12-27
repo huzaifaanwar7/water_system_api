@@ -1,4 +1,5 @@
 ﻿using GBS.Api.DbModels;
+using GBS.Api.Model.Post;
 using GBS.Model;
 using GBS.Service;
 using GBS.Service.Service;  // Use GBS.Service.Service namespace
@@ -298,12 +299,12 @@ namespace GBS.Api.Controller
 
 
         [HttpPost("Save")]
-        public async Task<IActionResult> SaveOrder([FromBody] OrderVM orderPM)
+        public async Task<IActionResult> SaveOrder([FromBody] OrderPM orderPM)
         {
             try
             {
                 // Validate required fields
-                if (orderPM.ClientIdFk <= 0)
+                if (orderPM.ClientId <= 0)
                 {
                     return BadRequest(new
                     {
@@ -342,10 +343,10 @@ namespace GBS.Api.Controller
                 }
 
                 // Map properties
-                order.ClientIdFk = orderPM.ClientIdFk;
+                order.ClientIdFk = orderPM.ClientId;
                 order.OrderDate = orderPM.OrderDate;
                 order.DeliveryDate = orderPM.DeliveryDate;
-                order.StatusIdFk = orderPM.StatusIdFk;
+                order.StatusIdFk = orderPM.StatusId;
                 order.TotalQuantity = orderPM.TotalQuantity;
                 order.TotalAmount = orderPM.TotalAmount;
                 order.AdvanceAmount = orderPM.AdvanceAmount;
@@ -354,68 +355,68 @@ namespace GBS.Api.Controller
 
                 var saveResponse = await _orderService.SaveOrder(order);
 
-                //if (saveResponse > 0)
-                //{
-                //    // Handle Order Items
-                //    if (orderPM.OrderItems != null && orderPM.OrderItems.Any())
-                //    {
-                //        // Delete existing items if updating
-                //        if (!isNew)
-                //        {
-                //            await _orderService.DeleteOrderItems(order.Id);
-                //        }
+                if (saveResponse > 0)
+                {
+                    //    // Handle Order Items
+                    //    if (orderPM.OrderItems != null && orderPM.OrderItems.Any())
+                    //    {
+                    //        // Delete existing items if updating
+                    //        if (!isNew)
+                    //        {
+                    //            await _orderService.DeleteOrderItems(order.Id);
+                    //        }
 
-                //        var orderItems = orderPM.OrderItems.Select(item => new OrderItem
-                //        {
-                //            OrderIdFk = order.Id,
-                //            ProductIdFk = item.ProductIdFk,
-                //            Quantity = item.Quantity,
-                //            SizeIdFk = item.SizeIdFk,
-                //            Color = item.Color,
-                //            UnitPrice = item.UnitPrice,
-                //            TotalPrice = item.TotalPrice,
-                //            SpecialInstructions = item.SpecialInstructions,
-                //            IsCompleted = item.IsCompleted,
-                //            CompletedQuantity = item.CompletedQuantity
-                //        });
+                    //        var orderItems = orderPM.OrderItems.Select(item => new OrderItem
+                    //        {
+                    //            OrderIdFk = order.Id,
+                    //            ProductIdFk = item.ProductIdFk,
+                    //            Quantity = item.Quantity,
+                    //            SizeIdFk = item.SizeIdFk,
+                    //            Color = item.Color,
+                    //            UnitPrice = item.UnitPrice,
+                    //            TotalPrice = item.TotalPrice,
+                    //            SpecialInstructions = item.SpecialInstructions,
+                    //            IsCompleted = item.IsCompleted,
+                    //            CompletedQuantity = item.CompletedQuantity
+                    //        });
 
-                //        await _orderService.SaveOrderItems(orderItems);
-                //    }
+                    //        await _orderService.SaveOrderItems(orderItems);
+                    //    }
 
-                //    // Handle Order Costs
-                //    if (orderPM.OrderCosts != null && orderPM.OrderCosts.Any())
-                //    {
-                //        // Delete existing costs if updating
-                //        if (!isNew)
-                //        {
-                //            await _orderService.DeleteOrderCosts(order.Id);
-                //        }
+                    //    // Handle Order Costs
+                    //    if (orderPM.OrderCosts != null && orderPM.OrderCosts.Any())
+                    //    {
+                    //        // Delete existing costs if updating
+                    //        if (!isNew)
+                    //        {
+                    //            await _orderService.DeleteOrderCosts(order.Id);
+                    //        }
 
-                //        var orderCosts = orderPM.OrderCosts.Select(cost => new OrderCostVM
-                //        {
-                //            OrderIdFk = order.Id,
-                //            CostCategoryIdFk = cost.CostCategoryIdFk,
-                //            CostDescription = cost.CostDescription,
-                //            Quantity = cost.Quantity,
-                //            UnitCost = cost.UnitCost,
-                //            TotalCost = cost.TotalCost,
-                //            CostDate = cost.CostDate,
-                //            VendorName = cost.VendorName,
-                //            InvoiceNumber = cost.InvoiceNumber,
-                //            Notes = cost.Notes,
-                //            CreatedDate = DateTime.Now
-                //        });
+                    //        var orderCosts = orderPM.OrderCosts.Select(cost => new OrderCostVM
+                    //        {
+                    //            OrderIdFk = order.Id,
+                    //            CostCategoryIdFk = cost.CostCategoryIdFk,
+                    //            CostDescription = cost.CostDescription,
+                    //            Quantity = cost.Quantity,
+                    //            UnitCost = cost.UnitCost,
+                    //            TotalCost = cost.TotalCost,
+                    //            CostDate = cost.CostDate,
+                    //            VendorName = cost.VendorName,
+                    //            InvoiceNumber = cost.InvoiceNumber,
+                    //            Notes = cost.Notes,
+                    //            CreatedDate = DateTime.Now
+                    //        });
 
-                //        await _orderService.SaveOrderCosts(orderCosts);
-                //    }
+                    //        await _orderService.SaveOrderCosts(orderCosts);
+                    //    }
 
-                //    return Ok(new
-                //    {
-                //        status = HttpStatusCode.OK,
-                //        message = isNew ? "Order created successfully" : "Order updated successfully",
-                //        data = new { Id = order.Id, OrderNumber = order.OrderNumber }
-                //    });
-                //}
+                    return Ok(new
+                    {
+                        status = HttpStatusCode.OK,
+                        message = isNew ? "order created successfully" : "order updated successfully",
+                        data = new { id = order.Id, ordernumber = order.Reference }
+                    });
+                }
 
                 return BadRequest(new
                 {

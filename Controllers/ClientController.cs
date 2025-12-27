@@ -1,5 +1,6 @@
 using GBS.Api.DbModels;
 using GBS.Api.Model;
+using GBS.Api.Model.Post;
 using GBS.Model;
 using GBS.Model;
 using GBS.Service;
@@ -29,6 +30,7 @@ namespace GBS.Api.Controller
                     var response = clients.Select(client => new ClientVM
                     {
                         Id = client.Id,
+                        Reference = client.Reference,
                         ClientName = client.ClientName,
                         ContactPerson = client.ContactPerson,
                         Phone = client.Phone,
@@ -38,9 +40,9 @@ namespace GBS.Api.Controller
                         State = client.State,
                         PostalCode = client.PostalCode,
                         Gstnumber = client.Gstnumber,
-                        CreatedBy = client.CreatedBy,
+                        CreatedBy = "Hard Code Name",
                         CreatedDate = client.CreatedDate,
-                        ModifiedBy = client.ModifiedBy,
+                        ModifiedBy = "Hard Code Name",
                         ModifiedDate = client.ModifiedDate,
                     }).ToList();
 
@@ -85,6 +87,7 @@ namespace GBS.Api.Controller
                     var response = new ClientVM
                     {
                         Id = client.Id,
+                        Reference = client.Reference,
                         ClientName = client.ClientName,
                         ContactPerson = client.ContactPerson,
                         Phone = client.Phone,
@@ -94,16 +97,16 @@ namespace GBS.Api.Controller
                         State = client.State,
                         PostalCode = client.PostalCode,
                         Gstnumber = client.Gstnumber,
-                        CreatedBy = client.CreatedBy,
+                        CreatedBy = "Hard Code Name",
                         CreatedDate = client.CreatedDate,
-                        ModifiedBy = client.ModifiedBy,
+                        ModifiedBy = "Hard Code Name",
                         ModifiedDate = client.ModifiedDate,
                         Orders = new List<GBS.Model.OrderVM>(),
                         Payments = new List<GBS.Model.PaymentVM>()
                     };
                     foreach (var order in client.Orders)
                     {
-                        response.Orders.Add(new GBS.Model.OrderVM
+                        response.Orders.Add(new OrderVM
                         {
                             Id = order.Id,
                             Reference = order.Reference,
@@ -221,8 +224,6 @@ namespace GBS.Api.Controller
                 client.State = clientPM.State;
                 client.PostalCode = clientPM.PostalCode;
                 client.Gstnumber = clientPM.Gstnumber;
-                client.CreatedBy = loggedInUserId;
-                client.CreatedDate = DateTime.Now;
                 client.IsActive=true;
 
                 var saveResponse = await _clientService.SaveClient(client);

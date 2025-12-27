@@ -7,7 +7,7 @@ public partial class Product
 {
     public int Id { get; set; }
 
-    public string Reference { get; set; } = null!;
+    public string? Reference { get; set; }
 
     public string ProductName { get; set; } = null!;
 
