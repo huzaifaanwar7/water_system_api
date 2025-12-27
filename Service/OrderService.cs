@@ -13,6 +13,7 @@ namespace GBS.Service.Service  // Keep this namespace
         Task<Order> GetOrderById(int Id);
         Task<List<Order>> GetOrdersByClientId(int clientId);
         Task<int> SaveOrder(Order order);
+        Task<int> SaveOrderCost(OrderCost cost);
     }
 
     public class OrderService : IOrderService
@@ -62,6 +63,12 @@ namespace GBS.Service.Service  // Keep this namespace
         {
             if (order.Id == 0) { await _dbContext.Orders.AddAsync(order); }
             else { _dbContext.Orders.Update(order); }
+            return await _dbContext.SaveChangesAsync();
+        }  
+        public async Task<int> SaveOrderCost(OrderCost cost)
+        {
+            if (cost.Id == 0) { await _dbContext.OrderCosts.AddAsync(cost); }
+            else { _dbContext.OrderCosts.Update(cost); }
             return await _dbContext.SaveChangesAsync();
         }
     }

@@ -8,8 +8,8 @@ namespace GBS.Data.Model
 {
     public partial class PaymentVM
     {
-        public int? Id { get; set; }
-        public int? OrderIdFk { get; set; }
+        public int Id { get; set; }
+        public int OrderIdFk { get; set; }
 
         public DateTime? PaymentDate { get; set; }
 

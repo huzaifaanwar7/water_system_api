@@ -129,7 +129,7 @@ namespace GBS.Api.Controller
                             response.Payments.Add(new GBS.Data.Model.PaymentVM
                             {
                                 Id = payment.Id,
-                                OrderIdFk = payment.OrderIdFk,
+                                OrderIdFk = payment.OrderIdFk.Value,
                                 PaymentDate = payment.PaymentDate,
                                 Amount = payment.Amount,
                                 PaymentMethodIdFk = payment.PaymentMethodIdFk,

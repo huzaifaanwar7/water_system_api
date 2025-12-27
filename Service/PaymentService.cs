@@ -12,6 +12,8 @@ namespace GBS.Service.Service  // Keep this namespace
         Task<List<Payment>> GetPaymentList();
         Task<Payment> GetPaymentById(int Id);
         Task<List<Payment>> GetPaymentsByOrderId(int orderId);
+        Task<int> SavePayment(Payment orderId);
+        Task<decimal> GetTotalPaymentsByOrderId(int orderId);
 
     }
 
@@ -50,41 +52,17 @@ namespace GBS.Service.Service  // Keep this namespace
                 .ToListAsync();
         }
 
-        public async Task<Payment> CreatePayment(PaymentVM model)
+        public async Task<int> SavePayment(Payment payment)
         {
-            var payment = new Payment
+            if (payment.Id == 0)
             {
-                OrderIdFk = model.OrderIdFk,
-                PaymentDate = model.PaymentDate,
-                Amount = model.Amount,
-                PaymentMethodIdFk = model.PaymentMethodIdFk,
-                ReferenceNumber = model.ReferenceNumber,
-                Notes = model.Notes,
-                CreatedBy = model.CreatedBy,
-                CreatedDate = model.CreatedDate != default ? model.CreatedDate : System.DateTime.Now
-            };
-
-            _dbContext.Payments.Add(payment);
-            await _dbContext.SaveChangesAsync();
-            return payment;
-        }
-
-        public async Task<bool> UpdatePayment(int Id, PaymentVM model)
-        {
-            var payment = await _dbContext.Payments.FindAsync(Id);
-            if (payment == null) return false;
-
-            payment.OrderIdFk = model.OrderIdFk;
-            payment.PaymentDate = model.PaymentDate;
-            payment.Amount = model.Amount;
-            payment.PaymentMethodIdFk = model.PaymentMethodIdFk;
-            payment.ReferenceNumber = model.ReferenceNumber;
-            payment.Notes = model.Notes;
-            payment.CreatedBy = model.CreatedBy;
-
-            _dbContext.Payments.Update(payment);
-            await _dbContext.SaveChangesAsync();
-            return true;
+                await _dbContext.Payments.AddAsync(payment);
+            }
+            else
+            {
+                _dbContext.Payments.Update(payment);
+            }
+            return await _dbContext.SaveChangesAsync();
         }
 
         public async Task<bool> DeletePayment(int Id)
@@ -95,6 +73,12 @@ namespace GBS.Service.Service  // Keep this namespace
             _dbContext.Payments.Remove(payment);
             await _dbContext.SaveChangesAsync();
             return true;
+        }
+        public async Task<decimal> GetTotalPaymentsByOrderId(int orderId)
+        {
+            return await _dbContext.Payments
+                .Where(p => p.OrderIdFk == orderId)
+                .SumAsync(p => p.Amount.Value);
         }
     }
 }

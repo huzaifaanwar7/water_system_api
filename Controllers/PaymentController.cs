@@ -1,3 +1,4 @@
+using GBS.Api.DbModels;
 using GBS.Data.Model;
 using GBS.Service;
 using GBS.Service.Service;
@@ -11,14 +12,8 @@ namespace GBS.Api.Controller
 {
     [Route("[controller]")]
     [ApiController]
-    public class PaymentController : ControllerBase
+    public class PaymentController(IPaymentService _paymentService, IOrderService _orderService) : ControllerBase
     {
-        private readonly IPaymentService _paymentService;
-
-        public PaymentController(IPaymentService paymentService)
-        {
-            _paymentService = paymentService;
-        }
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -31,7 +26,7 @@ namespace GBS.Api.Controller
                     var response = payments.Select(p => new PaymentVM
                     {
                         Id = p.Id,
-                        OrderIdFk = p.OrderIdFk,
+                        OrderIdFk = p.OrderIdFk.Value,
                         PaymentDate = p.PaymentDate,
                         Amount = p.Amount,
                         PaymentMethodIdFk = p.PaymentMethodIdFk,
@@ -75,7 +70,7 @@ namespace GBS.Api.Controller
                     var response = new PaymentVM
                     {
                         Id = payment.Id,
-                        OrderIdFk = payment.OrderIdFk,
+                        OrderIdFk = payment.OrderIdFk.Value,
                         PaymentDate = payment.PaymentDate,
                         Amount = payment.Amount,
                         PaymentMethodIdFk = payment.PaymentMethodIdFk,
@@ -119,7 +114,7 @@ namespace GBS.Api.Controller
                     var response = payments.Select(p => new PaymentVM
                     {
                         Id = p.Id,
-                        OrderIdFk = p.OrderIdFk,
+                        OrderIdFk = p.OrderIdFk.Value,
                         PaymentDate = p.PaymentDate,
                         Amount = p.Amount,
                         PaymentMethodIdFk = p.PaymentMethodIdFk,
@@ -152,8 +147,172 @@ namespace GBS.Api.Controller
             }
         }
 
-       
 
-        
+        [HttpPost("Save")]
+        public async Task<IActionResult> SavePayment([FromBody] PaymentVM paymentPM)
+        {
+            try
+            {
+                // Validate required fields
+                if (paymentPM.OrderIdFk <= 0)
+                {
+                    return BadRequest(new
+                    {
+                        status = HttpStatusCode.BadRequest,
+                        message = "Order is required"
+                    });
+                }
+
+                if (paymentPM.Amount <= 0)
+                {
+                    return BadRequest(new
+                    {
+                        status = HttpStatusCode.BadRequest,
+                        message = "Payment amount must be greater than 0"
+                    });
+                }
+
+                // Verify order exists
+                var order = await _orderService.GetOrderById(paymentPM.OrderIdFk);
+                if (order == null)
+                {
+                    return NotFound(new
+                    {
+                        status = HttpStatusCode.NotFound,
+                        message = "Order not found"
+                    });
+                }
+
+                Payment payment;
+                decimal previousAmount = 0;
+                bool isNew = paymentPM.Id == 0;
+
+                if (!isNew)
+                {
+                    // Update existing payment
+                    payment = await _paymentService.GetPaymentById(paymentPM.Id);
+                    if (payment == null)
+                    {
+                        return NotFound(new
+                        {
+                            status = HttpStatusCode.NotFound,
+                            message = "Payment not found"
+                        });
+                    }
+                    previousAmount = payment.Amount.Value; // Store for balance calculation
+                }
+                else
+                {
+                    // Create new payment
+                    payment = new Payment
+                    {
+                        CreatedDate = DateTime.Now,
+                        // CreatedBy = loggedInUserId // Uncomment when auth is ready
+                    };
+                }
+
+                // Map properties
+                payment.OrderIdFk = paymentPM.OrderIdFk;
+                payment.PaymentDate = paymentPM.PaymentDate;
+                payment.Amount = paymentPM.Amount;
+                payment.PaymentMethodIdFk = paymentPM.PaymentMethodIdFk;
+                payment.ReferenceNumber = paymentPM.ReferenceNumber;
+                payment.Notes = paymentPM.Notes;
+
+                var saveResponse = await _paymentService.SavePayment(payment);
+
+                if (saveResponse > 0)
+                {
+                    // Update Order Balance
+                    var totalPayments = await _paymentService.GetTotalPaymentsByOrderId(order.Id);
+                    order.AdvanceAmount = totalPayments;
+                    order.BalanceAmount = order.TotalAmount - totalPayments;
+                    order.ModifiedDate = DateTime.Now;
+                    await _orderService.SaveOrder(order);
+
+                    return Ok(new
+                    {
+                        status = HttpStatusCode.OK,
+                        message = isNew ? "Payment recorded successfully" : "Payment updated successfully",
+                        data = new
+                        {
+                            Id = payment.Id,
+                            OrderBalance = order.BalanceAmount,
+                            TotalPaid = totalPayments
+                        }
+                    });
+                }
+
+                return BadRequest(new
+                {
+                    status = HttpStatusCode.BadRequest,
+                    message = "Failed to save payment"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = $"An error occurred: {ex.Message}"
+                });
+            }
+        }
+
+        //[HttpDelete("{paymentId}")]
+        //public async Task<IActionResult> DeletePayment([FromRoute] int paymentId)
+        //{
+        //    try
+        //    {
+        //        var payment = await _paymentService.GetPaymentById(paymentId);
+        //        if (payment == null)
+        //        {
+        //            return NotFound(new
+        //            {
+        //                status = HttpStatusCode.NotFound,
+        //                message = "Payment not found"
+        //            });
+        //        }
+
+        //        var orderId = payment.OrderIdFk;
+        //        var deleteResponse = await _paymentService.DeletePayment(paymentId);
+
+        //        if (deleteResponse > 0)
+        //        {
+        //            // Update Order Balance after deletion
+        //            var order = await _orderService.GetOrderById(orderId);
+        //            if (order != null)
+        //            {
+        //                var totalPayments = await _paymentService.GetTotalPaymentsByOrderId(orderId);
+        //                order.AdvanceAmount = totalPayments;
+        //                order.BalanceAmount = order.TotalAmount - totalPayments;
+        //                order.ModifiedDate = DateTime.Now;
+        //                await _orderService.SaveOrder(order);
+        //            }
+
+        //            return Ok(new
+        //            {
+        //                status = HttpStatusCode.OK,
+        //                message = "Payment deleted successfully"
+        //            });
+        //        }
+
+        //        return BadRequest(new
+        //        {
+        //            status = HttpStatusCode.BadRequest,
+        //            message = "Failed to delete payment"
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new
+        //        {
+        //            status = HttpStatusCode.InternalServerError,
+        //            message = $"An error occurred: {ex.Message}"
+        //        });
+        //    }
+        //}
+
+
     }
 }
