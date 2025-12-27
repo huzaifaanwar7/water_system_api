@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace GBS.Api.DbModels;
+
+public partial class EmployeeTechStack
+{
+    public int Id { get; set; }
+
+    public int EmployeeIdFk { get; set; }
+
+    public int TechStackIdFk { get; set; }
+
+    public bool IsActive { get; set; }
+
+    public int? CreatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
+
+    public int? UpdatedBy { get; set; }
+
+    public DateTime? UpdatedDate { get; set; }
+
+    public virtual Employee EmployeeIdFkNavigation { get; set; } = null!;
+
+    public virtual Lookup TechStackIdFkNavigation { get; set; } = null!;
+}
