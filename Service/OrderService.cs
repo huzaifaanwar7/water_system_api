@@ -12,6 +12,7 @@ namespace GBS.Service.Service  // Keep this namespace
         Task<List<Order>> GetOrderList();
         Task<Order> GetOrderById(int Id);
         Task<List<Order>> GetOrdersByClientId(int clientId);
+        Task<int> SaveOrder(Order order);
     }
 
     public class OrderService : IOrderService
@@ -56,6 +57,12 @@ namespace GBS.Service.Service  // Keep this namespace
                 .Include(o => o.StatusIdFkNavigation)
                 .Include(o => o.OrderCosts)
                 .ToListAsync();
+        }
+        public async Task<int> SaveOrder(Order order)
+        {
+            if (order.Id == 0) { await _dbContext.Orders.AddAsync(order); }
+            else { _dbContext.Orders.Update(order); }
+            return await _dbContext.SaveChangesAsync();
         }
     }
 }

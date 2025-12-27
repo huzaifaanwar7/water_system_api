@@ -1,3 +1,4 @@
+using GBS.Api.DbModels;
 using GBS.Api.Model;
 using GBS.Data.Model;
 using GBS.Service;
@@ -167,180 +168,137 @@ namespace GBS.Api.Controller
         }
 
 
-        //[HttpPost("Save")]
-        //public async Task<IActionResult> SaveClient([FromBody] ClientPM employee)
-        //{
-        //    try
-        //    {
-        //        // Retrieve all users using the employee service
-        //        bool usernameAlreadyExists = false;
-        //        usernameAlreadyExists = await _clientService.UsernameAlreadyExists(employee.Username);
-        //        if (usernameAlreadyExists)
-        //        {
-        //            return Ok(new BaseResponse
-        //            {
-        //                status = HttpStatusCode.BadRequest,
-        //                message = "Username already exists"
-        //            });
-        //        }
+        [HttpPost("Save")]
+        public async Task<IActionResult> SaveClient([FromBody] ClientVM clientPM)
+        {
+            try
+            {
+                int loggedInUserId = Convert.ToInt32(HttpContext.Items["ClientId"]);
 
-        //        Client user = null;
-        //        user = await _clientService.GetClientById(employee.Id);
-        //        if (user == null)
-        //        {
-        //            user = new Client();
-        //        }
-        //        user.FirstName = employee.FirstName;
-        //        user.Username = employee.Username;
-        //        user.LastName = employee.LastName;
-        //        user.PersonalPhone = employee.PersonalPhone;
-        //        user.PersonalEmail = employee.PersonalEmail;
-        //        user.Cnic = employee.Cnic; ;
-        //        user.JoiningDate = employee.JoiningDate;
-        //        user.Username = employee.Username;
-        //        user.Password = "Password@123";
-        //        user.StatusIdFk = employee.Status;
-        //        user.IsActive = true;
-        //        user.ProfilePictureId = employee.ProfilePictureId;
+                // Validate required fields
+                if (string.IsNullOrWhiteSpace(clientPM.ClientName))
+                {
+                    return BadRequest(new BaseResponse
+                    {
+                        status = HttpStatusCode.BadRequest,
+                        message = "Client name is required"
+                    });
+                }
 
-        //        var saveResponse = await _clientService.SaveClient(user);
-        //        // Check if users list is not empty
-        //        if (saveResponse > 0)
-        //        {
-        //            Client savedClient = await _clientService.GetClientByUsername(user.Username);
-        //            //Saved Userrole
-        //            var ClientUserRoles = employee.UserRole.Select(r => new ClientUserRole
-        //            {
-        //                ClientIdFk = savedClient.Id,
-        //                UserRoleIdFk = r,
-        //                CreatedBy = LoggedClient.Id,
-        //                CreatedDate = DateTime.Now,
-        //            });
+                Client client;
 
-        //            var saveUserRole = await _clientService.SaveUserRole(ClientUserRoles);
-        //            //Saved TechStack
-        //            var ClientTechStack = employee.TechStack.Select(t => new ClientTechStack
-        //            {
-        //                ClientIdFk = savedClient.Id,
-        //                TechStackIdFk = t,
-        //                CreatedBy = LoggedClient.Id,
-        //                CreatedDate = DateTime.Now,
-        //            });
-        //            var saveTechStack = await _clientService.SaveTeckStack(ClientTechStack);
+                if (clientPM.Id > 0)
+                {
+                    // Update existing client
+                    client = await _clientService.GetClientById(clientPM.Id);
+                    if (client == null)
+                    {
+                        return NotFound(new BaseResponse
+                        {
+                            status = HttpStatusCode.NotFound,
+                            message = "Client not found"
+                        });
+                    }
+                    client.ModifiedBy = loggedInUserId;
+                    client.ModifiedDate = DateTime.Now;
+                }
+                else
+                {
+                    // Create new client
+                    client = new Client
+                    {
+                        CreatedBy = loggedInUserId,
+                        CreatedDate = DateTime.Now
+                    };
+                }
 
-        //            //Saved JobRole
-        //            var ClientJobRole = employee.JobRole.Select(j => new ClientJobRole
-        //            {
-        //                ClientIdFk = savedClient.Id,
-        //                JobRoleIdFk = j,
-        //                CreatedBy = LoggedClient.Id,
-        //                CreatedDate = DateTime.Now,
-        //            });
-        //            var saveJobRole = await _clientService.SaveJobRole(ClientJobRole);
+                // Map properties
+                client.ClientName = clientPM.ClientName;
+                client.ContactPerson = clientPM.ContactPerson;
+                client.Phone = clientPM.Phone;
+                client.Email = clientPM.Email;
+                client.Address = clientPM.Address;
+                client.City = clientPM.City;
+                client.State = clientPM.State;
+                client.PostalCode = clientPM.PostalCode;
+                client.Gstnumber = clientPM.Gstnumber;
+                client.IsActive = clientPM.IsActive;
 
-        //            var savedUser = await _clientService.GetClientByUsername(user.Username);
+                var saveResponse = await _clientService.SaveClient(client);
 
-        //            var employeeDto = new ClientDto
-        //            {
-        //                Id = savedUser.Id,
-        //                Username = savedUser.Username,
-        //                FirstName = savedUser.FirstName,
-        //                LastName = savedUser.LastName,
-        //                PersonalEmail = savedUser.PersonalEmail,
-        //                PersonalPhone = savedUser.PersonalPhone
-        //                // Map other properties...
-        //            };
+                if (saveResponse > 0)
+                {
+                    return Ok(new BaseResponse
+                    {
+                        status = HttpStatusCode.OK,
+                        message = clientPM.Id > 0 ? "Client updated successfully" : "Client saved successfully",
+                        data = new { Id = client.Id }
+                    });
+                }
 
-        //            // Return success response
-        //            return Ok(new BaseResponse
-        //            {
-        //                status = HttpStatusCode.OK,
-        //                message = "Client saved successfully",
-        //                data = employeeDto
-        //            });
-        //        }
-
-        //        // Handle case where no users are found
-        //        return Ok(new BaseResponse
-        //        {
-        //            status = HttpStatusCode.BadRequest,
-        //            message = "Client not saved"
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Handle unexpected exceptions
-        //        return StatusCode(500, new BaseResponse
-        //        {
-        //            status = HttpStatusCode.InternalServerError,
-        //            message = $"An error occurred: {ex.InnerException}"
-        //        });
-        //    }
-        //}
+                return BadRequest(new BaseResponse
+                {
+                    status = HttpStatusCode.BadRequest,
+                    message = "Failed to save client"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = $"An error occurred: {ex.Message}"
+                });
+            }
+        }
 
 
-        //[HttpPut("Update")]
-        //public async Task<IActionResult> UpdateClient([FromBody] ClientUpdatePM employee)
-        //{
-        //    try
-        //    {
-        //        // Check if the employee exists
-        //        var existingClient = await _clientService.GetClientById(employee.Id);
-        //        if (existingClient == null)
-        //        {
-        //            return Ok(new BaseResponse
-        //            {
-        //                status = HttpStatusCode.NotFound,
-        //                message = "Client not found"
-        //            });
-        //        }
+        [HttpDelete("{clientId}")]
+        public async Task<IActionResult> DeleteClient([FromRoute] int clientId)
+        {
+            try
+            {
+                var client = await _clientService.GetClientById(clientId);
+                if (client == null)
+                {
+                    return NotFound(new BaseResponse
+                    {
+                        status = HttpStatusCode.NotFound,
+                        message = "Client not found"
+                    });
+                }
 
-        //        // Update employee details
-        //        existingClient.FirstName = employee.FirstName;
-        //        existingClient.LastName = employee.LastName;
-        //        existingClient.PersonalPhone = employee.PersonalPhone;
-        //        existingClient.PersonalEmail = employee.PersonalEmail;
-        //        existingClient.Cnic = employee.Cnic;
-        //        existingClient.JoiningDate = employee.JoiningDate;
-        //        existingClient.StatusIdFk = employee.Status;
-        //        existingClient.ProfilePictureId = employee.ProfilePictureId;
+                // Soft delete
+                client.IsActive = false;
+                client.ModifiedBy = Convert.ToInt32(HttpContext.Items["ClientId"]);
+                client.ModifiedDate = DateTime.Now;
 
-        //        // Save updated employee details
-        //        var updateClientResponse = await _clientService.UpdateClient(existingClient);
+                var result = await _clientService.SaveClient(client);
 
-        //        if (updateClientResponse > 0)
-        //        {
-        //            // Update related data (Roles, Tech Stack, Job Roles)
-        //            await _clientService.UpdateUserRoles(employee.UserRole, existingClient.Id);
-        //            await _clientService.UpdateTechStack(employee.TechStack, existingClient.Id);
-        //            await _clientService.UpdateJobRoles(employee.JobRole, existingClient.Id);
+                if (result > 0)
+                {
+                    return Ok(new BaseResponse
+                    {
+                        status = HttpStatusCode.OK,
+                        message = "Client deleted successfully"
+                    });
+                }
 
-        //            // Return success response
-        //            return Ok(new BaseResponse
-        //            {
-        //                status = HttpStatusCode.OK,
-        //                message = "Client updated successfully"
-        //            });
-        //        }
-
-        //        // If update fails
-        //        return Ok(new BaseResponse
-        //        {
-        //            status = HttpStatusCode.BadRequest,
-        //            message = "Client update failed"
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Handle unexpected exceptions
-        //        return StatusCode(500, new BaseResponse
-        //        {
-        //            status = HttpStatusCode.InternalServerError,
-        //            message = $"An error occurred: {ex.InnerException?.Message ?? ex.Message}"
-        //        });
-        //    }
-        //}
-
+                return BadRequest(new BaseResponse
+                {
+                    status = HttpStatusCode.BadRequest,
+                    message = "Failed to delete client"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new BaseResponse
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = $"An error occurred: {ex.Message}"
+                });
+            }
+        }
 
     }
 

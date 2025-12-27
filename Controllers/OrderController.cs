@@ -1,4 +1,5 @@
-﻿using GBS.Data.Model;
+﻿using GBS.Api.DbModels;
+using GBS.Data.Model;
 using GBS.Service;
 using GBS.Service.Service;  // Use GBS.Service.Service namespace
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -283,6 +284,143 @@ namespace GBS.Api.Controller
                 {
                     status = HttpStatusCode.NotFound,
                     message = "No orders found for this client."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = $"An error occurred: {ex.Message}"
+                });
+            }
+        }
+
+
+        [HttpPost("Save")]
+        public async Task<IActionResult> SaveOrder([FromBody] OrderVM orderPM)
+        {
+            try
+            {
+                // Validate required fields
+                if (orderPM.ClientIdFk <= 0)
+                {
+                    return BadRequest(new
+                    {
+                        status = HttpStatusCode.BadRequest,
+                        message = "Client is required"
+                    });
+                }
+
+                Order order;
+                bool isNew = orderPM.Id == 0;
+
+                if (!isNew)
+                {
+                    // Update existing order
+                    order = await _orderService.GetOrderById(orderPM.Id);
+                    if (order == null)
+                    {
+                        return NotFound(new
+                        {
+                            status = HttpStatusCode.NotFound,
+                            message = "Order not found"
+                        });
+                    }
+                    order.ModifiedDate = DateTime.Now;
+                    // order.ModifiedBy = loggedInUserId; // Uncomment when auth is ready
+                }
+                else
+                {
+                    // Create new order
+                    order = new Order
+                    {
+                        OrderNumber = "ORD123",
+                        CreatedDate = DateTime.Now,
+                        // CreatedBy = loggedInUserId // Uncomment when auth is ready
+                    };
+                }
+
+                // Map properties
+                order.ClientIdFk = orderPM.ClientIdFk;
+                order.OrderDate = orderPM.OrderDate;
+                order.DeliveryDate = orderPM.DeliveryDate;
+                order.StatusIdFk = orderPM.StatusIdFk;
+                order.TotalQuantity = orderPM.TotalQuantity;
+                order.TotalAmount = orderPM.TotalAmount;
+                order.AdvanceAmount = orderPM.AdvanceAmount;
+                order.BalanceAmount = orderPM.BalanceAmount ?? (orderPM.TotalAmount - (orderPM.AdvanceAmount ?? 0));
+                order.Notes = orderPM.Notes;
+
+                var saveResponse = await _orderService.SaveOrder(order);
+
+                //if (saveResponse > 0)
+                //{
+                //    // Handle Order Items
+                //    if (orderPM.OrderItems != null && orderPM.OrderItems.Any())
+                //    {
+                //        // Delete existing items if updating
+                //        if (!isNew)
+                //        {
+                //            await _orderService.DeleteOrderItems(order.Id);
+                //        }
+
+                //        var orderItems = orderPM.OrderItems.Select(item => new OrderItem
+                //        {
+                //            OrderIdFk = order.Id,
+                //            ProductIdFk = item.ProductIdFk,
+                //            Quantity = item.Quantity,
+                //            SizeIdFk = item.SizeIdFk,
+                //            Color = item.Color,
+                //            UnitPrice = item.UnitPrice,
+                //            TotalPrice = item.TotalPrice,
+                //            SpecialInstructions = item.SpecialInstructions,
+                //            IsCompleted = item.IsCompleted,
+                //            CompletedQuantity = item.CompletedQuantity
+                //        });
+
+                //        await _orderService.SaveOrderItems(orderItems);
+                //    }
+
+                //    // Handle Order Costs
+                //    if (orderPM.OrderCosts != null && orderPM.OrderCosts.Any())
+                //    {
+                //        // Delete existing costs if updating
+                //        if (!isNew)
+                //        {
+                //            await _orderService.DeleteOrderCosts(order.Id);
+                //        }
+
+                //        var orderCosts = orderPM.OrderCosts.Select(cost => new OrderCostVM
+                //        {
+                //            OrderIdFk = order.Id,
+                //            CostCategoryIdFk = cost.CostCategoryIdFk,
+                //            CostDescription = cost.CostDescription,
+                //            Quantity = cost.Quantity,
+                //            UnitCost = cost.UnitCost,
+                //            TotalCost = cost.TotalCost,
+                //            CostDate = cost.CostDate,
+                //            VendorName = cost.VendorName,
+                //            InvoiceNumber = cost.InvoiceNumber,
+                //            Notes = cost.Notes,
+                //            CreatedDate = DateTime.Now
+                //        });
+
+                //        await _orderService.SaveOrderCosts(orderCosts);
+                //    }
+
+                //    return Ok(new
+                //    {
+                //        status = HttpStatusCode.OK,
+                //        message = isNew ? "Order created successfully" : "Order updated successfully",
+                //        data = new { Id = order.Id, OrderNumber = order.OrderNumber }
+                //    });
+                //}
+
+                return BadRequest(new
+                {
+                    status = HttpStatusCode.BadRequest,
+                    message = "Failed to save order"
                 });
             }
             catch (Exception ex)
