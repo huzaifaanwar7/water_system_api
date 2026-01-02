@@ -35,6 +35,9 @@ namespace GBS.Service
                 .ThenInclude(x=> x.StatusIdFkNavigation)
                 .Include(c => c.Orders)
                 .ThenInclude(o => o.Payments)
+                .Include(c =>c.Orders)
+                .ThenInclude(o =>o.OrderItems)
+                .ThenInclude(oi => oi.ProductIdFkNavigation)
                 .FirstOrDefaultAsync();
         }
 

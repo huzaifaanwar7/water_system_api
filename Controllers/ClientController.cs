@@ -73,101 +73,123 @@ namespace GBS.Api.Controller
         }
 
 
-        [HttpGet("{ClientId}")]
-        public async Task<IActionResult> GetDetails([FromRoute] int ClientId)
+       [HttpGet("{ClientId}")]
+public async Task<IActionResult> GetDetails([FromRoute] int ClientId)
+{
+    try
+    {
+        // Retrieve all users using the employee service
+        var client = await _clientService.GetClientById(ClientId);
+        // Check if users list is not empty
+        if (client != null)
         {
-            try
+            // Prepare the response data
+            var response = new ClientVM
             {
-                // Retrieve all users using the employee service
-                var client = await _clientService.GetClientById(ClientId);
-                // Check if users list is not empty
-                if (client != null)
-                {
-                    // Prepare the response data
-                    var response = new ClientVM
-                    {
-                        Id = client.Id,
-                        Reference = client.Reference,
-                        ClientName = client.ClientName,
-                        ContactPerson = client.ContactPerson,
-                        Phone = client.Phone,
-                        Email = client.Email,
-                        Address = client.Address,
-                        City = client.City,
-                        State = client.State,
-                        PostalCode = client.PostalCode,
-                        Gstnumber = client.Gstnumber,
-                        CreatedBy = "Hard Code Name",
-                        CreatedDate = client.CreatedDate,
-                        ModifiedBy = "Hard Code Name",
-                        ModifiedDate = client.ModifiedDate,
-                        Orders = new List<GBS.Model.OrderVM>(),
-                        Payments = new List<GBS.Model.PaymentVM>()
-                    };
-                    foreach (var order in client.Orders)
-                    {
-                        response.Orders.Add(new OrderVM
-                        {
-                            Id = order.Id,
-                            Reference = order.Reference,
-                            ClientIdFk = order.ClientIdFk,
-                            OrderDate = order.OrderDate,
-                            DeliveryDate = order.DeliveryDate,
-                            StatusIdFk = order.StatusIdFk,
-                            Status = order.StatusIdFkNavigation.Name,
-                            TotalQuantity = order.TotalQuantity,
-                            TotalAmount = order.TotalAmount,
-                            AdvanceAmount = order.AdvanceAmount,
-                            BalanceAmount = order.BalanceAmount,
-                            Notes = order.Notes,
-                            CreatedBy = "Hard Coded Name",
-                            CreatedDate = order.CreatedDate,
-                            ModifiedDate = order.ModifiedDate,
-                            ModifiedBy = "Hard Coded Name",
+                Id = client.Id,
+                Reference = client.Reference,
+                ClientName = client.ClientName,
+                ContactPerson = client.ContactPerson,
+                Phone = client.Phone,
+                Email = client.Email,
+                Address = client.Address,
+                City = client.City,
+                State = client.State,
+                PostalCode = client.PostalCode,
+                Gstnumber = client.Gstnumber,
+                CreatedBy = "Hard Code Name",
+                CreatedDate = client.CreatedDate,
+                ModifiedBy = "Hard Code Name",
+                ModifiedDate = client.ModifiedDate,
+                Orders = new List<GBS.Model.OrderVM>(),
+                Payments = new List<GBS.Model.PaymentVM>(),
+                Products = new List<GBS.Model.ProductVM>()
+            };
 
-                        });
-                        foreach (var payment in order.Payments)
-                        {
-                            response.Payments.Add(new GBS.Model.PaymentVM
-                            {
-                                Id = payment.Id,
-                                OrderIdFk = payment.OrderIdFk,
-                                PaymentDate = payment.PaymentDate,
-                                Amount = payment.Amount,
-                                PaymentMethodIdFk = payment.PaymentMethodIdFk,
-                                Reference = payment.Reference,
-                                Notes = payment.Notes,
-                                CreatedBy = payment.CreatedBy,
-                                CreatedDate = payment.CreatedDate
-                            });
-                        }
-                    }
-                   
-                        // Return success response
-                        return Ok(new BaseResponse
+            foreach (var order in client.Orders)
+            {
+                response.Orders.Add(new OrderVM
+                {
+                    Id = order.Id,
+                    Reference = order.Reference,
+                    ClientIdFk = order.ClientIdFk,
+                    OrderDate = order.OrderDate,
+                    DeliveryDate = order.DeliveryDate,
+                    StatusIdFk = order.StatusIdFk,
+                    Status = order.StatusIdFkNavigation.Name,
+                    TotalQuantity = order.TotalQuantity,
+                    TotalAmount = order.TotalAmount,
+                    AdvanceAmount = order.AdvanceAmount,
+                    BalanceAmount = order.BalanceAmount,
+                    Notes = order.Notes,
+                    CreatedBy = "Hard Coded Name",
+                    CreatedDate = order.CreatedDate,
+                    ModifiedDate = order.ModifiedDate,
+                    ModifiedBy = "Hard Coded Name",
+                });
+
+                foreach (var payment in order.Payments)
+                {
+                    response.Payments.Add(new GBS.Model.PaymentVM
                     {
-                        status = HttpStatusCode.OK,
-                        data = response
+                        Id = payment.Id,
+                        OrderIdFk = payment.OrderIdFk,
+                        PaymentDate = payment.PaymentDate,
+                        Amount = payment.Amount,
+                        PaymentMethodIdFk = payment.PaymentMethodIdFk,
+                        Reference = payment.Reference,
+                        Notes = payment.Notes,
+                        CreatedBy = payment.CreatedBy,
+                        CreatedDate = payment.CreatedDate
                     });
                 }
 
-                // Handle case where no users are found
-                return NotFound(new BaseResponse
+              
+                foreach (var item in order.OrderItems)
                 {
-                    status = HttpStatusCode.NotFound,
-                    message = "No users found."
-                });
+                    if (item.ProductIdFkNavigation != null)
+                    {
+                        response.Products.Add(new GBS.Model.ProductVM
+                        {
+                            Id = item.ProductIdFkNavigation.Id,
+                            Reference = item.ProductIdFkNavigation.Reference,
+                            ProductName = item.ProductIdFkNavigation.ProductName,
+                            Description = item.ProductIdFkNavigation.Description,
+                            BaseStitchingCost = item.ProductIdFkNavigation.BaseStitchingCost,
+                            EstimatedTimeMinutes = item.ProductIdFkNavigation.EstimatedTimeMinutes,
+                            // Quantity = item.Quantity,
+                            // OrderIdFk = order.Id
+                        });
+                    }
+                }
             }
-            catch (Exception ex)
+
+            // Return success response
+            return Ok(new BaseResponse
             {
-                // Handle unexpected exceptions
-                return StatusCode(500, new BaseResponse
-                {
-                    status = HttpStatusCode.InternalServerError,
-                    message = $"An error occurred: {ex.Message}"
-                });
-            }
+                status = HttpStatusCode.OK,
+                data = response
+            });
         }
+
+        // Handle case where no users are found
+        return NotFound(new BaseResponse
+        {
+            status = HttpStatusCode.NotFound,
+            message = "No users found."
+        });
+    }
+    catch (Exception ex)
+    {
+        // Handle unexpected exceptions
+        return StatusCode(500, new BaseResponse
+        {
+            status = HttpStatusCode.InternalServerError,
+            message = $"An error occurred: {ex.Message}"
+        });
+    }
+}
+
 
 
         [HttpPost("Save")]
