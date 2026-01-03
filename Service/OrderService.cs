@@ -42,11 +42,14 @@ namespace GBS.Service.Service  // Keep this namespace
         public async Task<Order> GetOrderById(int Id)
         {
             return await _dbContext.Orders
-                .Where(u => u.Id == Id)
+                .Where(o => o.Id == Id)
                 .Include(o => o.ClientIdFkNavigation)
                 .Include(o => o.StatusIdFkNavigation)
                 .Include(o => o.OrderCosts)
-
+                .Include(o => o.OrderItems)
+                .Include(o => o.OrderLabors)
+                .Include(o => o.OrderMaterials)
+                .Include(o => o.OrderStatusHistories)
                 .FirstOrDefaultAsync();
         }
 
@@ -57,14 +60,20 @@ namespace GBS.Service.Service  // Keep this namespace
                 .Include(o => o.ClientIdFkNavigation)
                 .Include(o => o.StatusIdFkNavigation)
                 .Include(o => o.OrderCosts)
+                .Include(o => o.OrderItems)
+                .Include(o => o.OrderLabors)
+                .Include(o => o.OrderMaterials)
+                .Include(o => o.OrderStatusHistories)
                 .ToListAsync();
         }
+
         public async Task<int> SaveOrder(Order order)
         {
             if (order.Id == 0) { await _dbContext.Orders.AddAsync(order); }
             else { _dbContext.Orders.Update(order); }
             return await _dbContext.SaveChangesAsync();
-        }  
+        }
+
         public async Task<int> SaveOrderCost(OrderCost cost)
         {
             if (cost.Id == 0) { await _dbContext.OrderCosts.AddAsync(cost); }
