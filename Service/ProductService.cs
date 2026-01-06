@@ -48,7 +48,7 @@ namespace GBS.Service
         public async Task<ProductVM?> GetProductById(int id)
         {
             return await _dbContext.Products
-                .Where(p => p.Id == id)
+                .Where(p => p.Id == id && p.IsActive == true)
                 .Select(p => new ProductVM
                 {
                     Id = p.Id,
@@ -87,7 +87,7 @@ namespace GBS.Service
         }
         public async Task<bool>UpdateProduct(int Id,ProductVM model)
         {
-            var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id ==Id);
+            var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id ==Id && p.IsActive == true);
             if (product == null)
             return false;
                 product.Reference = model.Reference;
@@ -105,7 +105,7 @@ namespace GBS.Service
         }
         public async Task<bool>DeleteProduct(int Id)
         {
-                var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == Id);
+                var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == Id && p.IsActive == true);
     if (product == null)
         return false;
     product.IsActive = false;   
