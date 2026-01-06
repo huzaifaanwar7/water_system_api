@@ -503,5 +503,79 @@ public async Task<IActionResult> GetDetails([FromRoute] int OrderId)
                 });
             }
         }
+        [HttpPost("SaveItem")]
+public async Task<IActionResult> SaveItem([FromBody] OrderItemPM model)
+{
+    try
+    {
+        if (model.OrderId <= 0 || model.ProductIdFk <= 0)
+        {
+            return BadRequest(new
+            {
+                status = HttpStatusCode.BadRequest,
+                message = "Invalid order or product"
+            });
+        }
+
+        var order = await _orderService.GetOrderById(model.OrderId);
+        if (order == null)
+        {
+            return NotFound(new
+            {
+                status = HttpStatusCode.NotFound,
+                message = "Order not found"
+            });
+        }
+
+        OrderItem item;
+
+        if (model.Id > 0)
+        {
+            item = order.OrderItems.FirstOrDefault(x => x.Id == model.Id);
+            if (item == null)
+                return NotFound("Order item not found");
+        }
+        else
+        {
+            item = new OrderItem
+            {
+                OrderIdFk = model.OrderId
+            };
+        }
+
+       
+        item.ProductIdFk = model.ProductIdFk;
+        item.SizeIdFk = model.SizeIdFk;
+        item.Color = model.Color;
+        item.Quantity = model.Quantity;
+        item.UnitPrice = model.UnitPrice;
+        item.TotalPrice = model.UnitPrice * model.Quantity;
+        item.SpecialInstructions = model.SpecialInstructions;
+
+        await _orderService.SaveOrderItem(item);
+
+        // Recalculate order totals
+        order.TotalQuantity = order.OrderItems.Sum(x => x.Quantity);
+        order.TotalAmount = (decimal)order.OrderItems.Sum(x => x.TotalPrice);
+        order.BalanceAmount = order.TotalAmount - (order.AdvanceAmount  );
+
+        await _orderService.SaveOrder(order);
+
+        return Ok(new
+        {
+            status = HttpStatusCode.OK,
+            message = "Order item saved successfully"
+        });
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new
+        {
+            status = HttpStatusCode.InternalServerError,
+            message = ex.Message
+        });
+    }
+}
+
     }
 }
