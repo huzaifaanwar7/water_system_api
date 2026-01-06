@@ -108,8 +108,9 @@ namespace GBS.Service
                 var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == Id);
     if (product == null)
         return false;
-
-    _dbContext.Products.Remove(product);
+    product.IsActive = false;   
+    product.ModifiedDate = DateTime.Now;
+    _dbContext.Products.Update(product);
     await _dbContext.SaveChangesAsync();
     return true;
         }
