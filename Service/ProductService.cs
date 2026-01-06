@@ -8,6 +8,10 @@ namespace GBS.Service
     {
         Task<List<ProductVM>> GetProductList();
         Task<ProductVM?> GetProductById(int id);
+        
+        Task<int>AddProduct(ProductVM model);
+        Task<bool>UpdateProduct(int Id,ProductVM model);
+        Task<bool>DeleteProduct(int Id);
     }
 
     public class ProductService : IProductService
@@ -61,6 +65,53 @@ namespace GBS.Service
                     ModifiedBy = p.ModifiedBy
                 })
                 .FirstOrDefaultAsync();
+        }
+        public async Task<int>AddProduct(ProductVM model)
+        {
+                var product = new Product
+    {
+        Reference = model.Reference,
+        ProductName = model.ProductName,
+        CategoryIdFk = model.CategoryIdFk ?? 0,
+        Description = model.Description,
+        BaseStitchingCost = model.BaseStitchingCost ?? 0,
+        EstimatedTimeMinutes = model.EstimatedTimeMinutes,
+        IsActive = model.IsActive ?? true,
+        CreatedDate = DateTime.Now,
+        CreatedBy = model.CreatedBy ?? 0
+    };
+
+    _dbContext.Products.Add(product);
+    await _dbContext.SaveChangesAsync();
+    return product.Id;
+        }
+        public async Task<bool>UpdateProduct(int Id,ProductVM model)
+        {
+            var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id ==Id);
+            if (product == null)
+            return false;
+                product.Reference = model.Reference;
+    product.ProductName = model.ProductName;
+    product.CategoryIdFk = model.CategoryIdFk ?? product.CategoryIdFk;
+    product.Description = model.Description;
+    product.BaseStitchingCost = model.BaseStitchingCost ?? product.BaseStitchingCost;
+    product.EstimatedTimeMinutes = model.EstimatedTimeMinutes;
+    product.IsActive = model.IsActive;
+    product.ModifiedDate = DateTime.Now;
+    product.ModifiedBy = model.ModifiedBy;
+
+    await _dbContext.SaveChangesAsync();
+    return true;
+        }
+        public async Task<bool>DeleteProduct(int Id)
+        {
+                var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == Id);
+    if (product == null)
+        return false;
+
+    _dbContext.Products.Remove(product);
+    await _dbContext.SaveChangesAsync();
+    return true;
         }
     }
 }

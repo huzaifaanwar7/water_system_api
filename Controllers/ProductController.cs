@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using GBS.Service;
+using GBS.Model;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -26,4 +28,27 @@ public class ProductController : ControllerBase
         if (product == null) return NotFound();
         return Ok(product);
     }
+    [HttpPost("AddProduct")]
+    public async Task<IActionResult> AddProduct([FromBody]ProductVM model)
+    {
+        var id = await _productService.AddProduct(model);
+    return Ok(new {Message = "Product Added Successfully",ProductId =id});
+    }
+    [HttpPut("UpdateProduct/{id}")]
+public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductVM model)
+{
+    var updated = await _productService.UpdateProduct(id, model);
+    if (!updated) return NotFound();
+
+    return Ok(new { Message = "Product updated successfully" });
+}
+[HttpDelete("DeleteProduct/{id}")]
+public async Task<IActionResult> DeleteProduct(int id)
+{
+    var deleted = await _productService.DeleteProduct(id);
+    if (!deleted) return NotFound();
+
+    return Ok(new { Message = "Product deleted successfully" });
+}
+
 }
