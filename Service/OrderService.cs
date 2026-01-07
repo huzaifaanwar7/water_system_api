@@ -4,6 +4,7 @@ using GBS.Model;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace GBS.Service.Service  // Keep this namespace
 {
@@ -32,7 +33,10 @@ namespace GBS.Service.Service  // Keep this namespace
                 .Include(o => o.ClientIdFkNavigation)
                 .Include(o => o.StatusIdFkNavigation)
                 .Include(o => o.OrderCosts)
-                .Include(o => o.OrderItems)
+                .Include(o => o.OrderItems)  
+                .ThenInclude(o => o.ProductIdFkNavigation)
+                 .Include(o => o.OrderItems) 
+                 .ThenInclude(o =>o.SizeIdFkNavigation)
                 .Include(o => o.OrderLabors)
                 .Include(o => o.OrderMaterials)
                 .Include(o => o.OrderStatusHistories)
