@@ -50,7 +50,7 @@ namespace GBS.Api.Controller
                         CreatedDate = order.CreatedDate,
                         ModifiedDate = order.ModifiedDate,
                         ModifiedBy = "Hard Coded Name"
-                        
+
                     }).ToList();
 
                     return Ok(new
@@ -103,7 +103,7 @@ namespace GBS.Api.Controller
                         CreatedDate = order.CreatedDate,
                         ModifiedDate = order.ModifiedDate,
                         ModifiedBy = "Hard Coded Name",
-                 
+
                     }).ToList();
 
                     return Ok(new
@@ -130,130 +130,130 @@ namespace GBS.Api.Controller
         }
 
 
-       [HttpGet("{OrderId}")]
-public async Task<IActionResult> GetDetails([FromRoute] int OrderId)
-{
-    try
-    {
-        var order = await _orderService.GetOrderById(OrderId);
-        if (order != null)
+        [HttpGet("{OrderId}")]
+        public async Task<IActionResult> GetDetails([FromRoute] int OrderId)
         {
-            var response = new OrderVM
+            try
             {
-                Id = order.Id,
-                Reference = order.Reference,
-                ClientIdFk = order.ClientIdFk,
-                ClientName = order.ClientIdFkNavigation?.ClientName,
-                ClientReference = order.ClientIdFkNavigation?.Reference,
-                OrderDate = order.OrderDate,
-                DeliveryDate = order.DeliveryDate,
-                StatusIdFk = order.StatusIdFk,
-                Status = order.StatusIdFkNavigation?.Name,
-                TotalQuantity = order.TotalQuantity,
-                TotalAmount = order.TotalAmount,
-                AdvanceAmount = order.AdvanceAmount,
-                BalanceAmount = order.BalanceAmount,
-                Notes = order.Notes,
-                CreatedBy = "Hard Coded Name",
-                CreatedDate = order.CreatedDate,
-                ModifiedDate = order.ModifiedDate,
-                ModifiedBy = "Hard Coded Name",
-
-                OrderCosts = order.OrderCosts?.Select(oc => new OrderCostVM
+                var order = await _orderService.GetOrderById(OrderId);
+                if (order != null)
                 {
-                    Id = oc.Id,
-                    OrderIdFk = oc.OrderIdFk,
-                    CostCategoryIdFk = oc.CostCategoryIdFk,
-                    CostDescription = oc.CostDescription,
-                    Quantity = oc.Quantity,
-                    UnitCost = oc.UnitCost,
-                    TotalCost = oc.TotalCost,
-                    CostDate = oc.CostDate,
-                    VendorName = oc.VendorName,
-                    InvoiceNumber = oc.InvoiceNumber,
-                    Notes = oc.Notes
-                }).ToList(),
+                    var response = new OrderVM
+                    {
+                        Id = order.Id,
+                        Reference = order.Reference,
+                        ClientIdFk = order.ClientIdFk,
+                        ClientName = order.ClientIdFkNavigation?.ClientName,
+                        ClientReference = order.ClientIdFkNavigation?.Reference,
+                        OrderDate = order.OrderDate,
+                        DeliveryDate = order.DeliveryDate,
+                        StatusIdFk = order.StatusIdFk,
+                        Status = order.StatusIdFkNavigation?.Name,
+                        TotalQuantity = order.TotalQuantity,
+                        TotalAmount = order.TotalAmount,
+                        AdvanceAmount = order.AdvanceAmount,
+                        BalanceAmount = order.BalanceAmount,
+                        Notes = order.Notes,
+                        CreatedBy = "Hard Coded Name",
+                        CreatedDate = order.CreatedDate,
+                        ModifiedDate = order.ModifiedDate,
+                        ModifiedBy = "Hard Coded Name",
 
-                OrderItems = order.OrderItems?.Select(oi => new OrderItemVM
+                        OrderCosts = order.OrderCosts?.Select(oc => new OrderCostVM
+                        {
+                            Id = oc.Id,
+                            OrderIdFk = oc.OrderIdFk,
+                            CostCategoryIdFk = oc.CostCategoryIdFk,
+                            CostDescription = oc.CostDescription,
+                            Quantity = oc.Quantity,
+                            UnitCost = oc.UnitCost,
+                            TotalCost = oc.TotalCost,
+                            CostDate = oc.CostDate,
+                            VendorName = oc.VendorName,
+                            InvoiceNumber = oc.InvoiceNumber,
+                            Notes = oc.Notes
+                        }).ToList(),
+
+                        OrderItems = order.OrderItems?.Select(oi => new OrderItemVM
+                        {
+                            Id = oi.Id,
+                            OrderIdFk = oi.OrderIdFk,
+                            ProductIdFk = oi.ProductIdFk,
+                            ProductReference = oi.ProductIdFkNavigation.Reference,
+                            ProductName = oi.ProductIdFkNavigation.ProductName,
+                            Quantity = oi.Quantity,
+                            SizeIdFk = oi.SizeIdFk,
+                            SizeName = oi.SizeIdFkNavigation.Name,
+                            Color = oi.Color,
+                            UnitPrice = oi.UnitPrice,
+                            TotalPrice = oi.TotalPrice,
+                            SpecialInstructions = oi.SpecialInstructions,
+                            IsCompleted = oi.IsCompleted,
+                            CompletedQuantity = oi.CompletedQuantity
+                        }).ToList(),
+
+                        OrderLabors = order.OrderLabors?.Select(ol => new OrderLaborVM
+                        {
+                            Id = ol.Id,
+                            OrderIdFk = ol.OrderIdFk,
+                            OrderItemIdFk = ol.OrderItemIdFk,
+                            EmployeeIdFk = ol.EmployeeIdFk,
+                            WorkDate = ol.WorkDate,
+                            QuantityCompleted = ol.QuantityCompleted,
+                            HoursWorked = ol.HoursWorked,
+                            RatePerPiece = ol.RatePerPiece,
+                            TotalLaborCost = ol.TotalLaborCost,
+                            CreatedBy = ol.CreatedBy,
+                            CreatedDate = ol.CreatedDate
+                        }).ToList(),
+
+                        OrderMaterials = order.OrderMaterials?.Select(om => new OrderMaterialVM
+                        {
+                            Id = om.Id,
+                            OrderIdFk = om.OrderIdFk,
+                            MaterialIdFk = om.MaterialIdFk,
+                            QuantityUsed = om.QuantityUsed,
+                            UnitCost = om.UnitCost,
+                            TotalCost = om.TotalCost,
+                            UsageDate = om.UsageDate,
+                            Notes = om.Notes,
+                            CreatedBy = om.CreatedBy,
+                            CreatedDate = om.CreatedDate
+                        }).ToList(),
+
+                        OrderStatusHistories = order.OrderStatusHistories?.Select(osh => new OrderStatusHistoryVM
+                        {
+                            Id = osh.Id,
+                            OrderIdFk = osh.OrderIdFk,
+                            StatusIdFk = osh.StatusIdFk,
+                            StatusDate = osh.StatusDate,
+                            ChangedBy = osh.ChangedBy,
+                            Notes = osh.Notes
+                        }).ToList()
+                    };
+
+                    return Ok(new
+                    {
+                        status = HttpStatusCode.OK,
+                        data = response
+                    });
+                }
+
+                return NotFound(new
                 {
-                    Id = oi.Id,
-                    OrderIdFk = oi.OrderIdFk,
-                    ProductIdFk = oi.ProductIdFk,
-                    ProductReference = oi.ProductIdFkNavigation.Reference,
-                    ProductName = oi.ProductIdFkNavigation.ProductName,
-                    Quantity = oi.Quantity,
-                    SizeIdFk = oi.SizeIdFk,
-                    SizeName = oi.SizeIdFkNavigation.Name,
-                    Color = oi.Color,
-                    UnitPrice = oi.UnitPrice,
-                    TotalPrice = oi.TotalPrice,
-                    SpecialInstructions = oi.SpecialInstructions,
-                    IsCompleted = oi.IsCompleted,
-                    CompletedQuantity = oi.CompletedQuantity
-                }).ToList(),
-
-                OrderLabors = order.OrderLabors?.Select(ol => new OrderLaborVM
-                {
-                    Id = ol.Id,
-                    OrderIdFk = ol.OrderIdFk,
-                    OrderItemIdFk = ol.OrderItemIdFk,
-                    EmployeeIdFk = ol.EmployeeIdFk,
-                    WorkDate = ol.WorkDate,
-                    QuantityCompleted = ol.QuantityCompleted,
-                    HoursWorked = ol.HoursWorked,
-                    RatePerPiece = ol.RatePerPiece,
-                    TotalLaborCost = ol.TotalLaborCost,
-                    CreatedBy = ol.CreatedBy,
-                    CreatedDate = ol.CreatedDate
-                }).ToList(),
-
-                OrderMaterials = order.OrderMaterials?.Select(om => new OrderMaterialVM
-                {
-                    Id = om.Id,
-                    OrderIdFk = om.OrderIdFk,
-                    MaterialIdFk = om.MaterialIdFk,
-                    QuantityUsed = om.QuantityUsed,
-                    UnitCost = om.UnitCost,
-                    TotalCost = om.TotalCost,
-                    UsageDate = om.UsageDate,
-                    Notes = om.Notes,
-                    CreatedBy = om.CreatedBy,
-                    CreatedDate = om.CreatedDate
-                }).ToList(),
-
-                OrderStatusHistories = order.OrderStatusHistories?.Select(osh => new OrderStatusHistoryVM
-                {
-                    Id = osh.Id,
-                    OrderIdFk = osh.OrderIdFk,
-                    StatusIdFk = osh.StatusIdFk,
-                    StatusDate = osh.StatusDate,
-                    ChangedBy = osh.ChangedBy,
-                    Notes = osh.Notes
-                }).ToList()
-            };
-
-            return Ok(new
+                    status = HttpStatusCode.NotFound,
+                    message = "No order found."
+                });
+            }
+            catch (Exception ex)
             {
-                status = HttpStatusCode.OK,
-                data = response
-            });
+                return StatusCode(500, new
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = $"An error occurred: {ex.Message}"
+                });
+            }
         }
-
-        return NotFound(new
-        {
-            status = HttpStatusCode.NotFound,
-            message = "No order found."
-        });
-    }
-    catch (Exception ex)
-    {
-        return StatusCode(500, new
-        {
-            status = HttpStatusCode.InternalServerError,
-            message = $"An error occurred: {ex.Message}"
-        });
-    }
-}
 
 
         [HttpGet("Client/{ClientId}")]
@@ -444,78 +444,153 @@ public async Task<IActionResult> GetDetails([FromRoute] int OrderId)
             }
         }
         [HttpPost("SaveItem")]
-public async Task<IActionResult> SaveItem([FromBody] OrderItemPM model)
-{
-    try
-    {
-        if (model.OrderId <= 0 || model.ProductIdFk <= 0)
+        public async Task<IActionResult> SaveItem([FromBody] OrderItemPM model)
         {
-            return BadRequest(new
+            try
             {
-                status = HttpStatusCode.BadRequest,
-                message = "Invalid order or product"
-            });
-        }
+                if (model.OrderId <= 0 || model.ProductIdFk <= 0)
+                {
+                    return BadRequest(new
+                    {
+                        status = HttpStatusCode.BadRequest,
+                        message = "Invalid order or product"
+                    });
+                }
 
-        var order = await _orderService.GetOrderById(model.OrderId);
-        if (order == null)
-        {
-            return NotFound(new
+                var order = await _orderService.GetOrderById(model.OrderId);
+                if (order == null)
+                {
+                    return NotFound(new
+                    {
+                        status = HttpStatusCode.NotFound,
+                        message = "Order not found"
+                    });
+                }
+
+                OrderItem item;
+
+                if (model.Id > 0)
+                {
+                    item = order.OrderItems.FirstOrDefault(x => x.Id == model.Id);
+                    if (item == null)
+                        return NotFound("Order item not found");
+                }
+                else
+                {
+                    item = new OrderItem
+                    {
+                        OrderIdFk = model.OrderId
+                    };
+                }
+
+
+                item.ProductIdFk = model.ProductIdFk;
+                item.SizeIdFk = model.SizeIdFk;
+                item.Color = model.Color;
+                item.Quantity = model.Quantity;
+                item.UnitPrice = model.UnitPrice;
+                item.TotalPrice = model.UnitPrice * model.Quantity;
+                item.SpecialInstructions = model.SpecialInstructions;
+
+                await _orderService.SaveOrderItem(item);
+
+                // Recalculate order totals
+                order.TotalQuantity = order.OrderItems.Sum(x => x.Quantity);
+                order.TotalAmount = (decimal)order.OrderItems.Sum(x => x.TotalPrice);
+                order.BalanceAmount = order.TotalAmount - (order.AdvanceAmount);
+
+                await _orderService.SaveOrder(order);
+
+                return Ok(new
+                {
+                    status = HttpStatusCode.OK,
+                    message = "Order item saved successfully"
+                });
+            }
+            catch (Exception ex)
             {
-                status = HttpStatusCode.NotFound,
-                message = "Order not found"
-            });
+                return StatusCode(500, new
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = ex.Message
+                });
+            }
         }
 
-        OrderItem item;
 
-        if (model.Id > 0)
+        [HttpPost("{OrderId}/UpdateStatus")]
+        public async Task<IActionResult> UpdateStatus([FromRoute] int OrderId, [FromBody] OrderStatusHistoryPM statusUpdate)
         {
-            item = order.OrderItems.FirstOrDefault(x => x.Id == model.Id);
-            if (item == null)
-                return NotFound("Order item not found");
-        }
-        else
-        {
-            item = new OrderItem
+            int loggedInUserId = Convert.ToInt32(HttpContext.Items["EmployeeId"]);
+            try
             {
-                OrderIdFk = model.OrderId
-            };
+                if (statusUpdate.StatusId == null || statusUpdate.StatusId <= 0)
+                {
+                    return BadRequest(new
+                    {
+                        status = HttpStatusCode.BadRequest,
+                        message = "Invalid status ID"
+                    });
+                }
+                Order order = await _orderService.GetOrderById(OrderId);
+                if (order == null)
+                {
+                    return NotFound(new
+                    {
+                        status = HttpStatusCode.NotFound,
+                        message = "Order not found"
+                    });
+                }
+                order.StatusIdFk = (int)statusUpdate.StatusId;
+                order.ModifiedDate = DateTime.Now;
+                order.ModifiedBy = loggedInUserId; // Uncomment when auth is ready
+                var updateStatus = await _orderService.SaveOrder(order);
+                if (updateStatus > 0)
+                {
+                    OrderStatusHistory orderStatusHistory = new OrderStatusHistory
+                    {
+                        OrderIdFk = OrderId,
+                        StatusIdFk = (int)statusUpdate.StatusId,
+                        StatusDate = DateTime.Now,
+                        ChangedBy = loggedInUserId,
+                        Notes = statusUpdate.Notes
+                    };
+                    var saveStatusHistory = await _orderService.SaveOrderStatusHistory(orderStatusHistory);
+                    if (!saveStatusHistory)
+                    {
+                        return BadRequest(new
+                        {
+                            status = HttpStatusCode.BadRequest,
+                            message = "Failed to save order status history"
+                        });
+                    }
+                    if (saveStatusHistory)
+                    {
+                        return Ok(new
+                        {
+                            status = HttpStatusCode.OK,
+                            message = "Order status updated successfully"
+                        });
+                    }
+                }
+
+
+
+                return BadRequest(new
+                {
+                    status = HttpStatusCode.BadRequest,
+                    message = "Failed to update order status"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    status = HttpStatusCode.InternalServerError,
+                    message = $"An error occurred: {ex.Message}"
+                });
+            }
         }
-
-       
-        item.ProductIdFk = model.ProductIdFk;
-        item.SizeIdFk = model.SizeIdFk;
-        item.Color = model.Color;
-        item.Quantity = model.Quantity;
-        item.UnitPrice = model.UnitPrice;
-        item.TotalPrice = model.UnitPrice * model.Quantity;
-        item.SpecialInstructions = model.SpecialInstructions;
-
-        await _orderService.SaveOrderItem(item);
-
-        // Recalculate order totals
-        order.TotalQuantity = order.OrderItems.Sum(x => x.Quantity);
-        order.TotalAmount = (decimal)order.OrderItems.Sum(x => x.TotalPrice);
-        order.BalanceAmount = order.TotalAmount - (order.AdvanceAmount  );
-
-        await _orderService.SaveOrder(order);
-
-        return Ok(new
-        {
-            status = HttpStatusCode.OK,
-            message = "Order item saved successfully"
-        });
-    }
-    catch (Exception ex)
-    {
-        return StatusCode(500, new
-        {
-            status = HttpStatusCode.InternalServerError,
-            message = ex.Message
-        });
-    }
-}
 
     }
 }

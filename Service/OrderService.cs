@@ -16,6 +16,10 @@ namespace GBS.Service.Service  // Keep this namespace
         Task<int> SaveOrder(Order order);
         Task<int> SaveOrderCost(OrderCost cost);
         Task<int> SaveOrderItem(OrderItem item);
+        Task<int> SaveOrderLabor(OrderLabor labor);
+        Task<int> SaveOrderMaterial(OrderMaterial material);
+        Task<bool> SaveOrderStatusHistory(OrderStatusHistory statusHistory);
+
     }
 
     public class OrderService : IOrderService
@@ -33,10 +37,10 @@ namespace GBS.Service.Service  // Keep this namespace
                 .Include(o => o.ClientIdFkNavigation)
                 .Include(o => o.StatusIdFkNavigation)
                 .Include(o => o.OrderCosts)
-                .Include(o => o.OrderItems)  
+                .Include(o => o.OrderItems)
                 .ThenInclude(o => o.ProductIdFkNavigation)
-                 .Include(o => o.OrderItems) 
-                 .ThenInclude(o =>o.SizeIdFkNavigation)
+                 .Include(o => o.OrderItems)
+                 .ThenInclude(o => o.SizeIdFkNavigation)
                 .Include(o => o.OrderLabors)
                 .Include(o => o.OrderMaterials)
                 .Include(o => o.OrderStatusHistories)
@@ -51,10 +55,10 @@ namespace GBS.Service.Service  // Keep this namespace
                 .Include(o => o.ClientIdFkNavigation)
                 .Include(o => o.StatusIdFkNavigation)
                 .Include(o => o.OrderCosts)
-                .Include(o => o.OrderItems)  
+                .Include(o => o.OrderItems)
                 .ThenInclude(o => o.ProductIdFkNavigation)
-                 .Include(o => o.OrderItems) 
-                 .ThenInclude(o =>o.SizeIdFkNavigation)
+                 .Include(o => o.OrderItems)
+                 .ThenInclude(o => o.SizeIdFkNavigation)
                 .Include(o => o.OrderLabors)
                 .Include(o => o.OrderMaterials)
                 .Include(o => o.OrderStatusHistories)
@@ -88,18 +92,37 @@ namespace GBS.Service.Service  // Keep this namespace
             else { _dbContext.OrderCosts.Update(cost); }
             return await _dbContext.SaveChangesAsync();
         }
-        public async Task<int> SaveOrderItem (OrderItem item)
+        public async Task<int> SaveOrderItem(OrderItem item)
         {
-                if (item.Id == 0)
-    {
-        await _dbContext.OrderItems.AddAsync(item);
-    }
-    else
-    {
-        _dbContext.OrderItems.Update(item);
-    }
+            if (item.Id == 0)
+            {
+                await _dbContext.OrderItems.AddAsync(item);
+            }
+            else
+            {
+                _dbContext.OrderItems.Update(item);
+            }
 
-    return await _dbContext.SaveChangesAsync();
+            return await _dbContext.SaveChangesAsync();
+        }
+        public async Task<int> SaveOrderLabor(OrderLabor labor)
+        {
+            if (labor.Id == 0) { await _dbContext.OrderLabors.AddAsync(labor); }
+            else { _dbContext.OrderLabors.Update(labor); }
+            return await _dbContext.SaveChangesAsync();
+        }
+        public async Task<int> SaveOrderMaterial(OrderMaterial material)
+        {
+            if (material.Id == 0) { await _dbContext.OrderMaterials.AddAsync(material); }
+            else { _dbContext.OrderMaterials.Update(material); }
+            return await _dbContext.SaveChangesAsync();
+        }
+        public async Task<bool> SaveOrderStatusHistory(OrderStatusHistory statusHistory)
+        {
+            if (statusHistory.Id == 0) { await _dbContext.OrderStatusHistories.AddAsync(statusHistory); }
+            else { _dbContext.OrderStatusHistories.Update(statusHistory); }
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }
