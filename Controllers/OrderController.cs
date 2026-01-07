@@ -88,6 +88,8 @@ namespace GBS.Api.Controller
                         Id = order.Id,
                         Reference = order.Reference,
                         ClientIdFk = order.ClientIdFk,
+                        ClientName = order.ClientIdFkNavigation?.ClientName,
+                        ClientReference = order.ClientIdFkNavigation?.Reference,
                         OrderDate = order.OrderDate,
                         DeliveryDate = order.DeliveryDate,
                         StatusIdFk = order.StatusIdFk,
@@ -101,77 +103,7 @@ namespace GBS.Api.Controller
                         CreatedDate = order.CreatedDate,
                         ModifiedDate = order.ModifiedDate,
                         ModifiedBy = "Hard Coded Name",
-                        OrderCosts = order.OrderCosts?.Select(oc => new OrderCostVM
-                        {
-                            Id = oc.Id,
-                            OrderIdFk = oc.OrderIdFk,
-                            CostCategoryIdFk = oc.CostCategoryIdFk,
-                            CostDescription = oc.CostDescription,
-                            Quantity = oc.Quantity,
-                            UnitCost = oc.UnitCost,
-                            TotalCost = oc.TotalCost,
-                            CostDate = oc.CostDate,
-                            VendorName = oc.VendorName,
-                            InvoiceNumber = oc.InvoiceNumber,
-                            Notes = oc.Notes
-                        }).ToList() ?? new List<OrderCostVM>(),
-                        OrderItems = order.OrderItems?.Select(oi => new OrderItemVM
-                        {
-                            
-                            Id = oi.Id,
-                            OrderIdFk = oi.OrderIdFk,
-                            ProductIdFk = oi.ProductIdFk,
-                            ProductName=oi.ProductIdFkNavigation.ProductName,
-                            Quantity = oi.Quantity,
-                            SizeIdFk = oi.SizeIdFk,
-                            Name=oi.SizeIdFkNavigation.Name,
-                            Color = oi.Color,
-                            UnitPrice = oi.UnitPrice,
-                            TotalPrice = oi.TotalPrice,
-                            SpecialInstructions = oi.SpecialInstructions,
-                            IsCompleted = oi.IsCompleted,
-                            CompletedQuantity = oi.CompletedQuantity,
-
-                        }).ToList() ?? new List<OrderItemVM>(),
-                        OrderLabors = order.OrderLabors?.Select(ol => new OrderLaborVM
-                        {
-                            Id = ol.Id,
-                            OrderIdFk = ol.OrderIdFk,
-                            OrderItemIdFk = ol.OrderItemIdFk,
-                            EmployeeIdFk = ol.EmployeeIdFk,
-                            WorkDate = ol.WorkDate,
-                            QuantityCompleted = ol.QuantityCompleted,
-                            HoursWorked = ol.HoursWorked,
-                            RatePerPiece = ol.RatePerPiece,
-                            TotalLaborCost = ol.TotalLaborCost,
-                            CreatedBy = ol.CreatedBy,
-                            CreatedDate = ol.CreatedDate,
-                            
-                        }).ToList() ?? new List<OrderLaborVM>(),
-
-                        OrderMaterials = order.OrderMaterials?.Select(om => new OrderMaterialVM
-                        {
-                            Id = om.Id,
-                            OrderIdFk = om.OrderIdFk,
-                            MaterialIdFk = om.MaterialIdFk,
-                            QuantityUsed = om.QuantityUsed,
-                            UnitCost = om.UnitCost,
-                            TotalCost = om.TotalCost,
-                            UsageDate = om.UsageDate,
-                            Notes = om.Notes,
-                            CreatedBy = om.CreatedBy,
-                            CreatedDate = om.CreatedDate
-                        }).ToList() ?? new List<OrderMaterialVM>(),
-                        OrderStatusHistories = order.OrderStatusHistories?.Select(osh => new OrderStatusHistoryVM
-                        {
-                            Id = osh.Id,
-                            OrderIdFk = osh.OrderIdFk,
-                            StatusIdFk = osh.StatusIdFk,
-                            StatusDate = osh.StatusDate,
-                            ChangedBy = osh.ChangedBy,
-                            Notes = osh.Notes
-                        }).ToList() ?? new List<OrderStatusHistoryVM>()
-
+                 
                     }).ToList();
 
                     return Ok(new
@@ -211,6 +143,8 @@ public async Task<IActionResult> GetDetails([FromRoute] int OrderId)
                 Id = order.Id,
                 Reference = order.Reference,
                 ClientIdFk = order.ClientIdFk,
+                ClientName = order.ClientIdFkNavigation?.ClientName,
+                ClientReference = order.ClientIdFkNavigation?.Reference,
                 OrderDate = order.OrderDate,
                 DeliveryDate = order.DeliveryDate,
                 StatusIdFk = order.StatusIdFk,
@@ -245,8 +179,11 @@ public async Task<IActionResult> GetDetails([FromRoute] int OrderId)
                     Id = oi.Id,
                     OrderIdFk = oi.OrderIdFk,
                     ProductIdFk = oi.ProductIdFk,
+                    ProductReference = oi.ProductIdFkNavigation.Reference,
+                    ProductName = oi.ProductIdFkNavigation.ProductName,
                     Quantity = oi.Quantity,
                     SizeIdFk = oi.SizeIdFk,
+                    SizeName = oi.SizeIdFkNavigation.Name,
                     Color = oi.Color,
                     UnitPrice = oi.UnitPrice,
                     TotalPrice = oi.TotalPrice,

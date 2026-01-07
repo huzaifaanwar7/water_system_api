@@ -14,7 +14,8 @@ namespace GBS.Model
         public string Reference { get; set; } = null!;
 
         public int ClientIdFk { get; set; }
-
+        public string? ClientName { get; set; }
+        public string? ClientReference { get; set; }
         public DateTime OrderDate { get; set; }
 
         public DateTime DeliveryDate { get; set; }

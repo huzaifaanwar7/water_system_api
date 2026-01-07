@@ -6,8 +6,10 @@
         public int? OrderIdFk { get; set; }
         public int? ProductIdFk { get; set; }
         public decimal? Quantity { get; set; }
+        public string ProductReference { get; set; }
         public string ProductName {get; set;}
         public int? SizeIdFk { get; set; }
+        public string SizeName { get; set; }
         public string Name {get; set;}
         public string? Color { get; set; }
         public decimal? UnitPrice { get; set; }
