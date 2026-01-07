@@ -3,7 +3,7 @@ using GBS.Service;
 using GBS.Model;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 public class ProductController : ControllerBase
 {
@@ -29,26 +29,26 @@ public class ProductController : ControllerBase
         return Ok(product);
     }
     [HttpPost("AddProduct")]
-    public async Task<IActionResult> AddProduct([FromBody]ProductVM model)
+    public async Task<IActionResult> AddProduct([FromBody] ProductVM model)
     {
         var id = await _productService.AddProduct(model);
-    return Ok(new {Message = "Product Added Successfully",ProductId =id});
+        return Ok(new { Message = "Product Added Successfully", ProductId = id });
     }
     [HttpPut("UpdateProduct/{id}")]
-public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductVM model)
-{
-    var updated = await _productService.UpdateProduct(id, model);
-    if (!updated) return NotFound();
+    public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductVM model)
+    {
+        var updated = await _productService.UpdateProduct(id, model);
+        if (!updated) return NotFound();
 
-    return Ok(new { Message = "Product updated successfully" });
-}
-[HttpDelete("DeleteProduct/{id}")]
-public async Task<IActionResult> DeleteProduct(int id)
-{
-    var deleted = await _productService.DeleteProduct(id);
-    if (!deleted) return NotFound();
+        return Ok(new { Message = "Product updated successfully" });
+    }
+    [HttpDelete("DeleteProduct/{id}")]
+    public async Task<IActionResult> DeleteProduct(int id)
+    {
+        var deleted = await _productService.DeleteProduct(id);
+        if (!deleted) return NotFound();
 
-    return Ok(new { Message = "Product deleted successfully" });
-}
+        return Ok(new { Message = "Product deleted successfully" });
+    }
 
 }
