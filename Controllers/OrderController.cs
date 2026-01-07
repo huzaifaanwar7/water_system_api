@@ -117,11 +117,14 @@ namespace GBS.Api.Controller
                         }).ToList() ?? new List<OrderCostVM>(),
                         OrderItems = order.OrderItems?.Select(oi => new OrderItemVM
                         {
+                            
                             Id = oi.Id,
                             OrderIdFk = oi.OrderIdFk,
                             ProductIdFk = oi.ProductIdFk,
+                            ProductName=oi.ProductIdFkNavigation.ProductName,
                             Quantity = oi.Quantity,
                             SizeIdFk = oi.SizeIdFk,
+                            Name=oi.SizeIdFkNavigation.Name,
                             Color = oi.Color,
                             UnitPrice = oi.UnitPrice,
                             TotalPrice = oi.TotalPrice,
