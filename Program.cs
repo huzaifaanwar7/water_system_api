@@ -1,7 +1,6 @@
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.OpenApi.Models;
-using GBS.Service;
 using Microsoft.EntityFrameworkCore;
 using GBS.Api;
 
@@ -10,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using GBS.Api.Authorization;
 using Microsoft.Extensions.FileProviders;
-using GBS.Api.DbModels;
+// using GBS.Api.DbModels;
 
 var builder = WebApplication.CreateBuilder(args);
 var _appSettings = builder.Configuration.GetSection("AppSettings");
@@ -28,8 +27,8 @@ builder.Services.AddMemoryCache();
 // Register the DbContext with a connection string (for MySQL)
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<GBS_DbContext>(options =>
-   options.UseSqlServer(connectionString));
+// builder.Services.AddDbContext<GBS_DbContext>(options =>
+//    options.UseSqlServer(connectionString));
 
 
 
@@ -96,19 +95,9 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddTransient<IJwtUtils, JwtUtils>();
-builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<IEmployeeService, EmployeeService>();
-builder.Services.AddTransient<IAdminService, AdminService>();
-builder.Services.AddTransient<IMediaService, MediaService>();
-builder.Services.AddTransient<IClientService, ClientService>();
-builder.Services.AddScoped<GBS.Service.Service.IOrderService, GBS.Service.Service.OrderService>();
-builder.Services.AddScoped<GBS.Service.Service.IPaymentService, GBS.Service.Service.PaymentService>();
-builder.Services.AddScoped<IProductService, ProductService>();
-
-
-
-
+    builder.Services.AddTransient<IJwtUtils, JwtUtils>();
+    
+   
 
 builder.Services.AddControllers();
 

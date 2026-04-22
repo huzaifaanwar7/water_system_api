@@ -4,8 +4,6 @@ using Newtonsoft.Json.Linq;
 using System.Data;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
-using GBS.Service;
-using GBS.Model;
 
 public class JwtMiddleware
 {
