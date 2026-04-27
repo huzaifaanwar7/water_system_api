@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GBS.Api.DbModels
 {
+    [Table("BottleConfigs")]
     public class BottleConfig
     {
         [Key]

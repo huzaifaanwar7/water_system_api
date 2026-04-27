@@ -23,6 +23,13 @@ namespace GBS.Api.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Customer>().ToTable("Customers");
+            modelBuilder.Entity<Delivery>().ToTable("Deliveries");
+            modelBuilder.Entity<Payment>().ToTable("Payments");
+            modelBuilder.Entity<Invoice>().ToTable("Invoices");
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<BottleConfig>().ToTable("BottleConfigs");
+
             // Configure relationships if needed
             modelBuilder.Entity<Delivery>()
                 .HasOne(d => d.Customer)
