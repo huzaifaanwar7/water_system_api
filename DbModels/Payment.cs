@@ -21,7 +21,7 @@ namespace GBS.Api.DbModels
         public decimal Amount { get; set; }
 
         [StringLength(50)]
-        public string Method { get; set; } = "cash"; // cash, easypaisa, jazzcash
+        public string Method { get; set; } = "cash"; // cash, bank, jazzcash
 
         [StringLength(100)]
         public string? TxnId { get; set; }

@@ -56,14 +56,14 @@ namespace GBS.Api.Controllers
                 }
                 else
                 {
-                    // It's a paid delivery (cash, easypaisa, jazzcash)
+                    // It's a paid delivery (cash, bank, jazzcash)
                     // We should record it as a payment so it shows up in "Total Received"
                     var payment = new Payment
                     {
                         Date = delivery.Date,
                         CustomerId = delivery.CustomerId,
                         Amount = delivery.TotalAmount,
-                        Method = delivery.PaymentStatus, // "cash", "easypaisa", or "jazzcash"
+                        Method = delivery.PaymentStatus, // "cash", "bank", or "jazzcash"
                         Notes = "Auto-generated from delivery #" + delivery.Id
                     };
                     _context.Payments.Add(payment);
