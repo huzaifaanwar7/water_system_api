@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System.Data;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 public class JwtMiddleware
 {
@@ -20,7 +21,8 @@ public class JwtMiddleware
     {
         string token;
 
-        var skipValidation = context.Request.Path.ToString().ToLower().Contains("users/login")
+        var skipValidation = context.Request.Method == "OPTIONS" 
+             || context.Request.Path.ToString().ToLower().Contains("users/login")
              || context.Request.Path.ToString().ToLower().Contains("user/authenticate")
              || context.Request.Path.ToString().ToLower().Contains("public")
              || context.Request.Path.ToString().ToLower().Contains("user/validateotp")
@@ -52,8 +54,8 @@ public class JwtMiddleware
             //    // attach user to context on successful jwt validation
             //    context.Items["User"] = userService.GetById(userId.Value);
             //}
-            var EmployeeId = _jwtUtils.ValidateJwtToken(token);
-            if (EmployeeId == null)
+            var userId = _jwtUtils.ValidateJwtToken(token);
+            if (userId == null)
             {
                 context.Response.Clear();
                 context.Response.ContentType = "application/json";
@@ -65,25 +67,13 @@ public class JwtMiddleware
             }
             else
             {
-                context.Items["EmployeeId"] = EmployeeId;
-                await _next(context);
-                //if (body.Any(u => u["token"].ToString().EqualsIgnoreCase(token)))
-                //{
-                //    //context.Items["User"] = body.First();
-                //    context.Items["User"] = userService.GetById(EmployeeId.Value);
-                //    await _next(context);
-                //}
-                //else
-                //{
-                //    context.Response.Clear();
-                //    context.Response.ContentType = "application/json";
-                //    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                //    await context.Response.WriteAsync(new JObject()
-                //    {
-                //        ["status"] = "Unauthorized"
-                //    }.ToString());
-                //}
+                // Set the user in context for [Authorize] attribute to work
+                var claims = new[] { new Claim("Id", userId.Value.ToString()) };
+                var identity = new ClaimsIdentity(claims, "jwt");
+                context.User = new ClaimsPrincipal(identity);
 
+                context.Items["EmployeeId"] = userId;
+                await _next(context);
             }
         }
         //await _next(context);

@@ -36,7 +36,7 @@ namespace GBS.Api.Controllers
                 query = query.Where(d => d.PaymentStatus == status);
             }
 
-            return await query.OrderByDescending(d => d.Date).ToListAsync();
+            return await query.Include(d => d.Customer).OrderByDescending(d => d.Date).ToListAsync();
         }
 
         // POST: api/Deliveries
@@ -84,10 +84,28 @@ namespace GBS.Api.Controllers
                 return BadRequest();
             }
 
+            var oldDelivery = await _context.Deliveries.AsNoTracking().FirstOrDefaultAsync(d => d.Id == id);
+            if (oldDelivery == null) return NotFound();
+
             _context.Entry(delivery).State = EntityState.Modified;
 
             try
             {
+                // Revert old balance/bottles
+                var customer = await _context.Customers.FindAsync(delivery.CustomerId);
+                if (customer != null)
+                {
+                    // Revert old
+                    if (oldDelivery.PaymentStatus == "pending" || oldDelivery.PaymentStatus == "credit")
+                        customer.Balance += oldDelivery.TotalAmount;
+                    customer.BottlesOut -= (oldDelivery.Bottles19L - oldDelivery.Empty19L);
+
+                    // Apply new
+                    if (delivery.PaymentStatus == "pending" || delivery.PaymentStatus == "credit")
+                        customer.Balance -= delivery.TotalAmount;
+                    customer.BottlesOut += (delivery.Bottles19L - delivery.Empty19L);
+                }
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -113,6 +131,17 @@ namespace GBS.Api.Controllers
             if (delivery == null)
             {
                 return NotFound();
+            }
+
+            // Revert customer balance and bottles out
+            var customer = await _context.Customers.FindAsync(delivery.CustomerId);
+            if (customer != null)
+            {
+                if (delivery.PaymentStatus == "pending" || delivery.PaymentStatus == "credit")
+                {
+                    customer.Balance += delivery.TotalAmount;
+                }
+                customer.BottlesOut -= (delivery.Bottles19L - delivery.Empty19L);
             }
 
             _context.Deliveries.Remove(delivery);

@@ -30,7 +30,7 @@ builder.Services.AddMemoryCache();
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<GBS_DbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString, sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()));
 
 
 
@@ -122,7 +122,6 @@ Console.WriteLine("Environment:", env);
 
 
 //app.UseHttpsRedirection();
-app.UseCors("AllowAllOrigins");
 
 
 // Enable serving of static files
@@ -138,6 +137,7 @@ app.UseStaticFiles(new StaticFileOptions
 
 
 app.UseRouting();
+app.UseCors("AllowAllOrigins");
 app.UseAuthentication();
 app.UseAuthorization();
 // Add custom middleware to the pipeline

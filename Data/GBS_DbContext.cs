@@ -15,6 +15,8 @@ namespace GBS.Api.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<BottleConfig> BottleConfigs { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -29,9 +29,24 @@ IF OBJECT_ID('dbo.Deliveries', 'U') IS NOT NULL DROP TABLE dbo.Deliveries;
 IF OBJECT_ID('dbo.Invoices', 'U') IS NOT NULL DROP TABLE dbo.Invoices;
 IF OBJECT_ID('dbo.Customers', 'U') IS NOT NULL DROP TABLE dbo.Customers;
 IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL DROP TABLE dbo.Users;
+IF OBJECT_ID('dbo.BottleConfigs', 'U') IS NOT NULL DROP TABLE dbo.BottleConfigs;
 GO
 
 -- 4. CREATE TABLES
+CREATE TABLE BottleConfigs (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(50) NOT NULL,
+    Price DECIMAL(18,2) NOT NULL,
+    CurrentStock INT DEFAULT 0,
+    Description NVARCHAR(MAX)
+);
+GO
+
+INSERT INTO BottleConfigs (Name, Price, CurrentStock, Description) VALUES ('19L', 120, 500, 'Standard 19 Liter Bottle');
+INSERT INTO BottleConfigs (Name, Price, CurrentStock, Description) VALUES ('1.5L', 50, 1000, 'Pack of 1.5 Liter Bottles');
+INSERT INTO BottleConfigs (Name, Price, CurrentStock, Description) VALUES ('0.5L', 25, 2000, 'Pack of 0.5 Liter Bottles');
+GO
+
 CREATE TABLE Users (
     Id INT PRIMARY KEY IDENTITY(1,1),
     Username NVARCHAR(100) NOT NULL,
