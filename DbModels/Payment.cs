@@ -27,5 +27,10 @@ namespace GBS.Api.DbModels
         public string? TxnId { get; set; }
 
         public string? Notes { get; set; }
+
+        public int? InvoiceId { get; set; }
+
+        [ForeignKey("InvoiceId")]
+        public virtual Invoice? Invoice { get; set; }
     }
 }

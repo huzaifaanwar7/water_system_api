@@ -94,56 +94,88 @@ namespace GBS.Api.Controllers
 
         // PUT: api/Deliveries/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDelivery(int id, Delivery delivery)
+        public async Task<IActionResult> PutDelivery(int id, [FromBody] Delivery delivery)
         {
-            if (id != delivery.Id)
+            var existing = await _context.Deliveries.Include(d => d.Customer).FirstOrDefaultAsync(d => d.Id == id);
+            if (existing == null) return NotFound();
+
+            var oldStatus = (existing.PaymentStatus ?? "").ToLower();
+            var newStatus = (delivery.PaymentStatus ?? "").ToLower();
+
+            // Revert old impact
+            var customer = await _context.Customers.FindAsync(existing.CustomerId);
+            if (customer != null)
             {
-                return BadRequest();
+                if (oldStatus == "pending" || oldStatus == "credit")
+                    customer.Balance += existing.TotalAmount;
+                customer.BottlesOut -= (existing.Bottles19L - existing.Empty19L);
             }
+            await UpdateInventory(existing, true);
 
-            var oldDelivery = await _context.Deliveries.AsNoTracking().FirstOrDefaultAsync(d => d.Id == id);
-            if (oldDelivery == null) return NotFound();
+            // Update fields
+            existing.Date = delivery.Date;
+            existing.Bottles19L = delivery.Bottles19L;
+            existing.Bottles15L = delivery.Bottles15L;
+            existing.Bottles05L = delivery.Bottles05L;
+            existing.Empty19L = delivery.Empty19L;
+            existing.Empty15L = delivery.Empty15L;
+            existing.Empty05L = delivery.Empty05L;
+            existing.TotalAmount = delivery.TotalAmount;
+            existing.PaymentStatus = delivery.PaymentStatus;
+            existing.Notes = delivery.Notes;
 
-            _context.Entry(delivery).State = EntityState.Modified;
+            // Apply new impact
+            if (customer != null)
+            {
+                if (newStatus == "pending" || newStatus == "credit")
+                {
+                    customer.Balance -= existing.TotalAmount;
+                }
+                else if (oldStatus == "pending" || oldStatus == "credit")
+                {
+                    var payment = new Payment
+                    {
+                        Date = DateTime.Now,
+                        CustomerId = existing.CustomerId,
+                        Amount = existing.TotalAmount,
+                        Method = existing.PaymentStatus,
+                        Notes = "Payment for delivery #" + existing.Id,
+                        InvoiceId = existing.InvoiceId
+                    };
+                    _context.Payments.Add(payment);
+                }
+                customer.BottlesOut += (existing.Bottles19L - existing.Empty19L);
+            }
+            await UpdateInventory(existing, false);
+
+            // Sync Invoice Status if linked
+            if (existing.InvoiceId.HasValue)
+            {
+                var invoice = await _context.Invoices
+                    .Include(i => i.Deliveries)
+                    .FirstOrDefaultAsync(i => i.Id == existing.InvoiceId.Value);
+
+                if (invoice != null)
+                {
+                    bool allPaid = invoice.Deliveries.All(d => {
+                        var s = (d.PaymentStatus ?? "").ToLower();
+                        return s != "pending" && s != "credit";
+                    });
+                    invoice.Status = allPaid ? "paid" : "pending";
+                }
+            }
 
             try
             {
-                // Revert old balance/bottles
-                var customer = await _context.Customers.FindAsync(delivery.CustomerId);
-                if (customer != null)
-                {
-                    // Revert old
-                    var oldStatus = (oldDelivery.PaymentStatus ?? "").ToLower();
-                    if (oldStatus == "pending" || oldStatus == "credit")
-                        customer.Balance += oldDelivery.TotalAmount;
-                    customer.BottlesOut -= (oldDelivery.Bottles19L - oldDelivery.Empty19L);
-
-                    // Apply new
-                    var newStatus = (delivery.PaymentStatus ?? "").ToLower();
-                    if (newStatus == "pending" || newStatus == "credit")
-                        customer.Balance -= delivery.TotalAmount;
-                    customer.BottlesOut += (delivery.Bottles19L - delivery.Empty19L);
-
-                    // Update Inventory
-                    await UpdateInventory(oldDelivery, true); // Revert old
-                    await UpdateInventory(delivery, false);   // Apply new
-                }
-
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!DeliveryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                if (!DeliveryExists(id)) return NotFound();
+                else throw;
             }
 
-            return NoContent();
+            return Ok(existing);
         }
 
         // DELETE: api/Deliveries/5
@@ -210,7 +242,10 @@ namespace GBS.Api.Controllers
                 InvoiceDate = DateTime.Now,
                 DueDate = DateTime.Now.AddDays(7),
                 TotalAmount = deliveries.Sum(d => d.TotalAmount),
-                Status = "pending",
+                Status = deliveries.All(d => {
+                    var s = (d.PaymentStatus ?? "").ToLower();
+                    return s != "pending" && s != "credit";
+                }) ? "paid" : "pending",
                 Deliveries = deliveries
             };
 

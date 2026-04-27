@@ -97,10 +97,31 @@ namespace GBS.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = await _context.Customers
+                .Include(c => c.Deliveries)
+                .Include(c => c.Payments)
+                .Include(c => c.Invoices)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
             if (customer == null)
             {
                 return NotFound();
+            }
+
+            // Remove related records first
+            if (customer.Deliveries != null && customer.Deliveries.Any())
+            {
+                _context.Deliveries.RemoveRange(customer.Deliveries);
+            }
+
+            if (customer.Payments != null && customer.Payments.Any())
+            {
+                _context.Payments.RemoveRange(customer.Payments);
+            }
+
+            if (customer.Invoices != null && customer.Invoices.Any())
+            {
+                _context.Invoices.RemoveRange(customer.Invoices);
             }
 
             _context.Customers.Remove(customer);

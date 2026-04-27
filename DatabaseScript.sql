@@ -113,7 +113,9 @@ CREATE TABLE Payments (
     Method NVARCHAR(50) DEFAULT 'cash',
     TxnId NVARCHAR(100),
     Notes NVARCHAR(MAX),
-    CONSTRAINT FK_Payments_Customers FOREIGN KEY (CustomerId) REFERENCES Customers(Id)
+    InvoiceId INT,
+    CONSTRAINT FK_Payments_Customers FOREIGN KEY (CustomerId) REFERENCES Customers(Id),
+    CONSTRAINT FK_Payments_Invoices FOREIGN KEY (InvoiceId) REFERENCES Invoices(Id) ON DELETE SET NULL
 );
 GO
 

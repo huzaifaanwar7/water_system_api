@@ -126,6 +126,56 @@ namespace GBS.Api.Controllers
             return NoContent();
         }
 
+        // POST: api/Invoices/5/pay
+        [HttpPost("{id}/pay")]
+        public async Task<IActionResult> PayInvoice(int id, [FromBody] string method)
+        {
+            var invoice = await _context.Invoices
+                .Include(i => i.Deliveries)
+                .Include(i => i.Customer)
+                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (invoice == null) return NotFound();
+            if (invoice.Status == "paid") return BadRequest("Invoice is already paid.");
+
+            decimal totalToPay = 0;
+            foreach (var delivery in invoice.Deliveries)
+            {
+                var status = (delivery.PaymentStatus ?? "").ToLower();
+                if (status == "pending" || status == "credit")
+                {
+                    totalToPay += delivery.TotalAmount;
+                    delivery.PaymentStatus = method;
+                    
+                    // Update customer balance for this delivery
+                    if (invoice.Customer != null)
+                    {
+                        invoice.Customer.Balance += delivery.TotalAmount;
+                    }
+                }
+            }
+
+            if (totalToPay > 0)
+            {
+                // Create a single payment record for the invoice
+                var payment = new Payment
+                {
+                    Date = DateTime.Now,
+                    CustomerId = invoice.CustomerId,
+                    Amount = totalToPay,
+                    Method = method,
+                    Notes = "Paid Invoice #" + invoice.Id,
+                    InvoiceId = invoice.Id
+                };
+                _context.Payments.Add(payment);
+            }
+
+            invoice.Status = "paid";
+            await _context.SaveChangesAsync();
+
+            return Ok(invoice);
+        }
+
         private bool InvoiceExists(int id)
         {
             return _context.Invoices.Any(e => e.Id == id);
