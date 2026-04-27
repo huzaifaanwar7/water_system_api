@@ -9,7 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using GBS.Api.Authorization;
 using Microsoft.Extensions.FileProviders;
-// using GBS.Api.DbModels;
+using GBS.Api.Data;
+using GBS.Api.DbModels;
+
 
 var builder = WebApplication.CreateBuilder(args);
 var _appSettings = builder.Configuration.GetSection("AppSettings");
@@ -27,8 +29,9 @@ builder.Services.AddMemoryCache();
 // Register the DbContext with a connection string (for MySQL)
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-// builder.Services.AddDbContext<GBS_DbContext>(options =>
-//    options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<GBS_DbContext>(options =>
+    options.UseSqlServer(connectionString));
+
 
 
 

@@ -20,11 +20,13 @@ public class JwtMiddleware
     {
         string token;
 
-        var skipValidation = context.Request.Path.ToString().ToLower().Contains("user/authenticate")
+        var skipValidation = context.Request.Path.ToString().ToLower().Contains("users/login")
+             || context.Request.Path.ToString().ToLower().Contains("user/authenticate")
              || context.Request.Path.ToString().ToLower().Contains("public")
              || context.Request.Path.ToString().ToLower().Contains("user/validateotp")
              || context.Request.Path.ToString().ToLower().Contains("download")
              || context.Request.Path.ToString().ToLower().Contains("/www");
+
 
         var endpoint = context.GetEndpoint();
         var a = endpoint?.Metadata?.GetMetadata<IAllowAnonymous>();
