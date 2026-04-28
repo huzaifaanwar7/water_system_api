@@ -86,6 +86,7 @@ CREATE TABLE Invoices (
     InvoiceDate DATETIME NOT NULL DEFAULT GETDATE(),
     DueDate DATETIME,
     TotalAmount DECIMAL(18,2) NOT NULL,
+    AmountPaid DECIMAL(18,2) NOT NULL DEFAULT 0,
     Status NVARCHAR(50) DEFAULT 'pending',
     CONSTRAINT FK_Invoices_Customers FOREIGN KEY (CustomerId) REFERENCES Customers(Id)
 );

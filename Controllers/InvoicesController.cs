@@ -128,7 +128,7 @@ namespace GBS.Api.Controllers
 
         // POST: api/Invoices/5/pay
         [HttpPost("{id}/pay")]
-        public async Task<IActionResult> PayInvoice(int id, [FromBody] string method)
+        public async Task<IActionResult> PayInvoice(int id, [FromBody] PayRequest request)
         {
             var invoice = await _context.Invoices
                 .Include(i => i.Deliveries)
@@ -138,42 +138,60 @@ namespace GBS.Api.Controllers
             if (invoice == null) return NotFound();
             if (invoice.Status == "paid") return BadRequest("Invoice is already paid.");
 
-            decimal totalToPay = 0;
-            foreach (var delivery in invoice.Deliveries)
+            decimal amountToApply = request.Amount;
+            if (amountToApply <= 0) return BadRequest("Amount must be greater than zero.");
+            
+            // Limit to remaining balance
+            decimal remainingOnInvoice = invoice.TotalAmount - invoice.AmountPaid;
+            if (amountToApply > remainingOnInvoice)
             {
-                var status = (delivery.PaymentStatus ?? "").ToLower();
-                if (status == "pending" || status == "credit")
+                amountToApply = remainingOnInvoice;
+            }
+
+            // Create payment record
+            var payment = new Payment
+            {
+                Date = DateTime.Now,
+                CustomerId = invoice.CustomerId,
+                Amount = amountToApply,
+                Method = request.Method,
+                Notes = "Payment for Invoice #" + invoice.Id,
+                InvoiceId = invoice.Id
+            };
+            _context.Payments.Add(payment);
+
+            // Update Customer Balance
+            if (invoice.Customer != null)
+            {
+                invoice.Customer.Balance += amountToApply;
+            }
+
+            // Update Invoice
+            invoice.AmountPaid += amountToApply;
+            if (invoice.AmountPaid >= invoice.TotalAmount)
+            {
+                invoice.Status = "paid";
+                // Mark all deliveries as paid
+                foreach (var d in invoice.Deliveries)
                 {
-                    totalToPay += delivery.TotalAmount;
-                    delivery.PaymentStatus = method;
-                    
-                    // Update customer balance for this delivery
-                    if (invoice.Customer != null)
-                    {
-                        invoice.Customer.Balance += delivery.TotalAmount;
-                    }
+                    d.PaymentStatus = request.Method;
                 }
             }
-
-            if (totalToPay > 0)
+            else
             {
-                // Create a single payment record for the invoice
-                var payment = new Payment
-                {
-                    Date = DateTime.Now,
-                    CustomerId = invoice.CustomerId,
-                    Amount = totalToPay,
-                    Method = method,
-                    Notes = "Paid Invoice #" + invoice.Id,
-                    InvoiceId = invoice.Id
-                };
-                _context.Payments.Add(payment);
+                invoice.Status = "partial";
+                // Optionally mark some deliveries as paid if we want to be granular
+                // For now, partial status on invoice is enough
             }
 
-            invoice.Status = "paid";
             await _context.SaveChangesAsync();
-
             return Ok(invoice);
+        }
+
+        public class PayRequest
+        {
+            public decimal Amount { get; set; }
+            public string Method { get; set; } = "cash";
         }
 
         private bool InvoiceExists(int id)

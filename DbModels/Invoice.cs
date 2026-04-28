@@ -22,8 +22,11 @@ namespace GBS.Api.DbModels
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
 
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal AmountPaid { get; set; } = 0;
+
         [StringLength(50)]
-        public string Status { get; set; } = "pending"; // paid, pending
+        public string Status { get; set; } = "pending"; // paid, pending, partial
 
         public virtual ICollection<Delivery> Deliveries { get; set; } = new List<Delivery>();
     }
