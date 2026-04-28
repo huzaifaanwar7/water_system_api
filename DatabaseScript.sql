@@ -38,7 +38,10 @@ CREATE TABLE BottleConfigs (
     Name NVARCHAR(50) NOT NULL,
     Price DECIMAL(18,2) NOT NULL,
     CurrentStock INT DEFAULT 0,
-    Description NVARCHAR(MAX)
+    Description NVARCHAR(MAX),
+    CapCost DECIMAL(18,2) NOT NULL DEFAULT 0,
+    LabelCost DECIMAL(18,2) NOT NULL DEFAULT 0,
+    EmptyBottleCost DECIMAL(18,2) NOT NULL DEFAULT 0
 );
 GO
 

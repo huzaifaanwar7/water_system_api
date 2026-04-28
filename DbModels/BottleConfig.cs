@@ -19,5 +19,14 @@ namespace GBS.Api.DbModels
         public int CurrentStock { get; set; } = 0;
 
         public string? Description { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal CapCost { get; set; } = 0;
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal LabelCost { get; set; } = 0;
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal EmptyBottleCost { get; set; } = 0;
     }
 }
