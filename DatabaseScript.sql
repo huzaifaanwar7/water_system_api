@@ -53,15 +53,17 @@ GO
 CREATE TABLE Users (
     Id INT PRIMARY KEY IDENTITY(1,1),
     Username NVARCHAR(100) NOT NULL,
+    FullName NVARCHAR(100) NOT NULL DEFAULT '',
     Phone NVARCHAR(20) NOT NULL,
     Password NVARCHAR(100) NOT NULL,
+    AvatarUrl NVARCHAR(MAX) NULL,
     Role NVARCHAR(50) DEFAULT 'Admin',
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 GO
 
-INSERT INTO Users (Username, Phone, Password, Role) 
-VALUES ('huzaifa', '03450690300', 'huzaifa300', 'Admin');
+INSERT INTO Users (Username, FullName, Phone, Password, Role) 
+VALUES ('huzaifa', 'Huzaifa Admin', '03450690300', 'huzaifa300', 'Admin');
 GO
 
 CREATE TABLE Customers (
