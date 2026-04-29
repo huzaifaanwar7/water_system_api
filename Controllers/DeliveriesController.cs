@@ -43,27 +43,39 @@ namespace GBS.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Delivery>> PostDelivery(Delivery delivery)
         {
+            // IMPORTANT: Map the incoming AmountReceived to the database column AmountPaid
+            if (delivery.AmountReceived > 0) 
+            {
+                delivery.AmountPaid = delivery.AmountReceived;
+            }
+
             var status = (delivery.PaymentStatus ?? "").ToLower();
 
-            // Handle AmountReceived for partial payments
-            delivery.AmountPaid = delivery.AmountReceived;
-            if (status == "pending" || status == "credit" || status == "udhaar")
+            // Handle AmountPaid and PaymentStatus
+            if (delivery.AmountPaid >= delivery.TotalAmount)
             {
-                if (delivery.AmountPaid >= delivery.TotalAmount)
+                // If it's fully paid, ensure status reflects that if it was set to a pending type
+                if (status == "pending" || status == "credit" || status == "udhaar")
                 {
                     delivery.PaymentStatus = "paid";
-                    status = "paid";
                 }
-                else if (delivery.AmountPaid > 0)
-                {
-                    delivery.PaymentStatus = "partial";
-                    status = "partial";
-                }
+            }
+            else if (delivery.AmountPaid > 0)
+            {
+                // Partial payment received
+                delivery.PaymentStatus = "partial";
+            }
+            else if (status != "pending" && status != "credit" && status != "udhaar")
+            {
+                // No amount provided but a 'paid' method was selected -> assume full payment
+                delivery.AmountPaid = delivery.TotalAmount;
+                delivery.PaymentStatus = status; // Keep the method name as status (cash/bank/etc)
             }
             else
             {
-                // If paid fully in cash/bank/jazzcash directly
-                delivery.AmountPaid = delivery.TotalAmount;
+                // Truly pending/udhaar with 0 paid
+                delivery.AmountPaid = 0;
+                delivery.PaymentStatus = "pending";
             }
 
             _context.Deliveries.Add(delivery);
@@ -134,13 +146,32 @@ namespace GBS.Api.Controllers
             }
             await UpdateInventory(existing, true);
 
-            // Calculate new AmountPaid based on new status if it was changed
-            if (newStatus != oldStatus && (newStatus == "paid" || newStatus == "cash" || newStatus == "bank" || newStatus == "jazzcash"))
+            // Calculate new status based on AmountPaid
+            // We no longer force AmountPaid = TotalAmount here because it overrides partial payments.
+            // The frontend now provides the correct cumulative AmountPaid.
+            
+            // Recalculate status based on AmountPaid
+            if (delivery.AmountPaid >= delivery.TotalAmount)
             {
-                delivery.AmountPaid = delivery.TotalAmount;
+                if (newStatus == "pending" || newStatus == "credit" || newStatus == "partial" || newStatus == "udhaar")
+                {
+                    existing.PaymentStatus = "paid";
+                }
+                else
+                {
+                    existing.PaymentStatus = delivery.PaymentStatus;
+                }
+            }
+            else if (delivery.AmountPaid > 0)
+            {
+                existing.PaymentStatus = "partial";
+            }
+            else
+            {
+                existing.PaymentStatus = "pending";
             }
 
-            // Update fields
+            // RESTORE FIELD UPDATES
             existing.Date = delivery.Date;
             existing.Bottles19L = delivery.Bottles19L;
             existing.Bottles15L = delivery.Bottles15L;
@@ -149,7 +180,6 @@ namespace GBS.Api.Controllers
             existing.Empty15L = delivery.Empty15L;
             existing.Empty05L = delivery.Empty05L;
             existing.TotalAmount = delivery.TotalAmount;
-            existing.PaymentStatus = delivery.PaymentStatus;
             existing.Notes = delivery.Notes;
             existing.AmountPaid = delivery.AmountPaid;
 
