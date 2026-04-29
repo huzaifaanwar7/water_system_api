@@ -50,6 +50,38 @@ namespace GBS.Api.Controllers
             if (customer != null)
             {
                 customer.Balance += payment.Amount;
+
+                // Auto-allocate this general payment to the oldest unpaid deliveries
+                if (payment.DeliveryId == null)
+                {
+                    decimal remainingPayment = payment.Amount;
+                    
+                    var unpaidDeliveries = await _context.Deliveries
+                        .Where(d => d.CustomerId == payment.CustomerId && (d.PaymentStatus == "pending" || d.PaymentStatus == "credit" || d.PaymentStatus == "partial" || d.PaymentStatus == "udhaar"))
+                        .OrderBy(d => d.Date)
+                        .ToListAsync();
+
+                    foreach (var delivery in unpaidDeliveries)
+                    {
+                        if (remainingPayment <= 0) break;
+
+                        decimal amountDue = delivery.TotalAmount - delivery.AmountPaid;
+                        if (amountDue <= 0) continue;
+
+                        if (remainingPayment >= amountDue)
+                        {
+                            delivery.AmountPaid += amountDue;
+                            delivery.PaymentStatus = "paid";
+                            remainingPayment -= amountDue;
+                        }
+                        else
+                        {
+                            delivery.AmountPaid += remainingPayment;
+                            delivery.PaymentStatus = "partial";
+                            remainingPayment = 0;
+                        }
+                    }
+                }
             }
 
             await _context.SaveChangesAsync();

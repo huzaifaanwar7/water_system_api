@@ -103,6 +103,7 @@ CREATE TABLE Deliveries (
     Empty15L INT DEFAULT 0,
     Empty05L INT DEFAULT 0,
     TotalAmount DECIMAL(18,2) NOT NULL,
+    AmountPaid DECIMAL(18,2) NOT NULL DEFAULT 0,
     PaymentStatus NVARCHAR(50) DEFAULT 'pending',
     Notes NVARCHAR(MAX),
     InvoiceId INT,
@@ -120,8 +121,10 @@ CREATE TABLE Payments (
     TxnId NVARCHAR(100),
     Notes NVARCHAR(MAX),
     InvoiceId INT,
+    DeliveryId INT,
     CONSTRAINT FK_Payments_Customers FOREIGN KEY (CustomerId) REFERENCES Customers(Id),
-    CONSTRAINT FK_Payments_Invoices FOREIGN KEY (InvoiceId) REFERENCES Invoices(Id) ON DELETE SET NULL
+    CONSTRAINT FK_Payments_Invoices FOREIGN KEY (InvoiceId) REFERENCES Invoices(Id) ON DELETE SET NULL,
+    CONSTRAINT FK_Payments_Deliveries FOREIGN KEY (DeliveryId) REFERENCES Deliveries(Id) ON DELETE CASCADE
 );
 GO
 

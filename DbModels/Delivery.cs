@@ -28,6 +28,12 @@ namespace GBS.Api.DbModels
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
 
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal AmountPaid { get; set; }
+
+        [NotMapped]
+        public decimal AmountReceived { get; set; }
+
         [StringLength(50)]
         public string PaymentStatus { get; set; } = "pending"; // paid, pending, credit
 

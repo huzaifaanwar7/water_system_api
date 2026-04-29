@@ -32,5 +32,10 @@ namespace GBS.Api.DbModels
 
         [ForeignKey("InvoiceId")]
         public virtual Invoice? Invoice { get; set; }
+
+        public int? DeliveryId { get; set; }
+
+        [ForeignKey("DeliveryId")]
+        public virtual Delivery? Delivery { get; set; }
     }
 }

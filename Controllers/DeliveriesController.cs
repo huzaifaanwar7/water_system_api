@@ -43,31 +43,53 @@ namespace GBS.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Delivery>> PostDelivery(Delivery delivery)
         {
+            var status = (delivery.PaymentStatus ?? "").ToLower();
+
+            // Handle AmountReceived for partial payments
+            delivery.AmountPaid = delivery.AmountReceived;
+            if (status == "pending" || status == "credit" || status == "udhaar")
+            {
+                if (delivery.AmountPaid >= delivery.TotalAmount)
+                {
+                    delivery.PaymentStatus = "paid";
+                    status = "paid";
+                }
+                else if (delivery.AmountPaid > 0)
+                {
+                    delivery.PaymentStatus = "partial";
+                    status = "partial";
+                }
+            }
+            else
+            {
+                // If paid fully in cash/bank/jazzcash directly
+                delivery.AmountPaid = delivery.TotalAmount;
+            }
+
             _context.Deliveries.Add(delivery);
-            
+            await _context.SaveChangesAsync(); // Save to generate delivery.Id
+
             // Update customer balance and bottles out
             var customer = await _context.Customers.FindAsync(delivery.CustomerId);
             if (customer != null)
             {
-                var status = (delivery.PaymentStatus ?? "").ToLower();
-                if (status == "pending" || status == "credit")
+                customer.Balance -= delivery.TotalAmount; // Charge full amount
+
+                if (delivery.AmountPaid > 0)
                 {
-                    customer.Balance -= delivery.TotalAmount;
-                }
-                else
-                {
-                    // It's a paid delivery (cash, bank, jazzcash)
-                    // We should record it as a payment so it shows up in "Total Received"
                     var payment = new Payment
                     {
                         Date = delivery.Date,
                         CustomerId = delivery.CustomerId,
-                        Amount = delivery.TotalAmount,
-                        Method = delivery.PaymentStatus, // "cash", "bank", or "jazzcash"
-                        Notes = "Auto-generated from delivery #" + delivery.Id
+                        Amount = delivery.AmountPaid,
+                        Method = (status == "pending" || status == "credit" || status == "partial") ? "cash" : delivery.PaymentStatus,
+                        Notes = "Auto-generated payment for delivery #" + delivery.Id,
+                        DeliveryId = delivery.Id
                     };
                     _context.Payments.Add(payment);
+                    customer.Balance += delivery.AmountPaid; // Credit the paid amount
                 }
+
                 customer.BottlesOut += (delivery.Bottles19L - delivery.Empty19L);
             }
 
@@ -106,11 +128,17 @@ namespace GBS.Api.Controllers
             var customer = await _context.Customers.FindAsync(existing.CustomerId);
             if (customer != null)
             {
-                if (oldStatus == "pending" || oldStatus == "credit")
-                    customer.Balance += existing.TotalAmount;
+                customer.Balance += existing.TotalAmount;
+                customer.Balance -= existing.AmountPaid; // Revert the payment credit
                 customer.BottlesOut -= (existing.Bottles19L - existing.Empty19L);
             }
             await UpdateInventory(existing, true);
+
+            // Calculate new AmountPaid based on new status if it was changed
+            if (newStatus != oldStatus && (newStatus == "paid" || newStatus == "cash" || newStatus == "bank" || newStatus == "jazzcash"))
+            {
+                delivery.AmountPaid = delivery.TotalAmount;
+            }
 
             // Update fields
             existing.Date = delivery.Date;
@@ -123,28 +151,37 @@ namespace GBS.Api.Controllers
             existing.TotalAmount = delivery.TotalAmount;
             existing.PaymentStatus = delivery.PaymentStatus;
             existing.Notes = delivery.Notes;
+            existing.AmountPaid = delivery.AmountPaid;
 
             // Apply new impact
             if (customer != null)
             {
-                if (newStatus == "pending" || newStatus == "credit")
+                customer.Balance -= existing.TotalAmount;
+                if (existing.AmountPaid > 0)
                 {
-                    customer.Balance -= existing.TotalAmount;
+                    customer.Balance += existing.AmountPaid;
                 }
-                else if (oldStatus == "pending" || oldStatus == "credit")
+                customer.BottlesOut += (existing.Bottles19L - existing.Empty19L);
+                
+                var linkedPayment = await _context.Payments.FirstOrDefaultAsync(p => p.DeliveryId == existing.Id);
+                if (linkedPayment != null)
                 {
-                    var payment = new Payment
+                    linkedPayment.Amount = existing.AmountPaid;
+                    linkedPayment.Method = newStatus == "pending" ? "cash" : newStatus;
+                }
+                else if (existing.AmountPaid > 0)
+                {
+                    _context.Payments.Add(new Payment
                     {
                         Date = DateTime.Now,
                         CustomerId = existing.CustomerId,
-                        Amount = existing.TotalAmount,
-                        Method = existing.PaymentStatus,
+                        Amount = existing.AmountPaid,
+                        Method = newStatus == "pending" ? "cash" : newStatus,
                         Notes = "Payment for delivery #" + existing.Id,
+                        DeliveryId = existing.Id,
                         InvoiceId = existing.InvoiceId
-                    };
-                    _context.Payments.Add(payment);
+                    });
                 }
-                customer.BottlesOut += (existing.Bottles19L - existing.Empty19L);
             }
             await UpdateInventory(existing, false);
 
@@ -159,9 +196,10 @@ namespace GBS.Api.Controllers
                 {
                     bool allPaid = invoice.Deliveries.All(d => {
                         var s = (d.PaymentStatus ?? "").ToLower();
-                        return s != "pending" && s != "credit";
+                        return s != "pending" && s != "credit" && s != "partial";
                     });
                     invoice.Status = allPaid ? "paid" : "pending";
+                    invoice.AmountPaid = invoice.Deliveries.Sum(d => d.AmountPaid);
                 }
             }
 
@@ -192,10 +230,8 @@ namespace GBS.Api.Controllers
             var customer = await _context.Customers.FindAsync(delivery.CustomerId);
             if (customer != null)
             {
-                if (delivery.PaymentStatus == "pending" || delivery.PaymentStatus == "credit")
-                {
-                    customer.Balance += delivery.TotalAmount;
-                }
+                customer.Balance += delivery.TotalAmount; // Revert the charge
+                customer.Balance -= delivery.AmountPaid; // Revert the payment that will be cascade deleted
                 customer.BottlesOut -= (delivery.Bottles19L - delivery.Empty19L);
             }
 
@@ -242,9 +278,10 @@ namespace GBS.Api.Controllers
                 InvoiceDate = DateTime.Now,
                 DueDate = DateTime.Now.AddDays(7),
                 TotalAmount = deliveries.Sum(d => d.TotalAmount),
+                AmountPaid = deliveries.Sum(d => d.AmountPaid),
                 Status = deliveries.All(d => {
                     var s = (d.PaymentStatus ?? "").ToLower();
-                    return s != "pending" && s != "credit";
+                    return s != "pending" && s != "credit" && s != "partial";
                 }) ? "paid" : "pending",
                 Deliveries = deliveries
             };
