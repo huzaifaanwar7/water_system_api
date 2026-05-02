@@ -141,15 +141,80 @@ namespace GBS.Api.Controllers
                 return NotFound();
             }
 
+            var customerId = payment.CustomerId;
+            var amountToRevert = payment.Amount;
+
+            // Remove the payment
+            _context.Payments.Remove(payment);
+            
             // Revert customer balance
-            var customer = await _context.Customers.FindAsync(payment.CustomerId);
+            var customer = await _context.Customers.FindAsync(customerId);
             if (customer != null)
             {
-                customer.Balance -= payment.Amount;
+                customer.Balance -= amountToRevert;
             }
 
-            _context.Payments.Remove(payment);
             await _context.SaveChangesAsync();
+
+            // Re-calculate all delivery payment statuses for this customer to ensure consistency
+            if (customer != null)
+            {
+                var deliveries = await _context.Deliveries
+                    .Where(d => d.CustomerId == customerId)
+                    .OrderBy(d => d.Date)
+                    .ToListAsync();
+
+                var payments = await _context.Payments
+                    .Where(p => p.CustomerId == customerId)
+                    .OrderBy(p => p.Date)
+                    .ToListAsync();
+
+                // Reset all deliveries
+                foreach (var d in deliveries)
+                {
+                    d.AmountPaid = 0;
+                    d.PaymentStatus = "pending";
+                }
+
+                // Re-apply all payments
+                foreach (var p in payments)
+                {
+                    if (p.DeliveryId != null)
+                    {
+                        var d = deliveries.FirstOrDefault(x => x.Id == p.DeliveryId);
+                        if (d != null)
+                        {
+                            d.AmountPaid += p.Amount;
+                            d.PaymentStatus = d.AmountPaid >= d.TotalAmount ? "paid" : "partial";
+                        }
+                    }
+                    else
+                    {
+                        decimal remaining = p.Amount;
+                        foreach (var d in deliveries.Where(x => x.PaymentStatus != "paid"))
+                        {
+                            if (remaining <= 0) break;
+                            decimal due = d.TotalAmount - d.AmountPaid;
+                            if (due <= 0) continue;
+
+                            if (remaining >= due)
+                            {
+                                d.AmountPaid += due;
+                                d.PaymentStatus = "paid";
+                                remaining -= due;
+                            }
+                            else
+                            {
+                                d.AmountPaid += remaining;
+                                d.PaymentStatus = "partial";
+                                remaining = 0;
+                            }
+                        }
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+            }
 
             return NoContent();
         }
