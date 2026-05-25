@@ -21,13 +21,15 @@ public class JwtMiddleware
     {
         string token;
 
-        var skipValidation = context.Request.Method == "OPTIONS" 
-             || context.Request.Path.ToString().ToLower().Contains("users/login")
-             || context.Request.Path.ToString().ToLower().Contains("user/authenticate")
-             || context.Request.Path.ToString().ToLower().Contains("public")
-             || context.Request.Path.ToString().ToLower().Contains("user/validateotp")
-             || context.Request.Path.ToString().ToLower().Contains("download")
-             || context.Request.Path.ToString().ToLower().Contains("/www");
+        var p = context.Request.Path.ToString().ToLower();
+        var skipValidation = context.Request.Method == "OPTIONS"
+             || p.Contains("/auth/")
+             || p.Contains("users/login")
+             || p.Contains("public")
+             || p.Contains("download")
+             || p.Contains("/www")
+             || p.Contains("/files")
+             || p.Contains("/swagger");
 
 
         var endpoint = context.GetEndpoint();
@@ -68,11 +70,24 @@ public class JwtMiddleware
             else
             {
                 // Set the user in context for [Authorize] attribute to work
-                var claims = new[] { new Claim("Id", userId.Value.ToString()) };
+                // Parse the JWT to extract role and username for [Authorize(Roles=...)]
+                var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+                var jwt = handler.ReadJwtToken(token);
+                var role = jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role || c.Type == "role")?.Value ?? "Fan";
+                var uname = jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name || c.Type == "name" || c.Type == "unique_name")?.Value ?? "";
+
+                var claims = new[]
+                {
+                    new Claim("Id", userId.Value.ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, userId.Value.ToString()),
+                    new Claim(ClaimTypes.Name, uname),
+                    new Claim(ClaimTypes.Role, role)
+                };
                 var identity = new ClaimsIdentity(claims, "jwt");
                 context.User = new ClaimsPrincipal(identity);
 
-                context.Items["EmployeeId"] = userId;
+                context.Items["UserId"] = userId;
+                context.Items["Role"] = role;
                 await _next(context);
             }
         }
