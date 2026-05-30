@@ -35,8 +35,9 @@ namespace GBS.Service
                 Directory.CreateDirectory(folderPath);
             }
 
-            // Remove the metadata (everything before the Base64 string)
-            string base64Data = base64File.Split(",")[1];
+            // Remove the metadata (everything before the Base64 string).
+            // Tolerate a raw base64 string with no "data:...," prefix.
+            string base64Data = base64File.Contains(",") ? base64File.Split(",")[1] : base64File;
 
             // Convert Base64 string to byte array
             byte[] fileBytes = Convert.FromBase64String(base64Data);

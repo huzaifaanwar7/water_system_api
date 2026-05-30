@@ -97,15 +97,28 @@ namespace GBS.Api.Controllers
             if (string.IsNullOrWhiteSpace(req.Name) || string.IsNullOrWhiteSpace(req.ShortCode))
                 return BadRequest(new { message = "Name and ShortCode required." });
 
-            if (await _db.Teams.AnyAsync(t => t.ShortCode == req.ShortCode && !t.IsDeleted))
-                return Conflict(new { message = "ShortCode already exists." });
+            var shortCode = req.ShortCode.Trim().ToUpperInvariant();
+            if (shortCode.Length > 4)
+                return BadRequest(new { message = "ShortCode must be 4 characters or fewer." });
+
+            // The unique index on ShortCode spans ALL rows (including soft-deleted),
+            // so check without the IsDeleted filter to avoid a DB constraint crash.
+            var clash = await _db.Teams.FirstOrDefaultAsync(t => t.ShortCode == shortCode);
+            if (clash != null)
+            {
+                if (!clash.IsDeleted)
+                    return Conflict(new { message = "ShortCode already exists." });
+
+                // Reuse the soft-deleted slot instead of inserting a duplicate code.
+                return await ReviveDeletedTeam(clash, req, shortCode);
+            }
 
             var userId = User.GetUserId();
 
             var team = new Team
             {
                 Name = req.Name.Trim(),
-                ShortCode = req.ShortCode.Trim().ToUpperInvariant(),
+                ShortCode = shortCode,
                 Category = req.Category,
                 City = req.City,
                 HomeVenue = req.HomeVenue,
@@ -134,23 +147,76 @@ namespace GBS.Api.Controllers
                 }
             }
 
-            if (!string.IsNullOrEmpty(req.LogoBase64))
-            {
-                var ext = req.LogoBase64.Contains("image/png") ? ".png" : ".jpg";
-                team.LogoUrl = IOHelper.SaveFile(req.LogoBase64, $"team_{Guid.NewGuid():N}{ext}", "teams");
-            }
+            var (logoUrl, logoErr) = TrySaveLogo(req.LogoBase64);
+            if (logoErr != null) return BadRequest(new { message = logoErr });
+            if (logoUrl != null) team.LogoUrl = logoUrl;
 
             _db.Teams.Add(team);
-            await _db.SaveChangesAsync();
-
-            // Now that team has an Id, link the captain user to it.
-            if (req.CaptainUserId.HasValue)
+            try
             {
-                var cap = await _db.Users.FirstOrDefaultAsync(u => u.Id == req.CaptainUserId);
-                if (cap != null) { cap.TeamId = team.Id; await _db.SaveChangesAsync(); }
+                await _db.SaveChangesAsync();
+
+                // Now that team has an Id, link the captain user to it.
+                if (req.CaptainUserId.HasValue)
+                {
+                    var cap = await _db.Users.FirstOrDefaultAsync(u => u.Id == req.CaptainUserId);
+                    if (cap != null) { cap.TeamId = team.Id; await _db.SaveChangesAsync(); }
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                return Conflict(new { message = "Could not save team: " + (ex.InnerException?.Message ?? ex.Message) });
             }
 
             return Ok(team);
+        }
+
+        // Restores a previously soft-deleted team that owns the requested ShortCode,
+        // so the unique index is respected instead of throwing a 500.
+        private async Task<IActionResult> ReviveDeletedTeam(Team team, TeamRequest req, string shortCode)
+        {
+            var userId = User.GetUserId();
+            team.IsDeleted = false;
+            team.Name = req.Name.Trim();
+            team.ShortCode = shortCode;
+            team.Category = req.Category;
+            team.City = req.City;
+            team.HomeVenue = req.HomeVenue;
+            team.FoundedYear = req.FoundedYear;
+            team.PrimaryColorHex = req.PrimaryColorHex;
+            team.SecondaryColorHex = req.SecondaryColorHex;
+            team.CaptainUserId = req.CaptainUserId;
+            team.ApprovalStatus = "Approved";
+            team.ApprovedByUserId = userId;
+            team.ApprovedAt = DateTime.UtcNow;
+            team.UpdatedAt = DateTime.UtcNow;
+
+            var (logoUrl, logoErr) = TrySaveLogo(req.LogoBase64);
+            if (logoErr != null) return BadRequest(new { message = logoErr });
+            if (logoUrl != null) team.LogoUrl = logoUrl;
+
+            try { await _db.SaveChangesAsync(); }
+            catch (DbUpdateException ex)
+            {
+                return Conflict(new { message = "Could not save team: " + (ex.InnerException?.Message ?? ex.Message) });
+            }
+            return Ok(team);
+        }
+
+        // Returns (savedUrl, error). Never throws on malformed input.
+        private static (string?, string?) TrySaveLogo(string? logoBase64)
+        {
+            if (string.IsNullOrEmpty(logoBase64)) return (null, null);
+            try
+            {
+                var ext = logoBase64.Contains("image/png") ? ".png" : ".jpg";
+                var url = IOHelper.SaveFile(logoBase64, $"team_{Guid.NewGuid():N}{ext}", "teams");
+                return (url, null);
+            }
+            catch
+            {
+                return (null, "Invalid logo image data.");
+            }
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,Captain")]
@@ -173,13 +239,15 @@ namespace GBS.Api.Controllers
             team.SecondaryColorHex = req.SecondaryColorHex ?? team.SecondaryColorHex;
             team.UpdatedAt = DateTime.UtcNow;
 
-            if (!string.IsNullOrEmpty(req.LogoBase64))
-            {
-                var ext = req.LogoBase64.Contains("image/png") ? ".png" : ".jpg";
-                team.LogoUrl = IOHelper.SaveFile(req.LogoBase64, $"team_{Guid.NewGuid():N}{ext}", "teams");
-            }
+            var (logoUrl, logoErr) = TrySaveLogo(req.LogoBase64);
+            if (logoErr != null) return BadRequest(new { message = logoErr });
+            if (logoUrl != null) team.LogoUrl = logoUrl;
 
-            await _db.SaveChangesAsync();
+            try { await _db.SaveChangesAsync(); }
+            catch (DbUpdateException ex)
+            {
+                return Conflict(new { message = "Could not save team: " + (ex.InnerException?.Message ?? ex.Message) });
+            }
             return Ok(team);
         }
 
