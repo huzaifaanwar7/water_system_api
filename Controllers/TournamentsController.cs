@@ -140,16 +140,51 @@ namespace GBS.Api.Controllers
             return NoContent();
         }
 
+        public class SetGroupRequest { public string? GroupName { get; set; } }
+
+        // Assign / re-assign a team's pool (group) within the tournament.
+        [Authorize(Roles = "SuperAdmin,Scorer")]
+        [HttpPut("{id}/teams/{teamId}/group")]
+        public async Task<IActionResult> SetTeamGroup(int id, int teamId, [FromBody] SetGroupRequest req)
+        {
+            var tt = await _db.TournamentTeams.FirstOrDefaultAsync(x => x.TournamentId == id && x.TeamId == teamId);
+            if (tt == null) return NotFound();
+            tt.GroupName = req.GroupName;
+            await _db.SaveChangesAsync();
+            return Ok();
+        }
+
         // Computed live from completed matches + innings totals.
         // No materialized Standings table — derives W/L/T/NR + points + NRR + last-5 form.
-        [AllowAnonymous]
-        [HttpGet("{id}/standings")]
-        public async Task<IActionResult> Standings(int id)
+        // Internal standings row used by both /standings and /qualifiers.
+        private class StandingRow
         {
-            var teamIds = await _db.TournamentTeams
+            public int TeamId { get; set; }
+            public string? GroupName { get; set; }
+            public object? Team { get; set; }
+            public int MatchesPlayed { get; set; }
+            public int Wins { get; set; }
+            public int Losses { get; set; }
+            public int Ties { get; set; }
+            public int NoResults { get; set; }
+            public int Points { get; set; }
+            public double? NetRunRate { get; set; }
+            public int RunsScored { get; set; }
+            public double OversFaced { get; set; }
+            public int RunsConceded { get; set; }
+            public double OversBowled { get; set; }
+            public List<string> Last5Form { get; set; } = new();
+        }
+
+        // Computes per-team standings (with pool/group) for a tournament.
+        private async Task<List<StandingRow>> ComputeStandings(int id)
+        {
+            var tts = await _db.TournamentTeams
                 .Where(tt => tt.TournamentId == id)
-                .Select(tt => tt.TeamId).ToListAsync();
-            if (teamIds.Count == 0) return Ok(Array.Empty<object>());
+                .ToListAsync();
+            var teamIds = tts.Select(tt => tt.TeamId).ToList();
+            var groupOf = tts.ToDictionary(tt => tt.TeamId, tt => tt.GroupName);
+            if (teamIds.Count == 0) return new List<StandingRow>();
 
             var matches = await _db.Matches
                 .Where(m => m.TournamentId == id && !m.IsDeleted)
@@ -162,7 +197,7 @@ namespace GBS.Api.Controllers
                 .Select(t => new { t.Id, t.Name, t.ShortCode, t.LogoUrl }).ToListAsync();
             var teamMap = teams.ToDictionary(t => t.Id);
 
-            var rows = new List<object>();
+            var rows = new List<StandingRow>();
             foreach (var teamId in teamIds)
             {
                 var played = 0; var won = 0; var lost = 0; var tied = 0; var nr = 0;
@@ -209,11 +244,11 @@ namespace GBS.Api.Controllers
                 if (oversFaced > 0 && oversBowled > 0)
                     nrr = Math.Round((runsScored / oversFaced) - (runsConceded / oversBowled), 3);
 
-                var team = teamMap.GetValueOrDefault(teamId);
-                rows.Add(new
+                rows.Add(new StandingRow
                 {
                     TeamId = teamId,
-                    Team = team,
+                    GroupName = groupOf.GetValueOrDefault(teamId),
+                    Team = teamMap.GetValueOrDefault(teamId),
                     MatchesPlayed = played, Wins = won, Losses = lost, Ties = tied, NoResults = nr,
                     Points = points,
                     NetRunRate = nrr,
@@ -224,12 +259,58 @@ namespace GBS.Api.Controllers
             }
 
             // Sort: Points desc → NRR desc → Wins desc
-            var sorted = rows
-                .OrderByDescending(r => (int)r.GetType().GetProperty("Points")!.GetValue(r)!)
-                .ThenByDescending(r => (double?)r.GetType().GetProperty("NetRunRate")!.GetValue(r) ?? double.MinValue)
-                .ThenByDescending(r => (int)r.GetType().GetProperty("Wins")!.GetValue(r)!)
+            return rows
+                .OrderByDescending(r => r.Points)
+                .ThenByDescending(r => r.NetRunRate ?? double.MinValue)
+                .ThenByDescending(r => r.Wins)
                 .ToList();
-            return Ok(sorted);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{id}/standings")]
+        public async Task<IActionResult> Standings(int id)
+        {
+            var rows = await ComputeStandings(id);
+            return Ok(rows);
+        }
+
+        // Top-N teams per pool — the set that advances to the knockout stage.
+        // Returns a flat list of qualified teams (with their pool + seed).
+        [AllowAnonymous]
+        [HttpGet("{id}/qualifiers")]
+        public async Task<IActionResult> Qualifiers(int id, [FromQuery] int perPool = 2)
+        {
+            var rows = await ComputeStandings(id);
+            if (rows.Count == 0) return Ok(Array.Empty<object>());
+
+            var result = new List<object>();
+            var groups = rows
+                .GroupBy(r => r.GroupName ?? "Pool A")
+                .OrderBy(g => g.Key);
+            foreach (var g in groups)
+            {
+                var ranked = g
+                    .OrderByDescending(r => r.Points)
+                    .ThenByDescending(r => r.NetRunRate ?? double.MinValue)
+                    .ThenByDescending(r => r.Wins)
+                    .Take(Math.Max(1, perPool))
+                    .ToList();
+                for (var i = 0; i < ranked.Count; i++)
+                {
+                    var r = ranked[i];
+                    result.Add(new
+                    {
+                        r.TeamId,
+                        r.Team,
+                        Pool = g.Key,
+                        Seed = i + 1,          // 1 = pool winner
+                        SeedLabel = $"{g.Key} #{i + 1}",
+                        r.Points,
+                        r.NetRunRate,
+                    });
+                }
+            }
+            return Ok(result);
         }
 
         public class GenerateFixturesRequest
@@ -252,8 +333,9 @@ namespace GBS.Api.Controllers
             var tournament = await _db.Tournaments.FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
             if (tournament == null) return NotFound();
 
-            var teamIds = await _db.TournamentTeams
-                .Where(tt => tt.TournamentId == id).Select(tt => tt.TeamId).ToListAsync();
+            var tts = await _db.TournamentTeams
+                .Where(tt => tt.TournamentId == id).ToListAsync();
+            var teamIds = tts.Select(tt => tt.TeamId).ToList();
             if (teamIds.Count < 2) return BadRequest(new { message = "Tournament needs at least 2 teams." });
 
             if (req.ClearExisting)
@@ -278,7 +360,7 @@ namespace GBS.Api.Controllers
                     fixtures = BuildKnockoutBracket(teamIds);
                     break;
                 case "Hybrid":
-                    fixtures = BuildHybridFixtures(teamIds);
+                    fixtures = BuildPoolFixtures(tts);
                     break;
                 case "RoundRobin":
                 default:
@@ -408,6 +490,26 @@ namespace GBS.Api.Controllers
                 var b = padded[size - 1 - i];
                 if (a == -1 || b == -1) continue; // bye — skip generating this fixture
                 matches.Add((a, b, label));
+            }
+            return matches;
+        }
+
+        // Pool stage: round-robin WITHIN each assigned pool (GroupName). Stage label = pool name.
+        // Knockout fixtures (QF/SF/Final) are created manually afterwards from the qualifiers.
+        // Falls back to auto 2-group split when no pools were assigned.
+        private static List<(int, int, string)> BuildPoolFixtures(List<TournamentTeam> tts)
+        {
+            var assigned = tts.Where(t => !string.IsNullOrWhiteSpace(t.GroupName)).ToList();
+            if (assigned.Count < 2)
+                return BuildHybridFixtures(tts.Select(t => t.TeamId).ToList());
+
+            var matches = new List<(int, int, string)>();
+            foreach (var pool in assigned.GroupBy(t => t.GroupName!).OrderBy(g => g.Key))
+            {
+                var ids = pool.Select(t => t.TeamId).ToList();
+                if (ids.Count < 2) continue;
+                foreach (var (a, b, _) in BuildRoundRobin(ids, false))
+                    matches.Add((a, b, pool.Key));
             }
             return matches;
         }
