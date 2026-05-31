@@ -23,32 +23,43 @@ namespace GBS.Service
         // }
 
 
-        public static string SaveFile(string base64File, string fileName, string folderName = "upload")
+        // Saves a base64 image and returns its public "/files/..." URL.
+        // Returns null on any failure (bad base64, IO error) instead of throwing,
+        // so callers never surface a 500 just because an image was malformed.
+        public static string? SaveFile(string base64File, string fileName, string folderName = "upload")
         {
-
-            // Combine the web root path with the desired folder name
-            string folderPath = "www/" + folderName; //Path.Combine(_rootFolder, folderName);
-
-            // Check if the directory exists; if not, create it
-            if (!Directory.Exists(folderPath))
+            try
             {
-                Directory.CreateDirectory(folderPath);
+                if (string.IsNullOrWhiteSpace(base64File)) return null;
+
+                // Combine the web root path with the desired folder name
+                string folderPath = "www/" + folderName; //Path.Combine(_rootFolder, folderName);
+
+                // Check if the directory exists; if not, create it
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                // Remove the metadata (everything before the Base64 string).
+                // Tolerate a raw base64 string with no "data:...," prefix.
+                string base64Data = base64File.Contains(",") ? base64File.Split(",")[1] : base64File;
+
+                // Convert Base64 string to byte array
+                byte[] fileBytes = Convert.FromBase64String(base64Data);
+
+                // Define the file path where the file will be saved
+                string filePath = folderPath + "/" + fileName;
+
+                // Write the byte array to a file
+                File.WriteAllBytes(filePath, fileBytes);
+
+                return filePath.Replace("www", "/files");
             }
-
-            // Remove the metadata (everything before the Base64 string).
-            // Tolerate a raw base64 string with no "data:...," prefix.
-            string base64Data = base64File.Contains(",") ? base64File.Split(",")[1] : base64File;
-
-            // Convert Base64 string to byte array
-            byte[] fileBytes = Convert.FromBase64String(base64Data);
-
-            // Define the file path where the file will be saved
-            string filePath = folderPath + "/" + fileName;
-
-            // Write the byte array to a file
-            File.WriteAllBytes(filePath, fileBytes);
-
-            return filePath.Replace("www","/files");
+            catch
+            {
+                return null;
+            }
         }
     }
 }
