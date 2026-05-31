@@ -49,12 +49,23 @@ namespace GBS.Api.Controllers
             var teams = await _db.Teams.Where(t => teamIds.Contains(t.Id)).Select(t => new { t.Id, t.Name, t.ShortCode, t.LogoUrl }).ToListAsync();
             var lookup = teams.ToDictionary(t => t.Id);
 
+            // Innings summaries so list cards can show scores + compute margins.
+            var matchIds = matches.Select(m => m.Id).ToList();
+            var inningsAll = await _db.Innings
+                .Where(i => matchIds.Contains(i.MatchId))
+                .OrderBy(i => i.InningsNumber)
+                .Select(i => new { i.Id, i.MatchId, i.InningsNumber, i.BattingTeamId, i.BowlingTeamId, i.TotalRuns, i.Wickets, i.LegalBallsBowled, i.Target })
+                .ToListAsync();
+            var inningsByMatch = inningsAll.GroupBy(i => i.MatchId)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
             var items = matches.Select(m => new
             {
                 m.Id, m.MatchName, m.TournamentId, m.Venue, m.ScheduledStart, m.MatchFormat, m.OversPerInnings,
-                m.MatchState, m.ResultWinnerTeamId, m.ResultMargin, m.StageLabel,
+                m.MatchState, m.ResultWinnerTeamId, m.ResultMargin, m.ManOfTheMatchPlayerId, m.StageLabel,
                 HomeTeam = lookup.GetValueOrDefault(m.HomeTeamId),
-                AwayTeam = lookup.GetValueOrDefault(m.AwayTeamId)
+                AwayTeam = lookup.GetValueOrDefault(m.AwayTeamId),
+                Innings = inningsByMatch.GetValueOrDefault(m.Id) ?? new()
             });
 
             return Ok(new { items, page, pageSize, totalCount = total, totalPages = (int)Math.Ceiling(total / (double)pageSize) });

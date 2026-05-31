@@ -327,7 +327,7 @@ namespace GBS.Api.Controllers
                 .Where(b => b.MatchId == matchId && !b.IsUndone)
                 .OrderByDescending(b => b.BallSequence).Take(18)
                 .Select(b => new {
-                    b.Id, b.OverNumber, b.BallInOver, b.RunsBatter, b.RunsExtras,
+                    b.Id, b.InningsId, b.OverNumber, b.BallInOver, b.RunsBatter, b.RunsExtras,
                     b.ExtrasType, b.IsWicket, b.WicketType, b.IsLegalDelivery,
                     b.IsFreeHit, b.Commentary, b.BowledAt, b.BallSequence
                 }).ToListAsync();
