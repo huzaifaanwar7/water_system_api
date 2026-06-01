@@ -148,7 +148,8 @@ namespace GBS.Api.Controllers
                     if (req.RunsBatter == 4) bs.Fours++;
                     if (req.RunsBatter == 6) bs.Sixes++;
                 }
-                if (req.IsLegalDelivery) bs.BallsFaced++;
+                // NoBall bhi batter ke balls faced mein count hoti hai (Wide nahi hoti)
+                if (req.IsLegalDelivery || req.ExtrasType == "NoBall") bs.BallsFaced++;
             }
 
             // Dismissed batter
@@ -175,7 +176,9 @@ namespace GBS.Api.Controllers
                     _db.BowlingFigures.Add(bf);
                 }
                 if (req.IsLegalDelivery) bf.LegalBalls++;
-                bf.RunsConceded += req.RunsBatter + req.RunsExtras;
+                // Bye and LegBye runs are NOT charged to the bowler
+                bf.RunsConceded += req.RunsBatter +
+                    (req.ExtrasType == "Bye" || req.ExtrasType == "LegBye" ? 0 : req.RunsExtras);
                 if (req.IsWicket && req.WicketType != "RunOut") bf.Wickets++;
                 if (req.RunsBatter == 0 && (req.ExtrasType == null) && req.IsLegalDelivery) bf.Dots++;
                 if (req.RunsBatter == 4) bf.Fours++;
